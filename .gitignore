@@ -5,5 +5,8 @@ npm-debug.log
 node_modules
 config.json
 
+# Ignore dist
+dist
+
 # test coverage info
 test/__coverage__

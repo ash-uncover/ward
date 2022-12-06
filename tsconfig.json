@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "declaration": true,
     "esModuleInterop": true,
+    "inlineSourceMap": true,
     "lib": [
       "DOM"
     ],

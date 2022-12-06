@@ -1,6 +1,6 @@
 {
   "name": "@uncover/js-utils-microfrontend",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "aSH <ash.uncover@gmail.com>",
   "description": "Util project for micro frontends managemnt",
   "license": "MIT",
