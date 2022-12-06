@@ -3,14 +3,14 @@
     "baseUrl": ".",
     "declaration": true,
     "esModuleInterop": true,
+    "inlineSourceMap": true,
     "lib": [
-      "DOM"
+      "DOM",
     ],
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "dist",
-    "inlineSourceMap": true,
     "strict": true,
     "target": "es6",
     "typeRoots": [

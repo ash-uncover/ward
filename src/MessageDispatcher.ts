@@ -22,6 +22,7 @@ class MessageDispatcherClass {
   constructor(id?: string) {
     this.#id = id || `message-dispatcher-${UUID.next()}`
     // Wait for registration of other services
+    LOGGER.info(`[${this.idShort}] created, listening`)
     window.addEventListener(
       'message',
       this.#handleMessage.bind(this)
@@ -49,7 +50,10 @@ class MessageDispatcherClass {
   // Public Methods //
 
   addService(service: IMessageService) {
-    LOGGER.info(`[${this.idShort}] add service ${service.idShort}`)
+    if (service.idShort.startsWith('[')) {
+      debugger
+    }
+    LOGGER.info(`[${this.idShort}] add service [${service.idShort}]`)
     if (!this.#services.includes(service)) {
       this.#services.push(service)
     }
@@ -57,7 +61,7 @@ class MessageDispatcherClass {
   }
 
   removeService(service: IMessageService) {
-    LOGGER.info(`[${this.idShort}] remove service ${service.idShort}`)
+    LOGGER.info(`[${this.idShort}] remove service [${service.idShort}]`)
     this.#services = this.#services.filter(serv => serv !== service)
   }
 
@@ -65,7 +69,7 @@ class MessageDispatcherClass {
     LOGGER.info(`[${this.idShort}] send message to ${this.#services.length - 1} services from [${this.idShort}-${message._serviceId?.substring(message._serviceId!.length - 3)}]`)
     this.#services.forEach((service) => {
       if (service.id !== message._serviceId) {
-        LOGGER.info(`[${this.idShort}] send message on service ${service.idShort}`)
+        LOGGER.info(`[${this.idShort}] send message on service [${service.idShort}]`)
         service.onMessage({
           _dispatcherId: this.#id,
           ...message,

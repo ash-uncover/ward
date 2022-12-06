@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta charset="utf-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+
+  <title>JS Utils Microfrontend</title>
+
+  <style>
+    html,
+    body,
+    .root {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .root {
+      display: flex;
+    }
+
+    .message-sender {
+      flex-grow: 1;
+      flex-basis: 0;
+      margin: 0.5rem;
+      padding: 1rem;
+      border: 1px solid grey;
+
+      display: flex;
+      flex-direction: column;
+    }
+    .message-sender label {
+      display: inline-block;
+      width: 5rem;
+    }
+    .message-sender input {
+      margin-bottom: 0.5rem;
+    }
+    .message-sender button {
+      width: 177px;
+      display: block;
+    }
+    .message-sender ul {
+      border: 1px solid lightgrey;
+      flex-grow: 1;
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="root">
+    <div class="message-sender">
+      <h4 style="margin:0;margin-bottom:0.5rem;">MessageService Y1</h4>
+      <div>
+        <label for="typeY1">Type</label>
+        <input id="typeY1" value="typeY1" />
+      </div>
+      <div>
+        <label for="payloadY1">Payload</label>
+        <input id="payloadY1" value="payloadY1" />
+      </div>
+      <button onclick="sendY1()">Send</button>
+      <h5 style="margin:0.5rem 0;;">Events</h5>
+      <ul id="listY1"></ul>
+    </div>
+  </div>
+</body>
+
+</html>

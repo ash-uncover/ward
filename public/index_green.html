@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta charset="utf-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+
+  <title>JS Utils Microfrontend</title>
+
+  <style>
+    html, body, .root { padding: 0; margin: 0; width: 100%; height: 100%; }
+    .root {
+      display: flex;
+    }
+    .message-sender {
+      flex-grow: 1;
+      width: 0;
+      margin: 0.5rem;
+      padding: 1rem;
+      border: 1px solid grey;
+
+      display: flex;
+      flex-direction: column;
+    }
+    .message-sender label {
+      display: inline-block;
+      width: 5rem;
+    }
+    .message-sender input {
+      margin-bottom: 0.5rem;
+    }
+    .message-sender button {
+      width: 177px;
+      display: block;
+    }
+    .message-sender ul {
+      border: 1px solid lightgrey;
+      flex-grow: 1;
+      margin: 0;
+    }
+    .container {
+      flex-grow:1;
+      width: 0;
+      margin: 0.5rem;
+    }
+    .container-yellow {
+      border: 4px solid yellow;
+      background: #FFE;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="root">
+    <div class="message-sender">
+      <h4 style="margin:0;margin-bottom:0.5rem;">MessageService G1</h4>
+      <div>
+        <label for="typeG1">Type</label>
+        <input id="typeG1" value="typeG1" />
+      </div>
+      <div>
+        <label for="payloadG1">Payload</label>
+        <input id="payloadG1" value="payloadG1" />
+      </div>
+      <button onclick="sendG1()">Send</button>
+      <h5 style="margin:0.5rem 0;;">Events</h5>
+      <ul id="listG1"></ul>
+    </div>
+    <iframe
+      class="container container-yellow"
+      src="/index_yellow.html"
+    ></iframe>
+  </div>
+</body>
+
+</html>

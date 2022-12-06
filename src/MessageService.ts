@@ -19,6 +19,7 @@ class MessageService implements IMessageService {
 
   constructor(id?: string) {
     this.#id = id || `message-service-${UUID.next()}`
+    LOGGER.info(`[${this.idShort}] created`)
   }
 
   // Getters & Setters //
@@ -28,7 +29,7 @@ class MessageService implements IMessageService {
   }
 
   get idShort() {
-    return `[${MessageDispatcher.idShort}-${this.#id.substring(this.#id.length - 3)}]`
+    return `${MessageDispatcher.idShort}-${this.#id.substring(this.#id.length - 3)}`
   }
 
   // Public //
@@ -37,9 +38,9 @@ class MessageService implements IMessageService {
     this.#init = true
     this.#handle = handleMessage
     this.#closure = MessageDispatcher.addService(this)
-    LOGGER.info(`${this.idShort} starting`)
+    LOGGER.info(`[${this.idShort}] starting`)
     return () => {
-      LOGGER.info(`${this.idShort} closing`)
+      LOGGER.info(`[${this.idShort}] closing`)
       this.#init = false
       this.#handle = null
       if (this.#closure) {
@@ -50,22 +51,22 @@ class MessageService implements IMessageService {
 
   onMessage(message: Message) {
     if (this.#init && this.#handle) {
-      LOGGER.info(`${this.idShort} onMessage`)
+      LOGGER.info(`[${this.idShort}] onMessage`)
       this.#handle(message)
     } else {
-      console.warn(`${this.idShort} onMessage but not init`)
+      console.warn(`[${this.idShort}] onMessage but not init`)
     }
   }
 
   sendMessage(message: Message) {
-    LOGGER.info(`${this.idShort} sendMessage`)
+    LOGGER.info(`[${this.idShort}] sendMessage`)
     if (this.#init) {
       MessageDispatcher.sendMessage({
         ...message,
         _serviceId: this.id,
       })
     } else {
-      console.warn(`${this.idShort} sendMessage but not init`)
+      console.warn(`[${this.idShort}] sendMessage but not init`)
     }
   }
 }

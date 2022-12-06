@@ -1,6 +1,6 @@
 {
   "name": "@uncover/js-utils-microfrontend",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "aSH <ash.uncover@gmail.com>",
   "description": "Util project for micro frontends managemnt",
   "license": "MIT",
@@ -14,14 +14,23 @@
     "dist/**/*"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "build:docs": "npm i && webpack --config webpack.config.docs.js --mode production",
+    "start": "npm i && webpack serve --progress --mode development"
   },
   "dependencies": {
     "@uncover/js-utils": "^0.0.11",
     "@uncover/js-utils-logger": "^0.1.4"
   },
   "devDependencies": {
+    "babel-loader": "^9.1.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "html-webpack-plugin": "^5.5.0",
+    "ts-loader": "^9.4.2",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.3"
+    "typescript": "^4.9.3",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.11.1"
   }
 }
