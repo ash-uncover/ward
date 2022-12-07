@@ -54,7 +54,7 @@ class MessageService implements IMessageService {
       LOGGER.info(`[${this.idShort}] onMessage`)
       this.#handle(message)
     } else {
-      console.warn(`[${this.idShort}] onMessage but not init`)
+      LOGGER.warn(`[${this.idShort}] onMessage but not init`)
     }
   }
 
@@ -66,7 +66,7 @@ class MessageService implements IMessageService {
         _serviceId: this.id,
       })
     } else {
-      console.warn(`[${this.idShort}] sendMessage but not init`)
+      LOGGER.warn(`[${this.idShort}] sendMessage but not init`)
     }
   }
 }

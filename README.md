@@ -4,3 +4,10 @@
 ![Last Push](https://github.com/ash-uncover/js-utils-microfrontend/actions/workflows/publish-npm.yml/badge.svg)
 
 js-utils-microfrontend is a small JavaScript library providing tools to ease microfrontend development regardless of the chosen frameworks
+
+### Usage
+
+```
+npm add @uncover/js-utils-microfrontend
+```
+
