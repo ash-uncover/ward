@@ -34,6 +34,15 @@ jobs:
       - name: build
         run: npm run build
 
+      - name: test
+        run: npm run test:coverage
+
+      - name: Generating coverage badges
+        uses: jpb06/jest-badges-action@latest
+          with:
+            branches: main
+            coverage-summary-path: ./test/__coverage__/coverage-summary.json
+
       - name: publish
         uses: JS-DevTools/npm-publish@v1
         with:
