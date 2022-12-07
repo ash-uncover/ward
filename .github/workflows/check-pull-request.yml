@@ -36,3 +36,9 @@ jobs:
 
       - name: test
         run: npm run test:coverage
+
+      - name: Generating coverage badges
+        uses: jpb06/jest-badges-action@latest
+        with:
+          branches: *
+          coverage-summary-path: ./test/__coverage__/coverage-summary.json
