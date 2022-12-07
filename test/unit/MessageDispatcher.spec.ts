@@ -1,5 +1,5 @@
 import { LogConfig } from '@uncover/js-utils-logger';
-import MessageService from '../../src'
+import MessageService from '../../src/MessageService'
 import MessageDispatcher, { CONNECTION_ACKNOWLEDGE, CONNECTION_CLOSING, CONNECTION_REQUEST, getDispatcherId, getDispatcherIdShort, getDispatchers, getServices, getStarted, handlers, reset } from '../../src/MessageDispatcher';
 
 jest.mock('../../src/MessageDispatcher', () => {
