@@ -1,8 +1,8 @@
 import { UUID } from '@uncover/js-utils'
 import Logger from '@uncover/js-utils-logger'
-import { IMessageService } from './IMessageService'
+import IMessageService from './IMessageService'
 import Message from './Message'
-import MessageDispatcher from './MessageDispatcher'
+import MessageDispatcher, { getDispatcherIdShort } from './MessageDispatcher'
 
 const LOGGER = new Logger('MessageService', 0)
 
@@ -29,7 +29,7 @@ class MessageService implements IMessageService {
   }
 
   get idShort() {
-    return `${MessageDispatcher.idShort}-${this.#id.substring(this.#id.length - 3)}`
+    return `${getDispatcherIdShort()}-${this.#id.substring(this.#id.length - 3)}`
   }
 
   // Public //
@@ -54,7 +54,7 @@ class MessageService implements IMessageService {
       LOGGER.info(`[${this.idShort}] onMessage`)
       this.#handle(message)
     } else {
-      console.warn(`[${this.idShort}] onMessage but not init`)
+      LOGGER.warn(`[${this.idShort}] onMessage but not init`)
     }
   }
 
@@ -66,7 +66,7 @@ class MessageService implements IMessageService {
         _serviceId: this.id,
       })
     } else {
-      console.warn(`[${this.idShort}] sendMessage but not init`)
+      LOGGER.warn(`[${this.idShort}] sendMessage but not init`)
     }
   }
 }

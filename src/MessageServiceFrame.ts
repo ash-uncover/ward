@@ -1,8 +1,9 @@
 import { UUID } from '@uncover/js-utils'
 import Logger from '@uncover/js-utils-logger'
-import { IMessageService } from './IMessageService'
+
+import IMessageService from './IMessageService'
 import Message from './Message'
-import MessageDispatcher from './MessageDispatcher'
+import MessageDispatcher, { getDispatcherIdShort } from './MessageDispatcher'
 
 const LOGGER = new Logger('MessageServiceFrame', 0)
 
@@ -33,7 +34,7 @@ class MessageServiceFrame implements IMessageService {
   }
 
   get idShort() {
-    return `${MessageDispatcher.idShort}-${this.#id.substring(this.#id.length - 3)}`
+    return `${getDispatcherIdShort()}-${this.#id.substring(this.#id.length - 3)}`
   }
 
   // Public Methods //

@@ -7,6 +7,7 @@ config.json
 
 # Ignore dist
 dist
+bundles
 
 # test coverage info
 test/__coverage__

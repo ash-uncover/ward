@@ -1,8 +1,7 @@
 import MessageBase from './Message'
 import MessageServiceBase from './MessageService'
 
-// Message
-export type Message = MessageBase
-export const MessageService = MessageServiceBase
+const MessageService = MessageServiceBase
 
+export type Message = MessageBase
 export default MessageService
