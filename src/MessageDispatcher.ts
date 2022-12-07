@@ -1,126 +1,166 @@
 import { UUID } from '@uncover/js-utils'
 import Logger from '@uncover/js-utils-logger'
-import { IMessageService } from './IMessageService'
+import IMessageService from './IMessageService'
 import Message from './Message'
 import MessageServiceFrame from './MessageServiceFrame'
 
-const CONNECTION_REQUEST = '__CONNNECTION_REQUEST__'
-const CONNECTION_ACKNOWLEDGE = '__CONNECTION_ACKNOWLEDGE__'
+export const CONNECTION_REQUEST = '__CONNNECTION_REQUEST__'
+export const CONNECTION_ACKNOWLEDGE = '__CONNECTION_ACKNOWLEDGE__'
+export const CONNECTION_CLOSING = '__CONNNECTION_CLOSING__'
 
 const LOGGER = new Logger('MessageDispatcher', 0)
 
-class MessageDispatcherClass {
+let id: string
+let idShort: string
+let started: boolean = false
+let services: IMessageService[] = []
+let dispatchers: string[] = []
 
-  // Attributes //
+export const setId = (dispatcherId?: string) => {
+  id = dispatcherId || `message-dispatcher-${UUID.next()}`
+  idShort = id.substring(Math.max(id.length - 3, 0))
+}
 
-  #id: string
-  #services: IMessageService[] = []
-  #dispatchers: string[] = []
+export const getDispatcherId = () => {
+  return id
+}
 
-  // Constructor //
+export const getDispatcherIdShort = () => {
+  return idShort
+}
 
-  constructor(id?: string) {
-    this.#id = id || `message-dispatcher-${UUID.next()}`
-    // Wait for registration of other services
-    LOGGER.info(`[${this.idShort}] created, listening`)
-    window.addEventListener(
-      'message',
-      this.#handleMessage.bind(this)
-    )
-    if (window !== window.parent) {
-      // Try to connect to a parent service
-      LOGGER.info(`[${this.idShort}] contact parent`)
-      window.parent.postMessage({
-        _dispatcherId: this.id,
-        type: CONNECTION_REQUEST
-      }, '*')
-    }
-  }
+export const getStarted = () => {
+  return started
+}
 
-  // Getters & Setters //
+export const getServices = () => {
+  return services
+}
 
-  get id() {
-    return this.#id
-  }
+export const getDispatchers = () => {
+  return dispatchers
+}
 
-  get idShort() {
-    return this.#id.substring(this.#id.length - 3)
-  }
+export const reset = () => {
+  setId()
+  started = false
+  services  = []
+  dispatchers = []
+}
 
-  // Public Methods //
-
-  addService(service: IMessageService) {
-    if (service.idShort.startsWith('[')) {
-      debugger
-    }
-    LOGGER.info(`[${this.idShort}] add service [${service.idShort}]`)
-    if (!this.#services.includes(service)) {
-      this.#services.push(service)
-    }
-    return () => this.removeService(service)
-  }
-
-  removeService(service: IMessageService) {
-    LOGGER.info(`[${this.idShort}] remove service [${service.idShort}]`)
-    this.#services = this.#services.filter(serv => serv !== service)
-  }
-
-  sendMessage(message: Message) {
-    LOGGER.info(`[${this.idShort}] send message to ${this.#services.length - 1} services from [${this.idShort}-${message._serviceId?.substring(message._serviceId!.length - 3)}]`)
-    this.#services.forEach((service) => {
-      if (service.id !== message._serviceId) {
-        LOGGER.info(`[${this.idShort}] send message on service [${service.idShort}]`)
-        service.onMessage({
-          _dispatcherId: this.#id,
-          ...message,
-        })
-      }
-    })
-  }
-
-  // Private Methods //
-
-  #handleMessage(event: MessageEvent) {
-    const data = event.data || {}
-    if (data._dispatcherId) {
-      switch (data.type) {
+export const handlers = {
+  handleMessage: (event: MessageEvent) => {
+    if (event.data._dispatcherId) {
+      switch (event.data.type) {
         case CONNECTION_REQUEST: {
-          this.#handleConnectionRequest(event)
+          handlers.handleConnectionRequest(event)
           break
         }
         case CONNECTION_ACKNOWLEDGE: {
-          this.#handleConnectionAcknowledge(event)
+          handlers.handleConnectionAcknowledge(event)
+          break
+        }
+        case CONNECTION_CLOSING: {
+          handlers.handleConnectionClosing(event)
           break
         }
       }
     }
-  }
+  },
 
-  #handleConnectionRequest(event: MessageEvent) {
-    const dispatcherId = event.data?._dispatcherId
-    LOGGER.info(`[${this.idShort}] child trying to connect [${dispatcherId.substring(dispatcherId.length - 3)}]`)
-    LOGGER.info(`[${this.idShort}] current childs: ${this.#dispatchers.join(', ')}`)
+  handleConnectionRequest: (event: MessageEvent) => {
+    const dispatcherId = event.data._dispatcherId
+    LOGGER.info(`[${idShort}] child trying to connect [${dispatcherId.substring(dispatcherId.length - 3)}]`)
+    LOGGER.info(`[${idShort}] current childs: ${dispatchers.join(', ')}`)
     const wdow = <Window>event.source!
-    if (!this.#dispatchers.includes(dispatcherId)) {
+    if (!dispatchers.includes(dispatcherId)) {
       const service = new MessageServiceFrame(dispatcherId, wdow)
-      this.addService(service)
-      this.#dispatchers.push(dispatcherId)
+      MessageDispatcher.addService(service)
+      dispatchers.push(dispatcherId)
       service.onMessage({
-        _dispatcherId: this.#id,
+        _dispatcherId: id,
         _serviceId: service.id,
         type: CONNECTION_ACKNOWLEDGE,
         payload: null
       })
     }
-  }
+  },
 
-  #handleConnectionAcknowledge(event: MessageEvent) {
-    LOGGER.info(`[${this.idShort}] parent acknowledge connection`)
-    const service = new MessageServiceFrame(event.data?._dispatcherId, window.parent, event.data?._serviceId)
-    this.addService(service)
+  handleConnectionAcknowledge: (event: MessageEvent) => {
+    LOGGER.info(`[${idShort}] parent acknowledge connection`)
+    const service = new MessageServiceFrame(event.data._dispatcherId, window.parent, event.data._serviceId)
+    MessageDispatcher.addService(service)
+  },
+
+  handleConnectionClosing: (event: MessageEvent) => {
+    LOGGER.info(`[${idShort}] child notify closing`)
   }
 }
 
-const MessageDispatcher = new MessageDispatcherClass()
+const MessageDispatcher = {
+
+  start: (dispatcherId?: string) => {
+    setId(dispatcherId)
+    started = true
+    LOGGER.info(`[${idShort}] created`)
+    window.addEventListener(
+      'message',
+      handlers.handleMessage
+    )
+    if (window !== window.parent) {
+      LOGGER.info(`[${idShort}] contact parent`)
+      window.parent.postMessage({
+        _dispatcherId: id,
+        type: CONNECTION_REQUEST
+      }, '*')
+    }
+  },
+
+  stop: () => {
+    LOGGER.info(`[${idShort}] stopping`)
+    started = false
+    window.removeEventListener(
+      'message',
+      handlers.handleMessage
+    )
+    if (window !== window.parent) {
+      LOGGER.info(`[${idShort}] notifying parent`)
+      window.parent.postMessage({
+        _dispatcherId: id,
+        type: CONNECTION_CLOSING
+      }, '*')
+    }
+  },
+
+  addService: (service: IMessageService) => {
+    LOGGER.info(`[${idShort}] add service [${service.idShort}]`)
+    if (!services.includes(service)) {
+      services.push(service)
+    }
+    return () => MessageDispatcher.removeService(service)
+  },
+
+  removeService: (service: IMessageService) => {
+    LOGGER.info(`[${idShort}] remove service [${service.idShort}]`)
+    services = services.filter(serv => serv !== service)
+  },
+
+  sendMessage: (message: Message) => {
+    if (started) {
+      LOGGER.info(`[${idShort}] send message to ${services.length - 1} services from [${idShort}-${message._serviceId?.substring(message._serviceId!.length - 3)}]`)
+      services.forEach((service) => {
+        if (service.id !== message._serviceId) {
+          LOGGER.info(`[${idShort}] send message on service [${service.idShort}]`)
+          service.onMessage({
+            _dispatcherId: id,
+            ...message,
+          })
+        }
+      })
+    } else {
+      LOGGER.warn(`[${idShort}] try to send message but not started`)
+    }
+  }
+}
 
 export default MessageDispatcher

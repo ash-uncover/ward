@@ -4,9 +4,10 @@
     "declaration": true,
     "esModuleInterop": true,
     "lib": [
-      "DOM"
+      "DOM",
+      "ESNext"
     ],
-    "module": "es6",
+    "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "dist",
