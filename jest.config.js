@@ -6,6 +6,7 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
   },
+  clearMocks: true,
   collectCoverageFrom: [
     'src/**/*.{ts,tsx,js,jsx}',
     '!**/node_modules/**',

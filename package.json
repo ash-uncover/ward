@@ -18,7 +18,7 @@
     "build:bundle": "npm i && webpack --config webpack.config.build.js --mode production",
     "start": "npm i && webpack serve --progress --mode development",
     "test": "cls && jest --env=jsdom",
-    "test:coverage": "jest --env=jsdom --collectCoverage"
+    "test:coverage": "cls && jest --env=jsdom --collectCoverage"
   },
   "dependencies": {
     "@uncover/js-utils": "^0.0.11",
