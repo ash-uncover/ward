@@ -1,5 +1,5 @@
 import { LogConfig } from '@uncover/js-utils-logger';
-import MessageService from '../../src'
+import MessageService from '../../src/MessageService'
 import MessageDispatcher, { getDispatcherId, getDispatcherIdShort } from '../../src/MessageDispatcher';
 
 const DISPATCHER_ID = 'dispatcherId'
