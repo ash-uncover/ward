@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "build:docs": "npm i && webpack --config webpack.config.docs.js --mode production",
+    "build:bundle": "npm i && webpack --config webpack.config.build.js --mode production",
     "start": "npm i && webpack serve --progress --mode development"
   },
   "dependencies": {

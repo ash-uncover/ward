@@ -6,11 +6,12 @@
     "lib": [
       "DOM"
     ],
-    "module": "commonjs",
+    "module": "es6",
     "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "dist",
-    "inlineSourceMap": true,
+    "removeComments": true,
+    "sourceMap": true,
     "strict": true,
     "target": "es6",
     "typeRoots": [
