@@ -9,6 +9,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
       - name: Checkout project
         uses: actions/checkout@master
 
@@ -40,5 +45,5 @@ jobs:
       - name: Generating coverage badges
         uses: jpb06/jest-badges-action@latest
         with:
-          branches: *
+          branches: ${{ steps.extract_branch.outputs.branch }}
           coverage-summary-path: ./test/__coverage__/coverage-summary.json
