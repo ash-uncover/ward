@@ -51,7 +51,9 @@ class MessageServiceFrame implements IMessageService {
 
   onMessage(message: Message) {
     LOGGER.info(`[${this.id}] onMessage`)
+    /* istanbul ignore next */
     if (this.window.closed) {
+      /* istanbul ignore next */
       this.#removeService()
     } else {
       this.window.postMessage({
