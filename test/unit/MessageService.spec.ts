@@ -1,4 +1,4 @@
-import { LogConfig } from '@uncover/js-utils-logger'
+  import { LogConfig } from '@uncover/js-utils-logger'
 import MessageService from '../../src/lib/MessageService'
 import MessageDispatcher from '../../src/lib/MessageDispatcher'
 

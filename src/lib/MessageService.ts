@@ -28,10 +28,6 @@ class MessageService implements IMessageService {
     return this.#id
   }
 
-  get idLogs() {
-    return `${getDispatcherId()}-${this.#id}`
-  }
-
   // Public //
 
   init(handleMessage: ((message: Message) => void)) {

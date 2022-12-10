@@ -6,6 +6,7 @@ import MessageDispatcher, {
   CONNECTION_REQUEST,
   getDispatcherId,
   getDispatchers,
+  getService,
   getServices,
   getStarted,
   handlers,
@@ -200,6 +201,21 @@ describe('MessageDispatcher', () => {
       })
       // Assertion
       expect(spyService1OnMesssage).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  // getService //
+
+  describe('getService', () => {
+
+    test('when receiving any message', () => {
+      // Declaration
+      const service = new MessageService('service1')
+      MessageDispatcher.addService(service)
+      // Execution
+      const result = getService('service1')
+      // Assertion
+      expect(result).toBe(service)
     })
   })
 

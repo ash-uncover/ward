@@ -21,11 +21,13 @@ describe('MessageServiceFrame', () => {
   let spyWindowPostMessage: any
 
   let spyDispatcherSendMessage: any
+  let spyDispatcherRemoveService: any
 
 
   beforeEach(() => {
     spyWindowPostMessage = jest.spyOn(window, 'postMessage')
     spyDispatcherSendMessage = jest.spyOn(MessageDispatcher, 'sendMessage')
+    spyDispatcherRemoveService = jest.spyOn(MessageDispatcher, 'removeService')
   })
 
   afterEach(() => {
@@ -78,6 +80,18 @@ describe('MessageServiceFrame', () => {
         payload: 'payload',
         _serviceId: service.id
       }, '*')
+    })
+
+    test('when closing', () => {
+      // Declaration
+      const dispatcherId: string = 'dispatcherId'
+      const service = new MessageServiceFrame(dispatcherId, window)
+      // Execution
+      service.onMessage({ type: 'type', payload: 'payload' })
+      const event = new CustomEvent('unload');
+      window.dispatchEvent(event)
+      // Assertion
+      expect(spyDispatcherRemoveService).toHaveBeenCalled()
     })
   })
 
