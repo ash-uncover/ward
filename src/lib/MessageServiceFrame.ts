@@ -5,7 +5,7 @@ import IMessageService from './IMessageService'
 import Message from './Message'
 import MessageDispatcher, { getDispatcherId } from './MessageDispatcher'
 
-const LOGGER = new Logger('MessageServiceFrame', LogLevels.WARN)
+const LOGGER = new Logger('MessageServiceFrame', LogLevels.DEBUG)
 
 class MessageServiceFrame implements IMessageService {
 
@@ -20,10 +20,19 @@ class MessageServiceFrame implements IMessageService {
   constructor(dispatcherId: string, wdow: Window, id?: string) {
     this.#dispatcherId = dispatcherId
     this.#id = id || `message-service-frame-${UUID.next()}`
+    LOGGER.debug(`[${getDispatcherId()}-${this.id}] created`)
     this.#window = wdow
     window.addEventListener(
       'message',
       this.#handleMessage.bind(this)
+    )
+    wdow.addEventListener(
+      'unload',
+      () => this.#removeService()
+    )
+    window.addEventListener(
+      'unload',
+      () => this.#removeService()
     )
   }
 
@@ -43,7 +52,7 @@ class MessageServiceFrame implements IMessageService {
   onMessage(message: Message) {
     LOGGER.info(`[${this.id}] onMessage`)
     if (this.window.closed) {
-      MessageDispatcher.removeService(this)
+      this.#removeService()
     } else {
       this.window.postMessage({
         ...message,
@@ -71,6 +80,10 @@ class MessageServiceFrame implements IMessageService {
         payload: data.payload
       })
     }
+  }
+
+  #removeService() {
+    MessageDispatcher.removeService(this)
   }
 }
 

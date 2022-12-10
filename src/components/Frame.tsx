@@ -18,9 +18,9 @@ const Frame = ({
   useEffect(() => {
     if (frame.current) {
       frame.current.addEventListener('load', () => {
-        console.log(`${getDispatcherId()} load ${id}`)
+        console.log(`${getDispatcherId()} from frame load ${id}`)
         frame.current!.contentWindow!.addEventListener('unload', () => {
-          console.log(`${getDispatcherId()} unload ${id}`)
+          console.log(`${getDispatcherId()} from frame unload ${id}`)
           onClose()
         })
         frame.current!.addEventListener('beforeunload', () => {

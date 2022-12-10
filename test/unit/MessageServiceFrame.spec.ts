@@ -1,12 +1,12 @@
-import { LogConfig } from '@uncover/js-utils-logger';
-import MessageServiceFrame from '../../src/MessageServiceFrame'
-import MessageDispatcher from '../../src/MessageDispatcher'
+import { LogConfig } from '@uncover/js-utils-logger'
+import MessageServiceFrame from '../../src/lib/MessageServiceFrame'
+import MessageDispatcher from '../../src/lib/MessageDispatcher'
 
 const DISPATCHER_ID = 'dispatcherId'
 const DISPATCHER_ID_SHORT = 'dispatcherIdShort'
 
-jest.mock('../../src/MessageDispatcher', () => ({
-  ...(jest.requireActual('../../src/MessageDispatcher')),
+jest.mock('../../src/lib/MessageDispatcher', () => ({
+  ...(jest.requireActual('../../src/lib/MessageDispatcher')),
   __esModule: true,
   getDispatcherId: jest.fn(() => DISPATCHER_ID),
   getDispatcherIdShort: jest.fn(() => DISPATCHER_ID_SHORT)
@@ -47,8 +47,7 @@ describe('MessageServiceFrame', () => {
       const service = new MessageServiceFrame(dispatcherId, window, serviceId)
       // Assertion
       expect(service.id).toBe(serviceId)
-      expect(service.idShort).toBe(`${DISPATCHER_ID_SHORT}-eId`)
-      expect(spyWindowAddEventListener).toHaveBeenCalledTimes(1)
+      expect(spyWindowAddEventListener).toHaveBeenCalledTimes(3)
     })
 
     test('when the id is auto generated', () => {
@@ -59,9 +58,7 @@ describe('MessageServiceFrame', () => {
       const service = new MessageServiceFrame(dispatcherId, window, )
       // Assertion
       expect(service.id).not.toBeNull()
-      expect(service.idShort).not.toBeNull()
-      expect(service.id.endsWith(service.idShort.split(`${DISPATCHER_ID_SHORT}-`)[1])).toBe(true)
-      expect(spyWindowAddEventListener).toHaveBeenCalledTimes(1)
+      expect(spyWindowAddEventListener).toHaveBeenCalledTimes(3)
     })
   })
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import MessageDispatcher, { getDispatchers, getServices } from '../lib/MessageDispatcher'
+import MessageDispatcher, { getDispatchers, getServices, getDispatcherId } from '../lib/MessageDispatcher'
 import Frame from './Frame'
 import Service from './Service'
 import IMessageService from '../lib/IMessageService'
@@ -46,6 +46,9 @@ const App = ({
     }
     MessageDispatcher.start(id)
     handleAddService()
+    window.addEventListener('beforeunload', () => {
+      console.log(`${getDispatcherId()} before unload`)
+    }, {capture: true})
   }, [])
 
   // Events //

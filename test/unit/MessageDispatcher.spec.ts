@@ -1,9 +1,19 @@
-import { LogConfig } from '@uncover/js-utils-logger';
-import MessageService from '../../src/MessageService'
-import MessageDispatcher, { CONNECTION_ACKNOWLEDGE, CONNECTION_CLOSING, CONNECTION_REQUEST, getDispatcherId, getDispatcherIdShort, getDispatchers, getServices, getStarted, handlers, reset } from '../../src/MessageDispatcher';
+import { LogConfig } from '@uncover/js-utils-logger'
+import MessageService from '../../src/lib/MessageService'
+import MessageDispatcher, {
+  CONNECTION_ACKNOWLEDGE,
+  CONNECTION_CLOSING,
+  CONNECTION_REQUEST,
+  getDispatcherId,
+  getDispatchers,
+  getServices,
+  getStarted,
+  handlers,
+  reset
+} from '../../src/lib/MessageDispatcher'
 
-jest.mock('../../src/MessageDispatcher', () => {
-  const actual = (jest.requireActual('../../src/MessageDispatcher'))
+jest.mock('../../src/lib/MessageDispatcher', () => {
+  const actual = (jest.requireActual('../../src/lib/MessageDispatcher'))
   return {
     ...actual,
     __esModule: true,
@@ -13,7 +23,7 @@ jest.mock('../../src/MessageDispatcher', () => {
   }
 })
 
-jest.mock('../../src/MessageServiceFrame')
+jest.mock('../../src/lib/MessageServiceFrame')
 
 LogConfig.off()
 
@@ -50,7 +60,6 @@ describe('MessageDispatcher', () => {
       expect(window.parent).toBe(window)
       expect(getStarted()).toBe(true)
       expect(getDispatcherId()).toBe(dispatcherId)
-      expect(getDispatcherIdShort()).toBe('rId')
       expect(spyWindowAddEventListener).toHaveBeenCalledTimes(1)
     })
 
@@ -62,7 +71,6 @@ describe('MessageDispatcher', () => {
       expect(window.parent).toBe(window)
       expect(getStarted()).toBe(true)
       expect(getDispatcherId()).not.toBeNull()
-      expect(getDispatcherIdShort()).toBe(getDispatcherId().substring(getDispatcherId().length - 3))
       expect(spyWindowAddEventListener).toHaveBeenCalledTimes(1)
     })
   })
