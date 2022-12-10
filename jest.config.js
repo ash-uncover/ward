@@ -8,7 +8,7 @@ module.exports = {
   },
   clearMocks: true,
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx,js,jsx}',
+    'src/lib/**/*.{ts,tsx,js,jsx}',
     '!**/node_modules/**',
     '!**/vendor/**',
     '!**/index.ts',

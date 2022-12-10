@@ -1,12 +1,12 @@
-import { LogConfig } from '@uncover/js-utils-logger';
-import MessageService from '../../src/MessageService'
-import MessageDispatcher, { getDispatcherId, getDispatcherIdShort } from '../../src/MessageDispatcher';
+  import { LogConfig } from '@uncover/js-utils-logger'
+import MessageService from '../../src/lib/MessageService'
+import MessageDispatcher from '../../src/lib/MessageDispatcher'
 
 const DISPATCHER_ID = 'dispatcherId'
 const DISPATCHER_ID_SHORT = 'dispatcherIdShort'
 
-jest.mock('../../src/MessageDispatcher', () => ({
-  ...(jest.requireActual('../../src/MessageDispatcher')),
+jest.mock('../../src/lib/MessageDispatcher', () => ({
+  ...(jest.requireActual('../../src/lib/MessageDispatcher')),
   __esModule: true,
   getDispatcherId: jest.fn(() => DISPATCHER_ID),
   getDispatcherIdShort: jest.fn(() => DISPATCHER_ID_SHORT)
@@ -50,7 +50,6 @@ describe('MessageService', () => {
       const service = new MessageService(id)
       // Assertion
       expect(service.id).toBe(id)
-      expect(service.idShort).toBe(`${DISPATCHER_ID_SHORT}-eId`)
     })
 
     test('when the id is auto generated', () => {
@@ -59,8 +58,6 @@ describe('MessageService', () => {
       const service = new MessageService()
       // Assertion
       expect(service.id).not.toBeNull()
-      expect(service.idShort).not.toBeNull()
-      expect(service.id.endsWith(service.idShort.split(`${DISPATCHER_ID_SHORT}-`)[1])).toBe(true)
     })
   })
 
