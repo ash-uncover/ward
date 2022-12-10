@@ -1,11 +1,11 @@
 import { UUID } from '@uncover/js-utils'
-import Logger from '@uncover/js-utils-logger'
+import Logger, { LogLevels } from '@uncover/js-utils-logger'
 
 import IMessageService from './IMessageService'
 import Message from './Message'
-import MessageDispatcher, { getDispatcherIdShort } from './MessageDispatcher'
+import MessageDispatcher, { getDispatcherId } from './MessageDispatcher'
 
-const LOGGER = new Logger('MessageServiceFrame', 0)
+const LOGGER = new Logger('MessageServiceFrame', LogLevels.WARN)
 
 class MessageServiceFrame implements IMessageService {
 
@@ -33,22 +33,27 @@ class MessageServiceFrame implements IMessageService {
     return this.#id
   }
 
-  get idShort() {
-    return `${getDispatcherIdShort()}-${this.#id.substring(this.#id.length - 3)}`
+  get window() {
+    return this.#window
   }
+
 
   // Public Methods //
 
   onMessage(message: Message) {
-    LOGGER.info(`[${this.idShort}] onMessage`)
-    this.#window.postMessage({
-      ...message,
-      _serviceId: this.#id
-    }, '*')
+    LOGGER.info(`[${this.id}] onMessage`)
+    if (this.window.closed) {
+      MessageDispatcher.removeService(this)
+    } else {
+      this.window.postMessage({
+        ...message,
+        _serviceId: this.#id
+      }, '*')
+    }
   }
 
   sendMessage(message: Message) {
-    LOGGER.info(`[${this.idShort}] sendMessage`)
+    LOGGER.info(`[${this.id}] sendMessage`)
     MessageDispatcher.sendMessage({
       ...message,
       _serviceId: this.id,
