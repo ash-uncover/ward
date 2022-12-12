@@ -46,9 +46,10 @@ describe('MessageServiceFrame', () => {
       // Declaration
       const dispatcherId: string = 'dispatcherId'
       const serviceId: string = 'serviceId'
+      const origin: string = '*'
       const spyWindowAddEventListener = jest.spyOn(window, 'addEventListener')
       // Execution
-      const service = new MessageServiceFrame(dispatcherId, window, serviceId)
+      const service = new MessageServiceFrame(dispatcherId, window, origin, serviceId)
       // Assertion
       expect(service.id).toBe(serviceId)
       expect(spyWindowAddEventListener).toHaveBeenCalledTimes(2)
@@ -57,9 +58,10 @@ describe('MessageServiceFrame', () => {
     test('when the id is auto generated', () => {
       // Declaration
       const dispatcherId: string = 'dispatcherId'
+      const origin: string = '*'
       const spyWindowAddEventListener = jest.spyOn(window, 'addEventListener')
       // Execution
-      const service = new MessageServiceFrame(dispatcherId, window)
+      const service = new MessageServiceFrame(dispatcherId, window, origin)
       // Assertion
       expect(service.id).not.toBeNull()
       expect(spyWindowAddEventListener).toHaveBeenCalledTimes(2)
@@ -72,9 +74,13 @@ describe('MessageServiceFrame', () => {
     test('when initialized', () => {
       // Declaration
       const dispatcherId: string = 'dispatcherId'
-      const service = new MessageServiceFrame(dispatcherId, window)
+      const origin: string = 'http://localhost'
+      const service = new MessageServiceFrame(dispatcherId, window, origin)
       // Execution
-      service.onMessage({ type: 'type', payload: 'payload' })
+      service.onMessage({
+        type: 'type',
+        payload: 'payload'
+      })
       // Assertion
       expect(spyWindowPostMessage).toHaveBeenCalledTimes(1)
       expect(spyWindowPostMessage).toHaveBeenCalledWith({
@@ -87,9 +93,13 @@ describe('MessageServiceFrame', () => {
     test('when closing', () => {
       // Declaration
       const dispatcherId: string = 'dispatcherId'
-      const service = new MessageServiceFrame(dispatcherId, window)
+      const origin: string = '*'
+      const service = new MessageServiceFrame(dispatcherId, window, origin)
       // Execution
-      service.onMessage({ type: 'type', payload: 'payload' })
+      service.onMessage({
+        type: 'type',
+        payload: 'payload'
+      })
       const event = new CustomEvent('unload');
       window.dispatchEvent(event)
       // Assertion
@@ -103,7 +113,8 @@ describe('MessageServiceFrame', () => {
     test('when initialized', () => {
       // Declaration
       const dispatcherId: string = 'dispatcherId'
-      const service = new MessageServiceFrame(dispatcherId, window)
+      const origin: string = '*'
+      const service = new MessageServiceFrame(dispatcherId, window, origin)
       // Execution
       service.sendMessage({ type: 'type', payload: 'payload' })
       // Assertion
@@ -125,7 +136,8 @@ describe('MessageServiceFrame', () => {
     test('when window receives a message without dispatcher or service information', () => {
       // Declaration
       const dispatcherId: string = 'dispatcherId'
-      const service = new MessageServiceFrame(dispatcherId, window)
+      const origin: string = '*'
+      const service = new MessageServiceFrame(dispatcherId, window, origin)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const message = {
@@ -141,7 +153,8 @@ describe('MessageServiceFrame', () => {
     test('when window receives a message with same dispatcher information', () => {
       // Declaration
       const dispatcherId: string = 'dispatcherId'
-      const service = new MessageServiceFrame(dispatcherId, window)
+      const origin: string = '*'
+      const service = new MessageServiceFrame(dispatcherId, window, origin)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const message = {
@@ -159,7 +172,8 @@ describe('MessageServiceFrame', () => {
     test('when window receives a message with same dispatcher information and no data', () => {
       // Declaration
       const dispatcherId: string = 'dispatcherId'
-      const service = new MessageServiceFrame(dispatcherId, window)
+      const origin: string = '*'
+      const service = new MessageServiceFrame(dispatcherId, window, origin)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const message = {
@@ -177,7 +191,8 @@ describe('MessageServiceFrame', () => {
     test('when window receives a message with same dispatcher information', () => {
       // Declaration
       const dispatcherId: string = 'dispatcherId'
-      const service = new MessageServiceFrame(dispatcherId, window)
+      const origin: string = '*'
+      const service = new MessageServiceFrame(dispatcherId, window, origin)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const message = {
@@ -200,7 +215,8 @@ describe('MessageServiceFrame', () => {
     test('when window receives a close message', () => {
       // Declaration
       const dispatcherId: string = 'dispatcherId'
-      const service = new MessageServiceFrame(dispatcherId, window)
+      const origin: string = '*'
+      const service = new MessageServiceFrame(dispatcherId, window, origin)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const message = {
