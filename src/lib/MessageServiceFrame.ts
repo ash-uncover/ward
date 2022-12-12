@@ -5,7 +5,7 @@ import IMessageService from './IMessageService'
 import Message from './Message'
 import MessageDispatcher, { CONNECTION_CLOSING, getDispatcherId } from './MessageDispatcher'
 
-const LOGGER = new Logger('MessageServiceFrame', LogLevels.DEBUG)
+const LOGGER = new Logger('MessageServiceFrame', LogLevels.WARN)
 
 class MessageServiceFrame implements IMessageService {
 
