@@ -59,7 +59,7 @@ describe('MessageServiceFrame', () => {
       const dispatcherId: string = 'dispatcherId'
       const spyWindowAddEventListener = jest.spyOn(window, 'addEventListener')
       // Execution
-      const service = new MessageServiceFrame(dispatcherId, window,)
+      const service = new MessageServiceFrame(dispatcherId, window)
       // Assertion
       expect(service.id).not.toBeNull()
       expect(spyWindowAddEventListener).toHaveBeenCalledTimes(2)
