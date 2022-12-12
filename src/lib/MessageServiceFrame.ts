@@ -18,22 +18,16 @@ class MessageServiceFrame implements IMessageService {
 
   // Constructor //
 
-  constructor(dispatcherId: string, wdow: Window, id?: string) {
+  constructor(dispatcherId: string, wdow: Window, origin: string, id?: string) {
     this.#dispatcherId = dispatcherId
     this.#id = id || `message-service-frame-${UUID.next()}`
     LOGGER.debug(`[${getDispatcherId()}-${this.id}] created`)
     this.#window = wdow
-    this.#origin = wdow.origin
+    this.#origin = origin
     window.addEventListener(
       'message',
       this.#handleMessage.bind(this)
     )
-    /*
-    wdow.addEventListener(
-      'unload',
-      () => this.#removeService()
-    )
-    */
     window.addEventListener(
       'unload',
       () => {

@@ -71,8 +71,9 @@ export const handlers = {
     LOGGER.info(`[${id}] child trying to connect [${dispatcherId.substring(dispatcherId.length - 3)}]`)
     LOGGER.info(`[${id}] current childs: ${dispatchers.join(', ')}`)
     const wdow = <Window>event.source!
+    const origin = event.origin
     if (!dispatchers.includes(dispatcherId)) {
-      const service = new MessageServiceFrame(dispatcherId, wdow)
+      const service = new MessageServiceFrame(dispatcherId, wdow, origin)
       dispatchers.push(dispatcherId)
       MessageDispatcher.addService(service)
       service.onMessage({
@@ -86,7 +87,7 @@ export const handlers = {
 
   handleConnectionAcknowledge: (event: MessageEvent) => {
     LOGGER.info(`[${id}] parent acknowledge connection`)
-    const service = new MessageServiceFrame(event.data._dispatcherId, window.parent, event.data._serviceId)
+    const service = new MessageServiceFrame(event.data._dispatcherId, window.parent, event.origin, event.data._serviceId)
     MessageDispatcher.addService(service)
   },
 
