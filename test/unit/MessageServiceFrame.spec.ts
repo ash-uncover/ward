@@ -1,16 +1,24 @@
 import { LogConfig } from '@uncover/js-utils-logger'
 import MessageServiceFrame from '../../src/lib/MessageServiceFrame'
-import MessageDispatcher from '../../src/lib/MessageDispatcher'
+import MessageDispatcher, { CONNECTION_CLOSING } from '../../src/lib/MessageDispatcher'
 
 const DISPATCHER_ID = 'dispatcherId'
 const DISPATCHER_ID_SHORT = 'dispatcherIdShort'
 
-jest.mock('../../src/lib/MessageDispatcher', () => ({
-  ...(jest.requireActual('../../src/lib/MessageDispatcher')),
-  __esModule: true,
-  getDispatcherId: jest.fn(() => DISPATCHER_ID),
-  getDispatcherIdShort: jest.fn(() => DISPATCHER_ID_SHORT)
-}))
+jest.mock('../../src/lib/MessageDispatcher', () => {
+  const actual = (jest.requireActual('../../src/lib/MessageDispatcher'))
+  return {
+    ...actual,
+    default: {
+      ...actual.default,
+      removeService: jest.fn(),
+      sendMessage: jest.fn()
+    },
+    __esModule: true,
+    getDispatcherId: jest.fn(() => DISPATCHER_ID),
+    getDispatcherIdShort: jest.fn(() => DISPATCHER_ID_SHORT)
+  }
+})
 
 LogConfig.off()
 
@@ -20,14 +28,8 @@ describe('MessageServiceFrame', () => {
 
   let spyWindowPostMessage: any
 
-  let spyDispatcherSendMessage: any
-  let spyDispatcherRemoveService: any
-
-
   beforeEach(() => {
     spyWindowPostMessage = jest.spyOn(window, 'postMessage')
-    spyDispatcherSendMessage = jest.spyOn(MessageDispatcher, 'sendMessage')
-    spyDispatcherRemoveService = jest.spyOn(MessageDispatcher, 'removeService')
   })
 
   afterEach(() => {
@@ -49,7 +51,7 @@ describe('MessageServiceFrame', () => {
       const service = new MessageServiceFrame(dispatcherId, window, serviceId)
       // Assertion
       expect(service.id).toBe(serviceId)
-      expect(spyWindowAddEventListener).toHaveBeenCalledTimes(3)
+      expect(spyWindowAddEventListener).toHaveBeenCalledTimes(2)
     })
 
     test('when the id is auto generated', () => {
@@ -57,10 +59,10 @@ describe('MessageServiceFrame', () => {
       const dispatcherId: string = 'dispatcherId'
       const spyWindowAddEventListener = jest.spyOn(window, 'addEventListener')
       // Execution
-      const service = new MessageServiceFrame(dispatcherId, window, )
+      const service = new MessageServiceFrame(dispatcherId, window)
       // Assertion
       expect(service.id).not.toBeNull()
-      expect(spyWindowAddEventListener).toHaveBeenCalledTimes(3)
+      expect(spyWindowAddEventListener).toHaveBeenCalledTimes(2)
     })
   })
 
@@ -79,7 +81,7 @@ describe('MessageServiceFrame', () => {
         type: 'type',
         payload: 'payload',
         _serviceId: service.id
-      }, '*')
+      }, 'http://localhost')
     })
 
     test('when closing', () => {
@@ -91,7 +93,7 @@ describe('MessageServiceFrame', () => {
       const event = new CustomEvent('unload');
       window.dispatchEvent(event)
       // Assertion
-      expect(spyDispatcherRemoveService).toHaveBeenCalled()
+      expect(MessageDispatcher.removeService).toHaveBeenCalled()
     })
   })
 
@@ -105,8 +107,8 @@ describe('MessageServiceFrame', () => {
       // Execution
       service.sendMessage({ type: 'type', payload: 'payload' })
       // Assertion
-      expect(spyDispatcherSendMessage).toHaveBeenCalledTimes(1)
-      expect(spyDispatcherSendMessage).toHaveBeenCalledWith({
+      expect(MessageDispatcher.sendMessage).toHaveBeenCalledTimes(1)
+      expect(MessageDispatcher.sendMessage).toHaveBeenCalledWith({
         type: 'type',
         payload: 'payload',
         _serviceId: service.id
@@ -116,7 +118,7 @@ describe('MessageServiceFrame', () => {
 
   // MessageServiceFrame.#handleMessage //
 
-  describe('sendMessage', () => {
+  describe('#handleMessage', () => {
 
     let spyServiceSendMessage: any
 
@@ -193,6 +195,25 @@ describe('MessageServiceFrame', () => {
         type: 'type',
         payload: 'payload'
       })
+    })
+
+    test('when window receives a close message', () => {
+      // Declaration
+      const dispatcherId: string = 'dispatcherId'
+      const service = new MessageServiceFrame(dispatcherId, window)
+      spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
+      // Execution
+      const message = {
+        type: CONNECTION_CLOSING,
+        payload: 'payload',
+        _serviceId: 'dummy',
+        _dispatcherId: dispatcherId
+      }
+      const event = new MessageEvent('message', { data: message })
+      window.dispatchEvent(event)
+      // Assertion
+      expect(spyServiceSendMessage).toHaveBeenCalledTimes(0)
+      expect(MessageDispatcher.removeService).toHaveBeenCalled()
     })
   })
 })
