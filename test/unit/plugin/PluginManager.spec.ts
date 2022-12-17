@@ -49,8 +49,8 @@ describe('PluginManager', () => {
       // Declaration
       const plugins: Plugin[] = []
       // Execution
-      checkPlugin(plugins[0])
       // Assertion
+      expect(() => checkPlugin(plugins[0])).toThrow()
     })
 
     test('When plugin has no name', () => {
@@ -60,8 +60,8 @@ describe('PluginManager', () => {
         url: 'url'
       }
       // Execution
-      checkPlugin(plugin)
       // Assertion
+      expect(() => checkPlugin(plugin)).toThrow()
     })
 
     test('When plugin has no url', () => {
@@ -71,8 +71,8 @@ describe('PluginManager', () => {
         url: ''
       }
       // Execution
-      checkPlugin(plugin)
       // Assertion
+      expect(() => checkPlugin(plugin)).toThrow()
     })
 
     test('When plugin is empty', () => {
