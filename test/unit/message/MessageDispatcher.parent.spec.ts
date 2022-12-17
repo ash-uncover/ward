@@ -1,5 +1,5 @@
 import { LogConfig } from '@uncover/js-utils-logger';
-import MessageDispatcher, { reset } from '../../src/lib/MessageDispatcher';
+import MessageDispatcher, { reset } from '../../../src/lib/message/MessageDispatcher';
 
 LogConfig.off()
 

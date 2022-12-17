@@ -1,12 +1,12 @@
   import { LogConfig } from '@uncover/js-utils-logger'
-import MessageService from '../../src/lib/MessageService'
-import MessageDispatcher from '../../src/lib/MessageDispatcher'
+import MessageService from '../../../src/lib/message/MessageService'
+import MessageDispatcher from '../../../src/lib/message/MessageDispatcher'
 
 const DISPATCHER_ID = 'dispatcherId'
 const DISPATCHER_ID_SHORT = 'dispatcherIdShort'
 
-jest.mock('../../src/lib/MessageDispatcher', () => ({
-  ...(jest.requireActual('../../src/lib/MessageDispatcher')),
+jest.mock('../../../src/lib/message/MessageDispatcher', () => ({
+  ...(jest.requireActual('../../../src/lib/message/MessageDispatcher')),
   __esModule: true,
   getDispatcherId: jest.fn(() => DISPATCHER_ID),
   getDispatcherIdShort: jest.fn(() => DISPATCHER_ID_SHORT)

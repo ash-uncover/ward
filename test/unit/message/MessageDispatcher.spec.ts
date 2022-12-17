@@ -1,5 +1,5 @@
 import { LogConfig } from '@uncover/js-utils-logger'
-import MessageService from '../../src/lib/MessageService'
+import MessageService from '../../../src/lib/message/MessageService'
 import MessageDispatcher, {
   CONNECTION_ACKNOWLEDGE,
   CONNECTION_CLOSING,
@@ -11,10 +11,10 @@ import MessageDispatcher, {
   getStarted,
   handlers,
   reset
-} from '../../src/lib/MessageDispatcher'
+} from '../../../src/lib/message/MessageDispatcher'
 
-jest.mock('../../src/lib/MessageDispatcher', () => {
-  const actual = (jest.requireActual('../../src/lib/MessageDispatcher'))
+jest.mock('../../../src/lib/message/MessageDispatcher', () => {
+  const actual = (jest.requireActual('../../../src/lib/message/MessageDispatcher'))
   return {
     ...actual,
     __esModule: true,
@@ -24,7 +24,7 @@ jest.mock('../../src/lib/MessageDispatcher', () => {
   }
 })
 
-jest.mock('../../src/lib/MessageServiceFrame')
+jest.mock('../../../src/lib/message/MessageServiceFrame')
 
 LogConfig.off()
 
