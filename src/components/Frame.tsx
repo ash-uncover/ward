@@ -13,26 +13,6 @@ const Frame = ({
 
   // Hooks //
 
-  const frame = useRef<HTMLIFrameElement>(null)
-
-  useEffect(() => {
-    if (frame.current) {
-      frame.current.addEventListener('load', () => {
-        console.log(`${getDispatcherId()} from frame load ${id}`)
-        frame.current!.contentWindow!.addEventListener('unload', () => {
-          console.log(`${getDispatcherId()} from frame unload ${id}`)
-          onClose()
-        })
-        frame.current!.addEventListener('beforeunload', () => {
-          console.log('before unload 1')
-        }, {capture: true})
-        frame.current!.contentWindow!.addEventListener('beforeunload', () => {
-          console.log('before unload 2')
-        }, {capture: true})
-      })
-    }
-  }, [frame])
-
   // Events //
 
   // Rendering //
@@ -47,8 +27,7 @@ const Frame = ({
       }}
     >
       <iframe
-        src={`http://localhost:8080?id=${id}`}
-        ref={frame}
+        src={`http://localhost:27001?id=${id}`}
         height='100%'
         width='100%'
         style={{

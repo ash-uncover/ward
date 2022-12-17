@@ -19,7 +19,7 @@ class MessageService implements IMessageService {
 
   constructor(id?: string) {
     this.#id = id || `message-service-${UUID.next()}`
-    LOGGER.info(`[${this.id}] created`)
+    LOGGER.info(`[${getDispatcherId()}-${this.id}] created`)
   }
 
   // Getters & Setters //
@@ -34,9 +34,9 @@ class MessageService implements IMessageService {
     this.#init = true
     this.#handle = handleMessage
     this.#closure = MessageDispatcher.addService(this)
-    LOGGER.info(`[${this.id}] starting`)
+    LOGGER.info(`[${getDispatcherId()}-${this.id}] starting`)
     return () => {
-      LOGGER.info(`[${this.id}] closing`)
+      LOGGER.info(`[${getDispatcherId()}-${this.id}] closing`)
       this.#init = false
       this.#handle = null
       if (this.#closure) {
@@ -47,22 +47,22 @@ class MessageService implements IMessageService {
 
   onMessage(message: Message) {
     if (this.#init && this.#handle) {
-      LOGGER.info(`[${this.id}] onMessage`)
+      LOGGER.info(`[${getDispatcherId()}-${this.id}] onMessage`)
       this.#handle(message)
     } else {
-      LOGGER.warn(`[${this.id}] onMessage but not init`)
+      LOGGER.warn(`[${getDispatcherId()}-${this.id}] onMessage but not init`)
     }
   }
 
   sendMessage(message: Message) {
-    LOGGER.info(`[${this.id}] sendMessage`)
+    LOGGER.info(`[${getDispatcherId()}-${this.id}] sendMessage`)
     if (this.#init) {
       MessageDispatcher.sendMessage({
         ...message,
         _serviceId: this.id,
       })
     } else {
-      LOGGER.warn(`[${this.id}] sendMessage but not init`)
+      LOGGER.warn(`[${getDispatcherId()}-${this.id}] sendMessage but not init`)
     }
   }
 }

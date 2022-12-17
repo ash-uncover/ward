@@ -11,13 +11,17 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
+    "bundles/**/*",
     "dist/**/*"
   ],
   "scripts": {
-    "build": "tsc",
-    "build:bundle": "npm i && webpack --config webpack.config.build.js --mode production",
+    "build": "npm run build:tsc & npm run build:bundle",
+    "build:bundle": "webpack --config webpack.config.build.js --mode production",
     "build:docs": "npm i && webpack --config webpack.config.docs.js --mode production",
-    "start": "npm i && webpack serve --progress --mode development --config webpack.config.dev.js",
+    "build:tsc": "tsc",
+    "start": "concurrently \"npm:start:*\"",
+    "start:main": "npm i && webpack serve --progress --mode development --config webpack.config.docs.main.js",
+    "start:child": "npm i && webpack serve --progress --mode development --config webpack.config.docs.child.js",
     "test": "jest --env=jsdom",
     "test:coverage": "jest --env=jsdom --collectCoverage"
   },
@@ -30,6 +34,7 @@
     "@types/node": "^18.11.11",
     "@types/react-dom": "^18.0.9",
     "babel-loader": "^9.1.0",
+    "concurrently": "^7.6.0",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.2",
     "html-webpack-plugin": "^5.5.0",
