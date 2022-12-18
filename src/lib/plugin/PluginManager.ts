@@ -43,8 +43,21 @@ export interface PluginDefinitionElement {
 export interface PluginProviders {
   [key: string]: PluginProvider[]
 }
-export interface PluginProvider extends PluginProvide {
+export interface PluginProvider {
   plugin: string
+  name: string
+  attributes: PluginProviderAttributes
+  elements: PluginProviderElements
+}
+export interface PluginProviderAttributes {
+  [key: string]: any
+}
+export interface PluginProviderElements {
+  [key: string]: PluginProviderElement
+}
+export interface PluginProviderElement {
+  type: string
+  url: string
 }
 
 const LOGGER = new Logger('PluginManager', LogLevels.DEBUG)
@@ -193,7 +206,14 @@ export const helpers = {
     provideId: string,
     elements: PluginProvideElements
   ) => {
-    return { ...elements }
+    return Object.keys(elements).reduce((acc: PluginProvideElements, elementId) => {
+      const element = elements[elementId]
+      acc[elementId] = {
+        type: element.type,
+        url: `${plugin.url}${element.url}`
+      }
+      return acc
+    }, {})
   },
 
   loadPluginDependencies: (plugin: Plugin) => {

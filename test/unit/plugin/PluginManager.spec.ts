@@ -8,7 +8,7 @@ import {
   PluginProvides,
   PluginProvideElements
 } from '../../../src/lib/plugin/PluginDefinitionModel'
-import PluginManager, { PluginProvider, helpers } from '../../../src/lib/plugin/PluginManager'
+import PluginManager, { PluginProvider, PluginProviderElements, helpers } from '../../../src/lib/plugin/PluginManager'
 import { LogConfig } from '@uncover/js-utils-logger'
 
 LogConfig.off()
@@ -622,13 +622,29 @@ describe('PluginManager', () => {
       }
       const provideId = 'provideId'
       const elements: PluginProvideElements = {
-        element1: { url: 'elementUrl1', type: 'iframe' },
-        element2: { url: 'elementUrl2', type: 'iframe' },
+        element1: {
+          url: '/elementUrl1',
+          type: 'iframe'
+        },
+        element2: {
+          url: '/elementUrl2',
+          type: 'iframe'
+        },
       }
       // Execution
       const result = helpers.loadPluginProvideElements(plugin, provideId, elements)
       // Assertion
-      expect(result).toEqual(elements)
+      const expected: PluginProviderElements = {
+        element1: {
+          url: 'pluginUrl/elementUrl1',
+          type: 'iframe'
+        },
+        element2: {
+          url: 'pluginUrl/elementUrl2',
+          type: 'iframe'
+        },
+      }
+      expect(result).toEqual(expected)
     })
   })
 
