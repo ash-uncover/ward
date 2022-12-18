@@ -13,7 +13,7 @@ export interface PluginDefines {
 export interface PluginDefine {
   properties: PluginDefineProperties
   attributes: PluginDefineAttributes
-  viewers: PluginDefineViewers
+  elements: PluginDefineElements
 }
 export interface PluginDefineProperties {
   [key: string]: string
@@ -21,10 +21,10 @@ export interface PluginDefineProperties {
 export interface PluginDefineAttributes {
   [key: string]: string
 }
-export interface PluginDefineViewers {
-  [key: string]: PluginDefineViewer
+export interface PluginDefineElements {
+  [key: string]: PluginDefineElement
 }
-export interface PluginDefineViewer {
+export interface PluginDefineElement {
 
 }
 
@@ -34,15 +34,15 @@ export interface PluginProvides {
 export interface PluginProvide {
   name: string
   attributes: PluginProvideAttributes
-  viewers: PluginProvideViewers
+  elements: PluginProvideElements
 }
 export interface PluginProvideAttributes {
   [key: string]: string | string[]
 }
-export interface PluginProvideViewers {
-  [key: string]: PluginProvideViewer
+export interface PluginProvideElements {
+  [key: string]: PluginProvideElement
 }
-export interface PluginProvideViewer {
+export interface PluginProvideElement {
   url: string
   type: 'iframe' | 'webcomponent' | 'component'
 }

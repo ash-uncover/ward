@@ -13,17 +13,6 @@ import MessageDispatcher, {
   reset
 } from '../../../src/lib/message/MessageDispatcher'
 
-jest.mock('../../../src/lib/message/MessageDispatcher', () => {
-  const actual = (jest.requireActual('../../../src/lib/message/MessageDispatcher'))
-  return {
-    ...actual,
-    __esModule: true,
-    handleConnectionRequest: jest.fn(actual.handleConnectionRequest),
-    handleConnectionAcknowledge: jest.fn(actual.handleConnectionAcknowledge),
-    handleConnectionClosing: jest.fn(actual.handleConnectionClosing),
-  }
-})
-
 jest.mock('../../../src/lib/message/MessageServiceFrame')
 
 LogConfig.off()
