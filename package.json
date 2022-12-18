@@ -1,6 +1,6 @@
 {
   "name": "@uncover/js-utils-microfrontend",
-  "version": "0.0.9",
+  "version": "1.0.0",
   "author": "aSH <ash.uncover@gmail.com>",
   "description": "Util project for micro frontends management",
   "license": "MIT",
@@ -17,11 +17,13 @@
   "scripts": {
     "build": "npm run build:tsc & npm run build:bundle",
     "build:bundle": "webpack --config webpack.config.build.js --mode production",
-    "build:docs": "npm i && webpack --config webpack.config.docs.js --mode production",
+    "build:docs": "npm i && concurrently \"npm:build:docs:*\"",
+    "build:docs:main": "webpack --mode production --config webpack.config.docs.main.js",
+    "build:docs:child": "webpack --mode production --config webpack.config.docs.child.js",
     "build:tsc": "tsc",
-    "start": "concurrently \"npm:start:*\"",
-    "start:main": "npm i && webpack serve --progress --mode development --config webpack.config.docs.main.js",
-    "start:child": "npm i && webpack serve --progress --mode development --config webpack.config.docs.child.js",
+    "start": "npm i && concurrently \"npm:start:*\"",
+    "start:main": "webpack serve --progress --mode development --config webpack.config.docs.main.js",
+    "start:child": "webpack serve --progress --mode development --config webpack.config.docs.child.js",
     "test": "jest --env=jsdom",
     "test:coverage": "jest --env=jsdom --collectCoverage"
   },
@@ -40,6 +42,7 @@
     "html-webpack-plugin": "^5.5.0",
     "jest": "^29.3.1",
     "jest-environment-jsdom": "^29.3.1",
+    "node-fetch": "^3.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "ts-jest": "^29.0.3",

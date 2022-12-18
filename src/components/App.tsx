@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import MessageDispatcher, { getDispatchers, getServices, getDispatcherId } from '../lib/MessageDispatcher'
+import MessageDispatcher, { getDispatchers, getServices, getDispatcherId } from '../lib/message/MessageDispatcher'
 import Frame from './Frame'
 import Service from './Service'
-import IMessageService from '../lib/IMessageService'
+import IMessageService from '../lib/message/IMessageService'
 
 let SERVICE = 1
 let FRAME = 1

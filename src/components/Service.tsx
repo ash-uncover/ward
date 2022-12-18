@@ -1,7 +1,7 @@
 import React, { FormEvent, useEffect, useState } from 'react'
-import Message from '../lib/Message'
-import MessageService from '../lib/MessageService'
-import { getService } from '../lib/MessageDispatcher'
+import Message from '../lib/message/Message'
+import MessageService from '../lib/message/MessageService'
+import { getService } from '../lib/message/MessageDispatcher'
 
 interface ServiceProperties {
   id: string
