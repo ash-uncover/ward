@@ -167,8 +167,14 @@ export const helpers = {
     const provider: PluginProvider = {
       plugin: plugin.name,
       name: provide.name,
-      attributes: helpers.loadPluginProvideAttributes(plugin, provideId, provide.attributes),
-      elements: helpers.loadPluginProvideElements(plugin, provideId, provide.elements),
+      attributes: {},
+      elements: {}
+    }
+    if (provide.attributes) {
+      provider.attributes = helpers.loadPluginProvideAttributes(plugin, provideId, provide.attributes)
+    }
+    if (provide.elements) {
+      provider.elements = helpers.loadPluginProvideElements(plugin, provideId, provide.elements)
     }
     providers[provideId] = providers[provideId] || []
     providers[provideId].push(provider)
