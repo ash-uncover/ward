@@ -1,17 +1,18 @@
 import Logger, { LogLevels } from '@uncover/js-utils-logger'
 import {
-  Plugin,
-  PluginDefine,
-  PluginDefineAttributes,
-  PluginDefines,
-  PluginProvide,
-  PluginProvideAttributes,
-  PluginProvides,
-  PluginProvideElements as PluginProvideElements
-} from './PluginDefinitionModel'
+  PluginData,
+  PluginDataDefine,
+  PluginDataDefineAttributes,
+  PluginDataDefines,
+  PluginDataProvide,
+  PluginDataProvideAttributes,
+  PluginDataProvides,
+  PluginDataProvideElements
+} from './model/PluginDataModel'
+import Plugin from './object/Plugin'
 
 export interface Plugins {
-  [key: string]: Plugin
+  [key: string]: PluginData
 }
 
 export interface PluginDefinitions {
@@ -62,6 +63,7 @@ export interface PluginProviderElement {
 
 const LOGGER = new Logger('PluginManager', LogLevels.DEBUG)
 
+let pluginObjects: any = {}
 let plugins: Plugins = {}
 let definitions: PluginDefinitions = {}
 let providers: PluginProviders = {}
@@ -81,7 +83,7 @@ export const helpers = {
     }
   },
 
-  checkPlugin: (plugin: Plugin) => {
+  checkPlugin: (plugin: PluginData) => {
     if (!plugin) {
       throw new Error('[checkPlugin] plugin information is not defined')
     }
@@ -103,8 +105,8 @@ export const helpers = {
     }
   },
 
-  loadPluginDefines: (plugin: Plugin) => {
-    const defines: PluginDefines = plugin.defines!
+  loadPluginDefines: (plugin: PluginData) => {
+    const defines: PluginDataDefines = plugin.defines!
     Object.keys(defines).forEach((defineId: string) => {
       const definitionId = `${plugin.name}/${defineId}`
       if (definitions[definitionId]) {
@@ -115,7 +117,7 @@ export const helpers = {
     })
   },
 
-  loadPluginDefine: (plugin: Plugin, defineId: string) => {
+  loadPluginDefine: (plugin: PluginData, defineId: string) => {
     const definitionId = `${plugin.name}/${defineId}`
     const define = plugin.defines![defineId]
     definitions[definitionId] = {
@@ -124,7 +126,7 @@ export const helpers = {
     }
   },
 
-  loadPluginDefineAttributes: (attributes: PluginDefineAttributes) => {
+  loadPluginDefineAttributes: (attributes: PluginDataDefineAttributes) => {
     return Object.keys(attributes).reduce((acc: any, attributeId: string) => {
       let attributeName = attributeId
       let attributeType = attributes[attributeId]
@@ -147,13 +149,13 @@ export const helpers = {
     }, {})
   },
 
-  loadPluginProvides: (plugin: Plugin) => {
-    const provides: PluginProvides = plugin.provides!
+  loadPluginProvides: (plugin: PluginData) => {
+    const provides: PluginDataProvides = plugin.provides!
     Object.keys(provides).forEach((provideId: string) => {
       if (!definitions[provideId]) {
         LOGGER.warn(`Provide '${provideId}' from '${plugin.url}' is not defined`)
       } else {
-        const provide: PluginProvide | PluginProvide[] = provides[provideId]
+        const provide: PluginDataProvide | PluginDataProvide[] = provides[provideId]
         if (Array.isArray(provide)) {
           provide.forEach((prov) => helpers.loadPluginProvide(plugin, provideId, prov))
         } else {
@@ -163,7 +165,7 @@ export const helpers = {
     })
   },
 
-  loadPluginProvide: (plugin: Plugin, provideId: string, provide: PluginProvide) => {
+  loadPluginProvide: (plugin: PluginData, provideId: string, provide: PluginDataProvide) => {
     const provider: PluginProvider = {
       plugin: plugin.name,
       name: provide.name,
@@ -181,9 +183,9 @@ export const helpers = {
   },
 
   loadPluginProvideAttributes: (
-    plugin: Plugin,
+    plugin: PluginData,
     provideId: string,
-    attributes: PluginProvideAttributes
+    attributes: PluginDataProvideAttributes
   ) => {
     const attributeTypes = definitions[provideId].attributes
     return Object.keys(attributes).reduce((acc: any, attributeId: string) => {
@@ -208,11 +210,11 @@ export const helpers = {
   },
 
   loadPluginProvideElements: (
-    plugin: Plugin,
+    plugin: PluginData,
     provideId: string,
-    elements: PluginProvideElements
+    elements: PluginDataProvideElements
   ) => {
-    return Object.keys(elements).reduce((acc: PluginProvideElements, elementId) => {
+    return Object.keys(elements).reduce((acc: PluginDataProvideElements, elementId) => {
       const element = elements[elementId]
       acc[elementId] = {
         type: element.type,
@@ -222,23 +224,25 @@ export const helpers = {
     }, {})
   },
 
-  loadPluginDependencies: (plugin: Plugin) => {
+  loadPluginDependencies: (plugin: PluginData) => {
     return plugin.dependencies!.map((dependency: string) => helpers.loadPluginInternal(dependency, false))
   },
 
   loadPluginInternal: async (url: string, master: boolean) => {
     try {
-      const plugin = await helpers.fetchPlugin(url)
-      helpers.checkPlugin(plugin)
-      if (plugins[plugin.name]) {
-        LOGGER.warn(`Plugin '${plugin.name}' from '${plugin.url}' already registered from '${plugins[plugin.name].url}'`)
+      const pluginData = await helpers.fetchPlugin(url)
+      helpers.checkPlugin(pluginData)
+      if (plugins[pluginData.name]) {
+        LOGGER.warn(`Plugin '${pluginData.name}' from '${pluginData.url}' already registered from '${plugins[pluginData.name].url}'`)
         // We dont process anything to prevent cyclic loading
         return Promise.resolve()
       }
-      plugins[plugin.name] = plugin
-      helpers.loadPluginDefines(plugin)
-      helpers.loadPluginProvides(plugin)
-      const dependencyLoaders = helpers.loadPluginDependencies(plugin)
+      const pluginObject = new Plugin(pluginData);
+      pluginObjects[pluginObject.name] = pluginObject
+      plugins[pluginData.name] = pluginData
+      helpers.loadPluginDefines(pluginData)
+      helpers.loadPluginProvides(pluginData)
+      const dependencyLoaders = helpers.loadPluginDependencies(pluginData)
       await Promise.all(dependencyLoaders)
 
     } catch (error) {
@@ -258,18 +262,33 @@ export class PluginManager {
   static async loadPlugin(url: string) {
     await helpers.loadPluginInternal(url, true)
   }
+
+  static get pluginObjects() {
+    return pluginObjects
+  }
+  static getPluginObject(pluginId: string) {
+    return pluginObjects[pluginId]
+  }
+
   static get plugins() {
     return plugins
   }
+  static getPlugin(pluginId: string) {
+    return plugins[pluginId]
+  }
+
   static get definitions() {
     return definitions
   }
+  static getDefinition(definitionId: string) {
+    return definitions[definitionId]
+  }
+
   static get providers() {
     return providers
   }
-
-  static getProviders(entity: string) {
-    return providers[entity]
+  static getProviders(definitionId: string) {
+    return providers[definitionId]
   }
 }
 

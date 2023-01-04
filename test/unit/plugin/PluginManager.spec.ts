@@ -1,13 +1,13 @@
 import {
-  Plugin,
-  PluginDefine,
-  PluginDefineAttributes,
-  PluginDefines,
-  PluginProvide,
-  PluginProvideAttributes,
-  PluginProvides,
-  PluginProvideElements
-} from '../../../src/lib/plugin/PluginDefinitionModel'
+  PluginData,
+  PluginDataDefine,
+  PluginDataDefineAttributes,
+  PluginDataDefines,
+  PluginDataProvide,
+  PluginDataProvideAttributes,
+  PluginDataProvides,
+  PluginDataProvideElements
+} from '../../../src/lib/plugin/model/PluginDataModel'
 import PluginManager, { PluginProvider, PluginProviderElements, helpers } from '../../../src/lib/plugin/PluginManager'
 import { LogConfig } from '@uncover/js-utils-logger'
 
@@ -79,7 +79,7 @@ describe('PluginManager', () => {
 
     test('When plugin is not defined', () => {
       // Declaration
-      const plugins: Plugin[] = []
+      const plugins: PluginData[] = []
       // Execution
       // Assertion
       expect(() => helpers.checkPlugin(plugins[0])).toThrow()
@@ -87,7 +87,7 @@ describe('PluginManager', () => {
 
     test('When plugin has no name', () => {
       // Declaration
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: '',
         url: 'url'
       }
@@ -98,7 +98,7 @@ describe('PluginManager', () => {
 
     test('When plugin has no url', () => {
       // Declaration
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'name',
         url: ''
       }
@@ -109,7 +109,7 @@ describe('PluginManager', () => {
 
     test('When plugin is empty', () => {
       // Declaration
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'name',
         url: 'url'
       }
@@ -124,9 +124,9 @@ describe('PluginManager', () => {
     test('When plugin contains all information', () => {
       // Declaration
       const pluginDependencies: string[] = []
-      const pluginDefines: PluginDefines = {}
-      const pluginProvides: PluginProvides = {}
-      const plugin: Plugin = {
+      const pluginDefines: PluginDataDefines = {}
+      const pluginProvides: PluginDataProvides = {}
+      const plugin: PluginData = {
         name: 'name',
         url: 'url',
         dependencies: pluginDependencies,
@@ -152,7 +152,7 @@ describe('PluginManager', () => {
 
     test('When there are no defines', () => {
       // Declaration
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'name',
         url: 'url',
         defines: {}
@@ -165,7 +165,7 @@ describe('PluginManager', () => {
 
     test('When there are compatible defines', () => {
       // Declaration
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'name',
         url: 'url',
         defines: {
@@ -191,7 +191,7 @@ describe('PluginManager', () => {
 
     test('When there are incompatible defines', () => {
       // Declaration
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'name',
         url: 'url',
         defines: {
@@ -221,7 +221,7 @@ describe('PluginManager', () => {
 
     test('Properly loads the plugin define', () => {
       // Declaration
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'name',
         url: 'url',
         defines: {
@@ -257,7 +257,7 @@ describe('PluginManager', () => {
 
     test('When there is one basic attribute', () => {
       // Declaration
-      const attributes: PluginDefineAttributes = {
+      const attributes: PluginDataDefineAttributes = {
         attribute: 'string'
       }
       // Execution
@@ -275,7 +275,7 @@ describe('PluginManager', () => {
 
     test('When there is one optionnal attribute', () => {
       // Declaration
-      const attributes: PluginDefineAttributes = {
+      const attributes: PluginDataDefineAttributes = {
         'attribute?': 'string'
       }
       // Execution
@@ -293,7 +293,7 @@ describe('PluginManager', () => {
 
     test('When there is one array attribute', () => {
       // Declaration
-      const attributes: PluginDefineAttributes = {
+      const attributes: PluginDataDefineAttributes = {
         attribute: 'string[]'
       }
       // Execution
@@ -321,7 +321,7 @@ describe('PluginManager', () => {
 
     test('When there are no provides', () => {
       // Declaration
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'name',
         url: 'url',
         defines: {
@@ -341,7 +341,7 @@ describe('PluginManager', () => {
 
     test('When there is an undefined provide', () => {
       // Declaration
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'name',
         url: 'url',
         defines: {
@@ -367,7 +367,7 @@ describe('PluginManager', () => {
 
     test('When there is a basic provide', () => {
       // Declaration
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'name',
         url: 'url',
         defines: {
@@ -409,7 +409,7 @@ describe('PluginManager', () => {
         attributes: {},
         elements: {},
       }
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'name',
         url: 'url',
         defines: {
@@ -455,7 +455,7 @@ describe('PluginManager', () => {
         attributes: {},
         elements: {},
       }
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'name',
         url: 'url',
         defines: {},
@@ -491,7 +491,7 @@ describe('PluginManager', () => {
         attributes: {},
         elements: {},
       }
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'pluginName',
         url: 'pluginUrl',
         defines: {},
@@ -525,7 +525,7 @@ describe('PluginManager', () => {
         },
         elements: {},
       }
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'pluginName',
         url: 'pluginUrl',
         defines: {},
@@ -559,7 +559,7 @@ describe('PluginManager', () => {
         },
         elements: {},
       }
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'pluginName',
         url: 'pluginUrl',
         defines: {},
@@ -593,7 +593,7 @@ describe('PluginManager', () => {
         },
         elements: {},
       }
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'pluginName',
         url: 'pluginUrl',
         defines: {},
@@ -614,14 +614,14 @@ describe('PluginManager', () => {
 
     test('Properly loads the plugin elements', () => {
       // Declaration
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'pluginName',
         url: 'pluginUrl',
         defines: {},
         provides: {}
       }
       const provideId = 'provideId'
-      const elements: PluginProvideElements = {
+      const elements: PluginDataProvideElements = {
         element1: {
           url: '/elementUrl1',
           type: 'iframe'
@@ -659,7 +659,7 @@ describe('PluginManager', () => {
 
     test('Properly call the loader on dependencies', () => {
       // Declaration
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'pluginName',
         url: 'pluginUrl',
         dependencies: [
@@ -694,7 +694,7 @@ describe('PluginManager', () => {
     test('When the plugin is not valid', async () => {
       // Declaration
       const url = 'url'
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'pluginName',
         url: 'pluginUrl'
       }
@@ -715,7 +715,7 @@ describe('PluginManager', () => {
     test('When the plugin is already defined', async () => {
       // Declaration
       const url = 'url'
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'pluginName',
         url: 'pluginUrl'
       }
@@ -738,7 +738,7 @@ describe('PluginManager', () => {
     test('When the plugin is valid', async () => {
       // Declaration
       const url = 'url'
-      const plugin: Plugin = {
+      const plugin: PluginData = {
         name: 'pluginName',
         url: 'pluginUrl'
       }
