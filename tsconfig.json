@@ -24,6 +24,8 @@
     "src"
   ],
   "exclude": [
+    "src/index_docs.js",
+    "src/index_bundle.js",
     "dist",
     "node_modules",
     "test",

@@ -257,15 +257,15 @@ describe('PluginManager', () => {
 
     test('When there is one basic attribute', () => {
       // Declaration
-      const attributes = {
-        attribute: 'type'
+      const attributes: PluginDefineAttributes = {
+        attribute: 'string'
       }
       // Execution
       const result = helpers.loadPluginDefineAttributes(attributes)
       // Assertion
       const expected = {
         attribute: {
-          type: 'type',
+          type: 'string',
           mandatory: true,
           array: false
         }
@@ -275,15 +275,15 @@ describe('PluginManager', () => {
 
     test('When there is one optionnal attribute', () => {
       // Declaration
-      const attributes = {
-        'attribute?': 'type'
+      const attributes: PluginDefineAttributes = {
+        'attribute?': 'string'
       }
       // Execution
       const result = helpers.loadPluginDefineAttributes(attributes)
       // Assertion
       const expected = {
         attribute: {
-          type: 'type',
+          type: 'string',
           mandatory: false,
           array: false
         }
@@ -293,15 +293,15 @@ describe('PluginManager', () => {
 
     test('When there is one array attribute', () => {
       // Declaration
-      const attributes = {
-        attribute: 'type[]'
+      const attributes: PluginDefineAttributes = {
+        attribute: 'string[]'
       }
       // Execution
       const result = helpers.loadPluginDefineAttributes(attributes)
       // Assertion
       const expected = {
         attribute: {
-          type: 'type',
+          type: 'string',
           mandatory: true,
           array: true
         }
