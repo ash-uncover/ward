@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/plugin.schema.json",
+  "title": "Plugin",
+  "description": "A plugin in the ward framework",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "The unique identifier for a plugin",
+      "type": "string"
+    },
+    "url": {
+      "description": "The url for a plugin",
+      "type": "string"
+    },
+    "dependencies": {
+      "description": "Dependencies for the plugin",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "defines": {
+      "description": "Definitions from the plugin",
+      "type": "object",
+      "properties": {
+        "*": {
+          "type": "object",
+          "properties": {
+            "properties": {
+              "type": "object"
+            },
+            "attributes": {
+              "type": "object"
+            },
+            "elements": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "provides": {
+      "description": "Entities provided by the plugin",
+      "type": "object",
+      "properties": {
+        "*": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "attributes": {
+              "type": "object"
+            },
+            "elements": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "name",
+    "url"
+  ],
+  "additionalProperties": false
+}

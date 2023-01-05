@@ -1,7 +1,7 @@
 import React from 'react'
 import { Outlet, useParams } from 'react-router-dom'
 // Components
-import Plugin from '../../../components/plugins/Plugin'
+import Plugin from '../../../components/plugins/content/Plugin'
 
 const RoutePlugins = () => {
 

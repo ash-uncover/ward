@@ -1,0 +1,7 @@
+.definition-side-entry {
+  list-style-type: disc;
+  padding-left: 0.75rem;
+  & .definition-side-entry__entries {
+    padding: 0;
+  }
+}

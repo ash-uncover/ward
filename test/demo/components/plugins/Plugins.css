@@ -19,4 +19,8 @@
       }
     }
   }
+
+  & .plugins__details {
+    padding: 1rem;
+  }
 }

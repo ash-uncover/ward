@@ -1,15 +1,9 @@
-import {
-  PluginData,
-  PluginDataDefine,
-  PluginDataDefineAttributes,
-  PluginDataDefines,
-  PluginDataProvide,
-  PluginDataProvideAttributes,
-  PluginDataProvides,
-  PluginDataProvideElements
-} from '../../../src/lib/plugin/model/PluginDataModel'
-import PluginManager, { PluginProvider, PluginProviderElements, helpers } from '../../../src/lib/plugin/PluginManager'
+import PluginManager, { helpers } from '../../../src/lib/plugin/PluginManager'
 import { LogConfig } from '@uncover/js-utils-logger'
+import Plugin from '../../../src/lib/plugin/object/Plugin'
+import PluginDefine from '../../../src/lib/plugin/object/PluginDefine'
+import PluginProvider from '../../../src/lib/plugin/object/PluginProvider'
+import PluginProvide from '../../../src/lib/plugin/object/PluginProvide'
 
 LogConfig.off()
 
@@ -21,23 +15,12 @@ describe('PluginManager', () => {
   /* TEST SETUP */
 
   let spyHelpersFetchPlugin: any
-  let spyHelpersCheckPlugin: any
-  let spyHelpersLoadPluginDefines: any
-  let spyHelpersLoadPluginDefine: any
-  let spyHelpersLoadPluginDefineAttributes: any
-  let spyHelpersLoadPluginProvides: any
-  let spyHelpersLoadPluginProvide: any
-  let spyHelpersLoadPluginProvideAttributes: any
-  let spyHelpersLoadPluginProvideElements: any
-  let spyHelpersLoadPluginDependencies: any
-  let spyHelpersLoadPluginInternal: any
 
   beforeEach(() => {
   })
 
   afterEach(() => {
     jest.restoreAllMocks()
-    helpers.reset()
   })
 
 
@@ -73,731 +56,208 @@ describe('PluginManager', () => {
     })
   })
 
-  // helpers.checkPlugin //
-
-  describe('helpers.checkPlugin', () => {
-
-    test('When plugin is not defined', () => {
-      // Declaration
-      const plugins: PluginData[] = []
-      // Execution
-      // Assertion
-      expect(() => helpers.checkPlugin(plugins[0])).toThrow()
-    })
-
-    test('When plugin has no name', () => {
-      // Declaration
-      const plugin: PluginData = {
-        name: '',
-        url: 'url'
-      }
-      // Execution
-      // Assertion
-      expect(() => helpers.checkPlugin(plugin)).toThrow()
-    })
-
-    test('When plugin has no url', () => {
-      // Declaration
-      const plugin: PluginData = {
-        name: 'name',
-        url: ''
-      }
-      // Execution
-      // Assertion
-      expect(() => helpers.checkPlugin(plugin)).toThrow()
-    })
-
-    test('When plugin is empty', () => {
-      // Declaration
-      const plugin: PluginData = {
-        name: 'name',
-        url: 'url'
-      }
-      // Execution
-      helpers.checkPlugin(plugin)
-      // Assertion
-      expect(plugin.dependencies).toEqual([])
-      expect(plugin.defines).toEqual({})
-      expect(plugin.provides).toEqual({})
-    })
-
-    test('When plugin contains all information', () => {
-      // Declaration
-      const pluginDependencies: string[] = []
-      const pluginDefines: PluginDataDefines = {}
-      const pluginProvides: PluginDataProvides = {}
-      const plugin: PluginData = {
-        name: 'name',
-        url: 'url',
-        dependencies: pluginDependencies,
-        defines: pluginDefines,
-        provides: pluginProvides
-      }
-      // Execution
-      helpers.checkPlugin(plugin)
-      // Assertion
-      expect(plugin.dependencies).toBe(pluginDependencies)
-      expect(plugin.defines).toBe(pluginDefines)
-      expect(plugin.provides).toBe(pluginProvides)
-    })
-  })
-
-  // helpers.loadPluginDefines //
-
-  describe('helpers.loadPluginDefines', () => {
-
-    beforeEach(() => {
-      spyHelpersLoadPluginDefine = jest.spyOn(helpers, 'loadPluginDefine')
-    })
-
-    test('When there are no defines', () => {
-      // Declaration
-      const plugin: PluginData = {
-        name: 'name',
-        url: 'url',
-        defines: {}
-      }
-      // Execution
-      helpers.loadPluginDefines(plugin)
-      // Assertion
-      expect(PluginManager.definitions).toEqual({})
-    })
-
-    test('When there are compatible defines', () => {
-      // Declaration
-      const plugin: PluginData = {
-        name: 'name',
-        url: 'url',
-        defines: {
-          define1: {
-            properties: {},
-            attributes: {},
-            elements: {},
-          },
-          define2: {
-            properties: {},
-            attributes: {},
-            elements: {},
-          }
-        }
-      }
-      // Execution
-      helpers.loadPluginDefines(plugin)
-      // Assertion
-      expect(spyHelpersLoadPluginDefine).toHaveBeenCalledTimes(2)
-      expect(spyHelpersLoadPluginDefine).toHaveBeenCalledWith(plugin, 'define1')
-      expect(spyHelpersLoadPluginDefine).toHaveBeenCalledWith(plugin, 'define2')
-    })
-
-    test('When there are incompatible defines', () => {
-      // Declaration
-      const plugin: PluginData = {
-        name: 'name',
-        url: 'url',
-        defines: {
-          define: {
-            properties: {},
-            attributes: {},
-            elements: {},
-          }
-        }
-      }
-      // Execution
-      helpers.loadPluginDefines(plugin)
-      helpers.loadPluginDefines(plugin)
-      // Assertion
-      expect(spyHelpersLoadPluginDefine).toHaveBeenCalledTimes(1)
-      expect(spyHelpersLoadPluginDefine).toHaveBeenCalledWith(plugin, 'define')
-    })
-  })
-
-  // loadPluginDefine //
-
-  describe('loadPluginDefine', () => {
-
-    beforeEach(() => {
-      spyHelpersLoadPluginDefineAttributes = jest.spyOn(helpers, 'loadPluginDefineAttributes')
-    })
-
-    test('Properly loads the plugin define', () => {
-      // Declaration
-      const plugin: PluginData = {
-        name: 'name',
-        url: 'url',
-        defines: {
-          define: {
-            properties: {},
-            attributes: {},
-            elements: {},
-          }
-        }
-      }
-      // Execution
-      helpers.loadPluginDefine(plugin, 'define')
-      // Assertion
-      expect(spyHelpersLoadPluginDefineAttributes).toHaveBeenCalledTimes(1)
-      expect(spyHelpersLoadPluginDefineAttributes).toHaveBeenCalledWith(plugin.defines!.define.attributes)
-      expect(PluginManager.definitions['name/define']).toBeDefined()
-    })
-  })
-
-  // loadPluginDefineAttributes //
-
-  describe('loadPluginDefineAttributes', () => {
-
-    test('When there are no attributes', () => {
-      // Declaration
-      const attributes = {}
-      // Execution
-      const result = helpers.loadPluginDefineAttributes(attributes)
-      // Assertion
-      const expected = {}
-      expect(result).toEqual(expected)
-    })
-
-    test('When there is one basic attribute', () => {
-      // Declaration
-      const attributes: PluginDataDefineAttributes = {
-        attribute: 'string'
-      }
-      // Execution
-      const result = helpers.loadPluginDefineAttributes(attributes)
-      // Assertion
-      const expected = {
-        attribute: {
-          type: 'string',
-          mandatory: true,
-          array: false
-        }
-      }
-      expect(result).toEqual(expected)
-    })
-
-    test('When there is one optionnal attribute', () => {
-      // Declaration
-      const attributes: PluginDataDefineAttributes = {
-        'attribute?': 'string'
-      }
-      // Execution
-      const result = helpers.loadPluginDefineAttributes(attributes)
-      // Assertion
-      const expected = {
-        attribute: {
-          type: 'string',
-          mandatory: false,
-          array: false
-        }
-      }
-      expect(result).toEqual(expected)
-    })
-
-    test('When there is one array attribute', () => {
-      // Declaration
-      const attributes: PluginDataDefineAttributes = {
-        attribute: 'string[]'
-      }
-      // Execution
-      const result = helpers.loadPluginDefineAttributes(attributes)
-      // Assertion
-      const expected = {
-        attribute: {
-          type: 'string',
-          mandatory: true,
-          array: true
-        }
-      }
-      expect(result).toEqual(expected)
-    })
-  })
-
-  // loadPluginProvides //
-
-  describe('loadPluginProvides', () => {
-
-    beforeEach(() => {
-      spyHelpersLoadPluginProvide = jest.spyOn(helpers, 'loadPluginProvide')
-      spyHelpersLoadPluginProvide.mockImplementation(() => { })
-    })
-
-    test('When there are no provides', () => {
-      // Declaration
-      const plugin: PluginData = {
-        name: 'name',
-        url: 'url',
-        defines: {
-          define: {
-            properties: {},
-            attributes: {},
-            elements: {},
-          }
-        },
-        provides: {}
-      }
-      // Execution
-      helpers.loadPluginProvides(plugin)
-      // Assertion
-      expect(spyHelpersLoadPluginProvide).toHaveBeenCalledTimes(0)
-    })
-
-    test('When there is an undefined provide', () => {
-      // Declaration
-      const plugin: PluginData = {
-        name: 'name',
-        url: 'url',
-        defines: {
-          define: {
-            properties: {},
-            attributes: {},
-            elements: {},
-          }
-        },
-        provides: {
-          provide: {
-            name: 'name',
-            attributes: {},
-            elements: {},
-          }
-        }
-      }
-      // Execution
-      helpers.loadPluginProvides(plugin)
-      // Assertion
-      expect(spyHelpersLoadPluginProvide).toHaveBeenCalledTimes(0)
-    })
-
-    test('When there is a basic provide', () => {
-      // Declaration
-      const plugin: PluginData = {
-        name: 'name',
-        url: 'url',
-        defines: {
-          define: {
-            properties: {},
-            attributes: {},
-            elements: {},
-          }
-        },
-        provides: {
-          'name/define': {
-            name: 'name',
-            attributes: {},
-            elements: {},
-          }
-        }
-      }
-      PluginManager.definitions['name/define'] = {
-        properties: {},
-        attributes: {},
-        elements: {},
-      }
-      // Execution
-      helpers.loadPluginProvides(plugin)
-      // Assertion
-      expect(spyHelpersLoadPluginProvide).toHaveBeenCalledTimes(1)
-      expect(spyHelpersLoadPluginProvide).toHaveBeenCalledWith(plugin, 'name/define', plugin.provides!['name/define'])
-    })
-
-    test('When there is an array of provide', () => {
-      // Declaration
-      const provide1 = {
-        name: 'name1',
-        attributes: {},
-        elements: {},
-      }
-      const provide2 = {
-        name: 'name2',
-        attributes: {},
-        elements: {},
-      }
-      const plugin: PluginData = {
-        name: 'name',
-        url: 'url',
-        defines: {
-          define: {
-            properties: {},
-            attributes: {},
-            elements: {},
-          }
-        },
-        provides: {
-          'name/define': [provide1, provide2]
-        }
-      }
-      PluginManager.definitions['name/define'] = {
-        properties: {},
-        attributes: {},
-        elements: {},
-      }
-      // Execution
-      helpers.loadPluginProvides(plugin)
-      // Assertion
-      expect(spyHelpersLoadPluginProvide).toHaveBeenCalledTimes(2)
-      expect(spyHelpersLoadPluginProvide).toHaveBeenCalledWith(plugin, 'name/define', provide1)
-      expect(spyHelpersLoadPluginProvide).toHaveBeenCalledWith(plugin, 'name/define', provide2)
-    })
-  })
-
-  // loadPluginProvide //
-
-  describe('loadPluginProvide', () => {
-
-    beforeEach(() => {
-      spyHelpersLoadPluginProvideAttributes = jest.spyOn(helpers, 'loadPluginProvideAttributes')
-      spyHelpersLoadPluginProvideAttributes.mockImplementation(() => { })
-      spyHelpersLoadPluginProvideElements = jest.spyOn(helpers, 'loadPluginProvideElements')
-      spyHelpersLoadPluginProvideElements.mockImplementation(() => { })
-    })
-
-    test('Properly calls the loading methods', () => {
-      // Declaration
-      const provide = {
-        name: 'name1',
-        attributes: {},
-        elements: {},
-      }
-      const plugin: PluginData = {
-        name: 'name',
-        url: 'url',
-        defines: {},
-        provides: {
-          'name/define': provide
-        }
-      }
-      // Execution
-      helpers.loadPluginProvide(plugin, 'name/define', provide)
-      // Assertion
-      expect(spyHelpersLoadPluginProvideAttributes).toHaveBeenCalledTimes(1)
-      expect(spyHelpersLoadPluginProvideAttributes).toHaveBeenCalledWith(plugin, 'name/define', provide.attributes)
-      expect(spyHelpersLoadPluginProvideElements).toHaveBeenCalledTimes(1)
-      expect(spyHelpersLoadPluginProvideElements).toHaveBeenCalledWith(plugin, 'name/define', provide.elements)
-      expect(PluginManager.providers['name/define']).toBeDefined()
-      expect(PluginManager.providers['name/define']).toHaveLength(1)
-    })
-  })
-
-  // loadPluginProvideAttributes //
-
-  describe('loadPluginProvideAttributes', () => {
-
-    test('When there are no attributes', () => {
-      // Declaration
-      PluginManager.definitions['pluginName/pluginDefine'] = {
-        attributes: {},
-        elements: {},
-        properties: {}
-      }
-      const provide = {
-        name: 'provideName',
-        attributes: {},
-        elements: {},
-      }
-      const plugin: PluginData = {
-        name: 'pluginName',
-        url: 'pluginUrl',
-        defines: {},
-        provides: {
-          'pluginName/pluginDefine': provide
-        }
-      }
-      // Execution
-      const result = helpers.loadPluginProvideAttributes(plugin, 'pluginName/pluginDefine', provide.attributes)
-      // Assertion
-      expect(result).toEqual({})
-    })
-
-    test('When there is one basic attribute', () => {
-      // Declaration
-      PluginManager.definitions['pluginName/pluginDefine'] = {
-        attributes: {
-          attribute: {
-            type: 'string',
-            mandatory: true,
-            array: false
-          }
-        },
-        elements: {},
-        properties: {}
-      }
-      const provide = {
-        name: 'provideName',
-        attributes: {
-          attribute: 'value'
-        },
-        elements: {},
-      }
-      const plugin: PluginData = {
-        name: 'pluginName',
-        url: 'pluginUrl',
-        defines: {},
-        provides: {
-          'pluginName/pluginDefine': provide
-        }
-      }
-      // Execution
-      const result = helpers.loadPluginProvideAttributes(plugin, 'pluginName/pluginDefine', provide.attributes)
-      // Assertion
-      expect(result).toEqual({ attribute: 'value' })
-    })
-
-    test('When there is one url attribute', () => {
-      // Declaration
-      PluginManager.definitions['pluginName/pluginDefine'] = {
-        attributes: {
-          attribute: {
-            type: 'url',
-            mandatory: true,
-            array: false
-          }
-        },
-        elements: {},
-        properties: {}
-      }
-      const provide = {
-        name: 'provideName',
-        attributes: {
-          attribute: '/value'
-        },
-        elements: {},
-      }
-      const plugin: PluginData = {
-        name: 'pluginName',
-        url: 'pluginUrl',
-        defines: {},
-        provides: {
-          'pluginName/pluginDefine': provide
-        }
-      }
-      // Execution
-      const result = helpers.loadPluginProvideAttributes(plugin, 'pluginName/pluginDefine', provide.attributes)
-      // Assertion
-      expect(result).toEqual({ attribute: 'pluginUrl/value' })
-    })
-
-    test('When there is an array of url attribute', () => {
-      // Declaration
-      PluginManager.definitions['pluginName/pluginDefine'] = {
-        attributes: {
-          attribute: {
-            type: 'url',
-            mandatory: true,
-            array: true
-          }
-        },
-        elements: {},
-        properties: {}
-      }
-      const provide = {
-        name: 'provideName',
-        attributes: {
-          attribute: ['/value1', '/value2']
-        },
-        elements: {},
-      }
-      const plugin: PluginData = {
-        name: 'pluginName',
-        url: 'pluginUrl',
-        defines: {},
-        provides: {
-          'pluginName/pluginDefine': provide
-        }
-      }
-      // Execution
-      const result = helpers.loadPluginProvideAttributes(plugin, 'pluginName/pluginDefine', provide.attributes)
-      // Assertion
-      expect(result).toEqual({ attribute: ['pluginUrl/value1', 'pluginUrl/value2'] })
-    })
-  })
-
-  // loadPluginProvideElements //
-
-  describe('loadPluginProvideElements', () => {
-
-    test('Properly loads the plugin elements', () => {
-      // Declaration
-      const plugin: PluginData = {
-        name: 'pluginName',
-        url: 'pluginUrl',
-        defines: {},
-        provides: {}
-      }
-      const provideId = 'provideId'
-      const elements: PluginDataProvideElements = {
-        element1: {
-          url: '/elementUrl1',
-          type: 'iframe'
-        },
-        element2: {
-          url: '/elementUrl2',
-          type: 'iframe'
-        },
-      }
-      // Execution
-      const result = helpers.loadPluginProvideElements(plugin, provideId, elements)
-      // Assertion
-      const expected: PluginProviderElements = {
-        element1: {
-          url: 'pluginUrl/elementUrl1',
-          type: 'iframe'
-        },
-        element2: {
-          url: 'pluginUrl/elementUrl2',
-          type: 'iframe'
-        },
-      }
-      expect(result).toEqual(expected)
-    })
-  })
-
-  // loadPluginDependencies //
-
-  describe('loadPluginDependencies', () => {
-
-    beforeEach(() => {
-      spyHelpersLoadPluginInternal = jest.spyOn(helpers, 'loadPluginInternal')
-      spyHelpersLoadPluginInternal.mockImplementation(() => 'internal')
-    })
-
-    test('Properly call the loader on dependencies', () => {
-      // Declaration
-      const plugin: PluginData = {
-        name: 'pluginName',
-        url: 'pluginUrl',
-        dependencies: [
-          'plugin1',
-          'plugin2'
-        ],
-        defines: {},
-        provides: {}
-      }
-      // Execution
-      const result = helpers.loadPluginDependencies(plugin)
-      // Assertion
-      expect(spyHelpersLoadPluginInternal).toHaveBeenCalledTimes(2)
-      expect(spyHelpersLoadPluginInternal).toHaveBeenCalledWith('plugin1', false)
-      expect(spyHelpersLoadPluginInternal).toHaveBeenCalledWith('plugin2', false)
-      expect(result).toEqual(['internal', 'internal'])
-    })
-  })
-
-  // loadPluginInternal //
-
-  describe('loadPluginInternal', () => {
+  describe('PluginManager', () => {
 
     beforeEach(() => {
       spyHelpersFetchPlugin = jest.spyOn(helpers, 'fetchPlugin')
-      spyHelpersCheckPlugin = jest.spyOn(helpers, 'checkPlugin')
-      spyHelpersLoadPluginDefines = jest.spyOn(helpers, 'loadPluginDefines')
-      spyHelpersLoadPluginProvides = jest.spyOn(helpers, 'loadPluginProvides')
-      spyHelpersLoadPluginDependencies = jest.spyOn(helpers, 'loadPluginDependencies')
     })
 
-    test('When the plugin is not valid', async () => {
-      // Declaration
-      const url = 'url'
-      const plugin: PluginData = {
-        name: 'pluginName',
-        url: 'pluginUrl'
-      }
-      spyHelpersFetchPlugin.mockImplementation(() => plugin)
-      spyHelpersCheckPlugin.mockImplementation(() => { throw new Error() })
-      // Execution
-      await helpers.loadPluginInternal(url, true)
-      // Assertion
-      expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
-      expect(spyHelpersFetchPlugin).toHaveBeenCalledWith(url)
-      expect(spyHelpersCheckPlugin).toHaveBeenCalledTimes(1)
-      expect(spyHelpersCheckPlugin).toHaveBeenCalledWith(plugin)
-      expect(spyHelpersLoadPluginDefines).toHaveBeenCalledTimes(0)
-      expect(spyHelpersLoadPluginProvides).toHaveBeenCalledTimes(0)
-      expect(spyHelpersLoadPluginDependencies).toHaveBeenCalledTimes(0)
+    afterEach(() => {
+      PluginManager.reset()
     })
 
-    test('When the plugin is already defined', async () => {
-      // Declaration
-      const url = 'url'
-      const plugin: PluginData = {
-        name: 'pluginName',
-        url: 'pluginUrl'
-      }
-      PluginManager.plugins['pluginName'] = {
-        name: 'pluginName1',
-        url: 'pluginUrl1'
-      }
-      spyHelpersFetchPlugin.mockImplementation(() => plugin)
-      spyHelpersCheckPlugin.mockImplementation(() => { })
-      // Execution
-      await helpers.loadPluginInternal(url, true)
-      // Assertion
-      expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
-      expect(spyHelpersFetchPlugin).toHaveBeenCalledWith(url)
-      expect(spyHelpersLoadPluginDefines).toHaveBeenCalledTimes(0)
-      expect(spyHelpersLoadPluginProvides).toHaveBeenCalledTimes(0)
-      expect(spyHelpersLoadPluginDependencies).toHaveBeenCalledTimes(0)
+    describe('constructor', () => {
+
+      test('initial values', () => {
+        // Declaration
+        // Execution
+        // Assertion
+        expect(PluginManager.plugins).toEqual([])
+        expect(PluginManager.rootPlugins).toEqual([])
+        expect(PluginManager.definitions).toEqual({})
+        expect(PluginManager.providers).toEqual({})
+      })
     })
 
-    test('When the plugin is valid', async () => {
-      // Declaration
-      const url = 'url'
-      const plugin: PluginData = {
-        name: 'pluginName',
-        url: 'pluginUrl'
-      }
-      spyHelpersFetchPlugin.mockImplementation(() => plugin)
-      spyHelpersCheckPlugin.mockImplementation(() => { })
-      spyHelpersLoadPluginDefines.mockImplementation(() => { })
-      spyHelpersLoadPluginProvides.mockImplementation(() => { })
-      spyHelpersLoadPluginDependencies.mockImplementation(() => { })
-      // Execution
-      await helpers.loadPluginInternal(url, true)
-      // Assertion
-      expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
-      expect(spyHelpersFetchPlugin).toHaveBeenCalledWith(url)
-      expect(spyHelpersLoadPluginDefines).toHaveBeenCalledTimes(1)
-      expect(spyHelpersLoadPluginDefines).toHaveBeenCalledWith(plugin)
-      expect(spyHelpersLoadPluginProvides).toHaveBeenCalledTimes(1)
-      expect(spyHelpersLoadPluginProvides).toHaveBeenCalledWith(plugin)
-      expect(spyHelpersLoadPluginDependencies).toHaveBeenCalledTimes(1)
-      expect(spyHelpersLoadPluginDependencies).toHaveBeenCalledWith(plugin)
-    })
-  })
+    describe('loadPlugin', () => {
 
+      test('basic plugin', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl'
+        }
+        spyHelpersFetchPlugin.mockImplementation(() => data)
+        // Execution
+        await PluginManager.loadPlugin('url')
+        // Assertion
+        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
+        expect(spyHelpersFetchPlugin).toHaveBeenCalledWith('url')
+        const expectedPlugin = new Plugin(data)
+        expect(PluginManager.plugins).toHaveLength(1)
+        expect(PluginManager.plugins[0]).toEqual(expectedPlugin)
+        expect(PluginManager.rootPlugins).toHaveLength(1)
+        expect(PluginManager.rootPlugins[0]).toEqual(expectedPlugin)
+        expect(PluginManager.getPlugin('pluginName')).toEqual(expectedPlugin)
+        expect(PluginManager.getPluginByUrl('url')).toEqual(expectedPlugin)
+      })
 
-  // PluginManager.loadPlugin //
+      test('plugin with defines', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl',
+          defines: {
+            define1: {}
+          }
+        }
+        spyHelpersFetchPlugin.mockImplementation(() => data)
+        // Execution
+        await PluginManager.loadPlugin('url')
+        // Assertion
+        const expectedDefine = new PluginDefine(
+          'pluginName',
+          'define1',
+          data.defines.define1
+        )
+        expect(PluginManager.definitions).toEqual({
+          'pluginName/define1': expectedDefine
+        })
+        expect(PluginManager.getDefinition('pluginName/define1')).toEqual(expectedDefine)
+      })
 
-  describe('PluginManager.loadPlugin', () => {
+      test('plugin with provides', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl',
+          defines: {
+            define1: {}
+          }
+        }
+        const dataChild = {
+          name: 'childName',
+          url: 'childUrl',
+          provides: {
+            'pluginName/define1': {
+              name: 'child'
+            }
+          }
+        }
+        // Execution
+        spyHelpersFetchPlugin.mockImplementation(() => data)
+        await PluginManager.loadPlugin('url')
+        spyHelpersFetchPlugin.mockImplementation(() => dataChild)
+        await PluginManager.loadPlugin('urlChild')
+        // Assertion
+        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(2)
+        expect(spyHelpersFetchPlugin).toHaveBeenCalledWith('url')
+        expect(spyHelpersFetchPlugin).toHaveBeenCalledWith('urlChild')
+        const expectedDefine = new PluginDefine(
+          'pluginName',
+          'define1',
+          data.defines.define1
+        )
+        const expectedProvide = new PluginProvide(
+          'childName',
+          'pluginName/define1',
+          dataChild.provides['pluginName/define1']
+        )
+        const expectedProvider = new PluginProvider(
+          'childName',
+          expectedDefine,
+          expectedProvide
+        )
+        expect(PluginManager.providers).toEqual({
+          'pluginName/define1/child': expectedProvider
+        })
+        expect(PluginManager.getProviders('pluginName/define1')).toEqual([expectedProvider])
+        expect(PluginManager.getProvider('pluginName/define1/child')).toEqual(expectedProvider)
+      })
 
-    beforeEach(() => {
-      spyHelpersLoadPluginInternal = jest.spyOn(helpers, 'loadPluginInternal')
-      spyHelpersLoadPluginInternal.mockImplementation(() => { })
-    })
+      test('load plugin with undefined provide', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl',
+          provides: {
+            define1: {
+              name: 'test'
+            }
+          }
+        }
+        spyHelpersFetchPlugin.mockImplementation(() => data)
+        // Execution
+        await PluginManager.loadPlugin('url')
+        // Assertion
+        expect(PluginManager.providers).toEqual({})
+      })
 
-    test('Properly calls the internal loading method', () => {
-      // Declaration
-      const url = 'url'
-      // Execution
-      PluginManager.loadPlugin(url)
-      // Assertion
-      expect(spyHelpersLoadPluginInternal).toHaveBeenCalledTimes(1)
-      expect(spyHelpersLoadPluginInternal).toHaveBeenCalledWith(url, true)
-    })
-  })
+      test('load same url twice', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl'
+        }
+        spyHelpersFetchPlugin.mockImplementation(() => data)
+        // Execution
+        await PluginManager.loadPlugin('url')
+        await PluginManager.loadPlugin('url')
+        // Assertion
+        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
+      })
 
-  // PluginManager.getProvider //
+      test('load plugin with dependency', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl',
+          dependencies: ['depUrl']
+        }
+        const dataDependency = {
+          name: 'dependencyName',
+          url: 'dependencyUrl'
+        }
+        spyHelpersFetchPlugin.mockImplementation((url: string) => {
+          if (url === 'url') {
+            return data
+          }
+          return dataDependency
+        })
+        // Execution
+        await PluginManager.loadPlugin('url')
+        // Assertion
+        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(2)
+        expect(PluginManager.plugins).toHaveLength(2)
+      })
 
-  describe('PluginManager.getProvider', () => {
-    test('1', () => {
-      // Declaration
-      const provider: PluginProvider = {
-        plugin: 'plugin',
-        name: 'name',
-        attributes: {},
-        elements: {},
-      }
-      PluginManager.providers['provider'] = [provider]
-      // Execution
-      const result = PluginManager.getProviders('provider')
-      // Assertion
-      expect(result).toEqual([provider])
+      test('load two plugins with same name', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl'
+        }
+        spyHelpersFetchPlugin.mockImplementation(() => data)
+        // Execution
+        await PluginManager.loadPlugin('url')
+        await PluginManager.loadPlugin('url2')
+        // Assertion
+        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(2)
+        expect(PluginManager.plugins).toHaveLength(1)
+      })
+
+      test('load plugin with invalid data', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName'
+        }
+        spyHelpersFetchPlugin.mockImplementation(() => data)
+        // Execution
+        await PluginManager.loadPlugin('url')
+        // Assertion
+        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
+        expect(PluginManager.plugins).toHaveLength(0)
+      })
     })
   })
 })

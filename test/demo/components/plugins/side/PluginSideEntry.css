@@ -1,0 +1,7 @@
+.plugin-side-entry {
+  list-style-type: disc;
+  padding-left: 0.75rem;
+  & .plugin-side-entry__entries {
+    padding: 0;
+  }
+}

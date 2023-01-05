@@ -1,6 +1,9 @@
+import PluginManager from '../PluginManager'
 import {
   PluginData,
 } from '../model/PluginDataModel'
+import PluginDefine from './PluginDefine'
+import PluginProvide from './PluginProvide'
 
 class Plugin {
 
@@ -12,30 +15,38 @@ class Plugin {
   #url: string
 
   #dependencies: string[]
-  #defines: string[]
-  #provides: string[]
+  #defines: PluginDefine[]
+  #provides: PluginProvide[]
 
   // Constructor //
 
-  constructor (pluginData: PluginData, loadedFrom?: string) {
-    if (!pluginData) {
-      throw new Error('[Plugin] plugin information is not defined')
-    }
+  constructor (
+    data: PluginData,
+    loadedFrom?: string
+  ) {
     this.#loadedFrom = loadedFrom
-    
-    if (!pluginData.name) {
-      throw new Error('[Plugin] plugin name is missing')
-    }
-    this.#name = pluginData.name
+    this.#name = data.name
+    this.#url = data.url
 
-    if (!pluginData.url) {
-      throw new Error('[Plugin] plugin url is missing')
-    }
-    this.#url = pluginData.url
+    this.#dependencies = data.dependencies || []
 
-    this.#dependencies = pluginData.dependencies || []
-    this.#defines = Object.keys(pluginData.defines || {})
-    this.#provides = Object.keys(pluginData.provides || {})
+    const defines = data.defines || {}
+    this.#defines = Object.keys(defines).map((defineName: string) => {
+      const define = defines[defineName]
+      return new PluginDefine(this.name, defineName, define)
+    })
+
+    const provides = data.provides || {}
+    this.#provides = Object.keys(provides).reduce((acc: PluginProvide[], provideName: string) => {
+      const provide = provides[provideName]
+      if (Array.isArray(provide)) {
+        const newProvides: PluginProvide[] = provide.map(prov => {
+          return new PluginProvide(this.name, provideName, prov)
+        })
+        return [...acc, ...newProvides]
+      }
+      return [...acc, new PluginProvide(this.name, provideName, provide)]
+    }, [])
   }
 
   // Getters & Setters //

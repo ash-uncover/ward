@@ -1,9 +1,10 @@
 import React, { FormEvent, ReactNode, useEffect, useState } from 'react'
-
+import { Link } from 'react-router-dom'
 import PluginManager from '../../../../src/lib/plugin/PluginManager'
 
 import './Plugins.css'
-import { Link } from 'react-router-dom'
+import { PluginSideEntry } from './side/PluginSideEntry'
+import { DefinitionSideEntry } from './side/DefinitionSideEntry'
 
 interface PluginsProperties {
   children: ReactNode
@@ -48,13 +49,13 @@ const Plugins = ({
 
       <div className='plugins__side_panel'>
 
-        <h1>
-          Plugins
-        </h1>
-
         <h2>
-          Add a plugin
+          Plugins
         </h2>
+
+        <h3>
+          Add a plugin
+        </h3>
 
         <form>
           <div>
@@ -72,26 +73,36 @@ const Plugins = ({
           </div>
         </form>
 
-        <h2>
+        <h3>
           Plugin list
-        </h2>
+        </h3>
 
         <ul>
-          {Object.values(PluginManager.plugins).map(plugin => {
+          {Object.values(PluginManager.rootPlugins).map(plugin => {
             return (
-              <li
-                key={plugin.url}
-                title={plugin.url}
-              >
-                <Link
-                  to={`${window.btoa(encodeURIComponent(plugin.name))}`}
-                >
-                  {plugin.name}
-                </Link>
-              </li>
+              <PluginSideEntry
+                key={plugin.name}
+                pluginId={plugin.name}
+              />
             )
           })}
         </ul>
+
+        <h3>
+          Definitions
+        </h3>
+
+        <ul>
+          {Object.values(PluginManager.definitions).map(definition => {
+            return (
+              <DefinitionSideEntry
+                key={definition.name}
+                definitionId={definition.name}
+              />
+            )
+          })}
+        </ul>
+
       </div>
 
       <div className='plugins__details'>
@@ -100,7 +111,6 @@ const Plugins = ({
 
     </div>
   )
-
 }
 
 export default Plugins
