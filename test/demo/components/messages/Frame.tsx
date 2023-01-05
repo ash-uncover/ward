@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { getDispatcherId } from '../lib/message/MessageDispatcher'
+import { getDispatcherId } from '../../../../src/lib/message/MessageDispatcher'
 
 interface FrameProperties {
   id: string

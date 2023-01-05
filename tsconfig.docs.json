@@ -11,21 +11,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": true,
-    "outDir": "dist",
-    "paths": {
-      "components": [
-        "src/components"
-      ],
-      "components/*": [
-        "src/components/*"
-      ],
-      "lib": [
-        "src/lib"
-      ],
-      "lib/*": [
-        "src/lib/*"
-      ],
-    },
+    "outDir": "docs",
     "sourceMap": true,
     "strict": true,
     "target": "es6",
@@ -34,12 +20,12 @@
     ]
   },
   "include": [
-    "src"
+    "src",
+    "test"
   ],
   "exclude": [
     "dist",
     "node_modules",
-    "test",
     ".vscode"
   ]
 }

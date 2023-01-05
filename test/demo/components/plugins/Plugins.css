@@ -1,0 +1,26 @@
+.plugins {
+  display: flex;
+  height: 100%;
+
+  & .plugins__side_panel {
+    flex-shrink: 0;
+    width: 300px;
+    border-right: 1px solid grey;
+    padding: 1rem;
+
+    & form {
+      & input {
+        width: 100%;
+        margin-bottom: 0.5rem;
+        box-sizing: border-box;
+      }
+      & button {
+        width: 100%;
+      }
+    }
+  }
+
+  & .plugins__details {
+    padding: 1rem;
+  }
+}

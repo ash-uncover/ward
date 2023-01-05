@@ -2,8 +2,7 @@
 
 const path = require('path')
 
-const DIR_DIST = path.resolve(__dirname, 'dist')
-const DIR_DIST_CHILD = path.resolve(__dirname, 'dist_child')
+const DIR_DIST_CHILD = path.resolve(__dirname, 'docs_child')
 const DIR_SRC = path.resolve(__dirname, 'src')
 const DIR_NODE_MODULES = path.resolve(__dirname, 'node_modules')
 

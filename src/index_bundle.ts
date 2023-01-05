@@ -1,4 +1,4 @@
-import * as PluginModelBase from './lib/plugin/PluginDefinitionModel'
+import * as PluginModelBase from './lib/plugin/model/PluginDataModel'
 import PluginManagerBase from './lib/plugin/PluginManager'
 
 import MessageBase from './lib/message/Message'

@@ -1,0 +1,29 @@
+import React from 'react'
+import PluginManager from '../../../../../src/lib/plugin/PluginManager'
+
+import './PluginProvider.css'
+
+export interface PluginProviderProperties {
+  providerId: string
+}
+
+export const PluginProvider = ({
+  providerId
+}: PluginProviderProperties) => {
+
+  // Rendering //
+
+  const provider = PluginManager.getProvider(providerId)
+
+  if (!provider) {
+    return (
+      <li>PROBLEM</li>
+    )
+  }
+
+  return (
+    <li>
+      {provider.name}
+    </li>
+  )
+}

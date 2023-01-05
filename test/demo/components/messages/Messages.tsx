@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import MessageDispatcher, { getDispatchers, getServices, getDispatcherId } from '../lib/message/MessageDispatcher'
+// Libs
+import MessageDispatcher, {
+  getDispatchers,
+  getServices,
+  getDispatcherId
+} from '../../../../src/lib/message/MessageDispatcher'
+import IMessageService from '../../../../src/lib/message/IMessageService'
+// Components
 import Frame from './Frame'
 import Service from './Service'
-import IMessageService from '../lib/message/IMessageService'
 
 let SERVICE = 1
 let FRAME = 1
@@ -10,7 +16,7 @@ let FRAME = 1
 interface AppProperties {
 }
 
-const App = ({
+const Messages = ({
 }: AppProperties) => {
 
   // Hooks //
@@ -195,4 +201,4 @@ const App = ({
 
 }
 
-export default App
+export default Messages
