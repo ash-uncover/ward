@@ -49,8 +49,19 @@ class PluginDefine {
   get name () { return this.#name }
 
   get properties () { return this.#properties.slice() }
+  getProperty (propertyId: string) {
+    return this.properties.find(property => property.name === propertyId)
+  }
+
   get attributes () { return this.#attributes.slice() }
+  getAttribute (attributeId: string) {
+    return this.attributes.find(attribute => attribute.name === attributeId)
+  }
+
   get elements () { return this.#elements.slice() }
+  getElement (elementId: string) {
+    return this.elements.find(element => element.name === elementId)
+  }
 
   // Public Methods //
 

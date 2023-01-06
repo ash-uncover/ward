@@ -57,7 +57,9 @@ class Plugin {
   get url () { return this.#url }
 
   get dependencies () { return this.#dependencies.slice() }
+
   get defines () { return this.#defines.slice() }
+  
   get provides () { return this.#provides.slice() }
 
   // Public Methods //

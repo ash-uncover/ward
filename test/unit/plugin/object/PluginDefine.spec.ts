@@ -41,6 +41,7 @@ describe('PluginDefine', () => {
         'string'
       )
       expect(result.properties).toEqual([expectedProperty])
+      expect(result.getProperty('prop1')).toEqual(expectedProperty)
     })
 
     test('when there are attributes', () => {
@@ -61,6 +62,7 @@ describe('PluginDefine', () => {
         'string'
       )
       expect(result.attributes).toEqual([expectedAttribute])
+      expect(result.getAttribute('att1')).toEqual(expectedAttribute)
     })
 
     test('when there are elements', () => {
@@ -77,10 +79,11 @@ describe('PluginDefine', () => {
       // Assertion
       const expectedElement = new PluginDefineElement(
         plugin,
-        'att1',
+        'elem1',
         {}
       )
       expect(result.elements).toEqual([expectedElement])
+      expect(result.getElement('elem1')).toEqual(expectedElement)
     })
   })
 })
