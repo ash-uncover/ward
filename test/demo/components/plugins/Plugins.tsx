@@ -7,10 +7,12 @@ import { PluginSideEntry } from './side/PluginSideEntry'
 import { DefinitionSideEntry } from './side/DefinitionSideEntry'
 
 interface PluginsProperties {
+  pluginId?: string
   children: ReactNode
 }
 
 const Plugins = ({
+  pluginId,
   children
 }: PluginsProperties) => {
 
@@ -19,7 +21,7 @@ const Plugins = ({
   const [newPluginUrl, setNewPluginUrl] = useState<string>('')
 
   const [plugins, setPlugins] = useState<string[]>([
-    'http://localhost:27000/plugin.json'
+    'http://localhost:8080/plugin.json'
   ])
 
   useEffect(() => {
@@ -82,6 +84,7 @@ const Plugins = ({
             return (
               <PluginSideEntry
                 key={plugin.name}
+                selectedPluginId={pluginId}
                 pluginId={plugin.name}
               />
             )
@@ -97,6 +100,7 @@ const Plugins = ({
             return (
               <DefinitionSideEntry
                 key={definition.name}
+                selectedPluginId={pluginId}
                 definitionId={definition.name}
               />
             )

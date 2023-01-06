@@ -6,10 +6,12 @@ import './DefinitionSideEntry.css'
 
 export interface DefinitionSideEntryProperties {
   definitionId: string
+  selectedPluginId?: string
 }
 
 export const DefinitionSideEntry = ({
-  definitionId
+  definitionId,
+  selectedPluginId
 }: DefinitionSideEntryProperties) => {
 
   // Rendering //
@@ -23,9 +25,14 @@ export const DefinitionSideEntry = ({
     )
   }
 
+  const classes = ['definition-side-entry']
+  if (selectedPluginId === definition.plugin) {
+    classes.push('selected')
+  }
+
   return (
     <li
-      className='definition-side-entry'
+      className={classes.join(' ')}
       title={definition.name}
     >
       <Link
@@ -35,9 +42,13 @@ export const DefinitionSideEntry = ({
       </Link>
       <ul className='definition-side-entry__entries'>
         {providers.map(provider => {
+          const classes = ['definition-side-entry']
+          if (provider.plugin === selectedPluginId) {
+            classes.push('selected')
+          }
           return (
             <li
-              className='definition-side-entry'
+              className={classes.join(' ')}
               key={provider.name}
             >
               <Link

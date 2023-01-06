@@ -8,7 +8,7 @@ const RoutePlugins = () => {
   // Hooks //
 
   const params = useParams()
-  const pluginId = params.pluginId
+  const pluginId = decodeURIComponent(atob(params.pluginId!))
 
   // Rendering //
 

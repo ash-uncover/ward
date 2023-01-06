@@ -7,16 +7,14 @@ import { PluginProvider } from './PluginProvider'
 import { PluginDependency } from './PluginDependency'
 
 interface PluginProperties {
-  pluginId?: string
+  pluginId: string
 }
 
 const Plugin = ({
   pluginId
 }: PluginProperties) => {
 
-  const pluginIdClear = decodeURIComponent(atob(pluginId!))
-
-  const plugin = PluginManager.getPlugin(pluginIdClear)
+  const plugin = PluginManager.getPlugin(pluginId)
 
   // Hooks //
 
@@ -51,7 +49,7 @@ const Plugin = ({
       return (
         <PluginProvider
           key={provide.name}
-          providerId={provide.name}
+          providerId={`${provide.define}/${provide.name}`}
         />
       )
     })
@@ -60,31 +58,32 @@ const Plugin = ({
   if (plugin) {
     return (
       <div className='plugin'>
+
         <h2>Plugin: {plugin.name}</h2>
-        <div>
-          <label>Loaded from:</label>
-          <span>{plugin.loadedFrom}</span>
-        </div>
-        <div>
+        <div className='plugin__info'>
           <label>Name:</label>
           <span>{plugin.name}</span>
         </div>
-        <div>
+        <div className='plugin__info'>
           <label>Url:</label>
           <span>{plugin.url}</span>
         </div>
+        <div className='plugin__info'>
+          <label>Loader:</label>
+          <span>{plugin.loadedFrom}</span>
+        </div>
 
-        <h2>Dependencies</h2>
+        <h2>{`Dependencies (${plugin!.dependencies.length})`}</h2>
         <ul>
           {renderDependencies()}
         </ul>
 
-        <h2>Defines</h2>
+        <h2>{`Defines (${plugin!.defines.length})`}</h2>
         <ul>
           {renderDefinitions()}
         </ul>
 
-        <h2>Provides</h2>
+        <h2>{`Provides (${plugin!.provides.length})`}</h2>
         <ul>
           {renderProviders()}
         </ul>
