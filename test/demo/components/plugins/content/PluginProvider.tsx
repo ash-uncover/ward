@@ -17,7 +17,7 @@ export const PluginProvider = ({
 
   if (!provider) {
     return (
-      <li>PROBLEM</li>
+      <li>{`PROBLEM - ${providerId}`}</li>
     )
   }
 

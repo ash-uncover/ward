@@ -2,17 +2,17 @@ import React from 'react'
 import PluginManager from '../../../../../src/lib/plugin/PluginManager'
 import { Link } from 'react-router-dom'
 
-import './PluginSideEntry.css'
+import './DefineDetails.css'
 
-export interface PluginSideEntryProperties {
+export interface DefineDetailsProperties {
   pluginId: string
   selectedPluginId?: string
 }
 
-export const PluginSideEntry = ({
+export const DefineDetails = ({
   pluginId,
   selectedPluginId
-}: PluginSideEntryProperties) => {
+}: DefineDetailsProperties) => {
 
   // Rendering //
 
@@ -44,7 +44,7 @@ export const PluginSideEntry = ({
           {plugin.dependencies.map(childUrl => {
             const child = PluginManager.getPluginByUrl(childUrl)
             return (
-              <PluginSideEntry
+              <DefineDetails
                 key={child!.name}
                 selectedPluginId={selectedPluginId}
                 pluginId={child!.name}

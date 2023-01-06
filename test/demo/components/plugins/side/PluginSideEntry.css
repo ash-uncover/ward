@@ -1,6 +1,12 @@
 .plugin-side-entry {
   list-style-type: disc;
   padding-left: 0.75rem;
+  &.selected {
+    font-weight: bold;
+  }
+  &:not(.selected) {
+    font-weight: normal;
+  }
   & .plugin-side-entry__entries {
     padding: 0;
   }

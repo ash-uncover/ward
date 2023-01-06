@@ -4,7 +4,7 @@ import Plugin from './object/Plugin'
 import PluginDefine from './object/PluginDefine'
 import PluginProvider from './object/PluginProvider'
 
-const LOGGER = new Logger('PluginManager', LogLevels.DEBUG)
+const LOGGER = new Logger('PluginManager', LogLevels.WARN)
 
 export const helpers = {
   fetchPlugin: async (url: string) => {

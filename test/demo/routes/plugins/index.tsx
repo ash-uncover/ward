@@ -1,14 +1,21 @@
 import React from 'react'
 import Plugins from '../../components/plugins/Plugins'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useParams } from 'react-router-dom'
 // Components
 
 const RoutePlugins = () => {
 
+  // Hooks //
+
+  const params = useParams()
+  const pluginId = decodeURIComponent(atob(params.pluginId!))
+
   // Rendering //
 
   return (
-    <Plugins>
+    <Plugins
+      pluginId={pluginId}
+    >
       <Outlet />
     </Plugins>
   )

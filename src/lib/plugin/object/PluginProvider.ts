@@ -1,8 +1,11 @@
+import Logger from '@uncover/js-utils-logger/dist/Logger'
 import PluginDefine from './PluginDefine'
 import PluginProvide from './PluginProvide'
 import PluginProviderAttribute from './PluginProviderAttribute'
 import PluginProviderElement from './PluginProviderElement'
+import { LogLevels } from '@uncover/js-utils-logger'
 
+const LOGGER = new Logger('PluginManager', LogLevels.WARN)
 class PluginProvider {
 
   // Attributes //
@@ -52,6 +55,16 @@ class PluginProvider {
       )
     })
 
+    provide.attributes.forEach(attribute => {
+      /* istanbul ignore next */
+      const attributeDefinition = definition.attributes.find(att => att.name === attribute.name)
+      /* istanbul ignore next */
+      if (!attributeDefinition) {
+        /* istanbul ignore next */
+        LOGGER.warn(`${provide.plugin} - ${provide.name} - Attribute '${attribute.name}' is not defined`)
+      }
+    })
+
     definition.elements.forEach(elementDefinition => {
       const {
         name,
@@ -70,6 +83,15 @@ class PluginProvider {
       )
     })
 
+    provide.elements.forEach(element => {
+      /* istanbul ignore next */
+      const elementDefinition = definition.elements.find(elem => elem.name === element.name)
+      /* istanbul ignore next */
+      if (!elementDefinition) {
+        /* istanbul ignore next */
+        LOGGER.warn(`${provide.plugin} - ${provide.name} - Element '${element.name}' is not defined`)
+      }
+    })
   }
 
   // Getters & Setters //
