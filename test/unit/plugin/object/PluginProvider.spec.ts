@@ -77,12 +77,14 @@ describe('PluginProvider', () => {
         provide.attributes[0]
       )
       expect(result.attributes).toEqual([expectedAttribute])
+      expect(result.getAttribute('att1')).toEqual(expectedAttribute)
       const expectedElement = new PluginProviderElement(
         pluginUrl,
         definition.elements[0],
         provide.elements[0]
       )
       expect(result.elements).toEqual([expectedElement])
+      expect(result.getElement('element1')).toEqual(expectedElement)
     })
 
     test('when an attribute type does not match the definition', () => {
