@@ -29,8 +29,8 @@ describe('PluginProvider', () => {
       expect(result.plugin).toEqual('providePlugin')
       expect(result.definition).toEqual('definitionPlugin/definitionName')
       expect(result.name).toEqual('definitionPlugin/definitionName/provideName')
-      expect(result.attributes).toEqual([])
-      expect(result.elements).toEqual([])
+      expect(result.attributes).toEqual({})
+      expect(result.elements).toEqual({})
     })
 
     test('when there are valid attributes and valid elements', () => {
@@ -71,20 +71,19 @@ describe('PluginProvider', () => {
       expect(result.plugin).toEqual('providePlugin')
       expect(result.definition).toEqual('definitionPlugin/definitionName')
       expect(result.name).toEqual('definitionPlugin/definitionName/provideName')
-      const expectedAttribute = new PluginProviderAttribute(
-        pluginUrl,
-        definition.attributes[0],
-        provide.attributes[0]
-      )
-      expect(result.attributes).toEqual([expectedAttribute])
-      expect(result.getAttribute('att1')).toEqual(expectedAttribute)
-      const expectedElement = new PluginProviderElement(
-        pluginUrl,
-        definition.elements[0],
-        provide.elements[0]
-      )
-      expect(result.elements).toEqual([expectedElement])
-      expect(result.getElement('element1')).toEqual(expectedElement)
+      const expectedAttributes = {
+        att1: 'value1'
+      }
+      expect(result.attributes).toEqual(expectedAttributes)
+      expect(result.getAttribute('att1')).toEqual(expectedAttributes.att1)
+      const expectedElements = {
+        element1: {
+          url: 'pluginUrlelement1Url',
+          type: 'iframe'
+        }
+      }
+      expect(result.elements).toEqual(expectedElements)
+      expect(result.getElement('element1')).toEqual(expectedElements.element1)
     })
 
     test('when an attribute type does not match the definition', () => {
