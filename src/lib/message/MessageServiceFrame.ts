@@ -21,7 +21,7 @@ class MessageServiceFrame implements IMessageService {
   constructor(dispatcherId: string, wdow: Window, origin: string, id?: string) {
     this.#dispatcherId = dispatcherId
     this.#id = id || `message-service-frame-${UUID.next()}`
-    LOGGER.debug(`[${getDispatcherId()}-${this.id}] created`)
+    LOGGER.info(`[${getDispatcherId()}-${this.id}] created`)
     this.#window = wdow
     this.#origin = origin
     window.addEventListener(
@@ -58,11 +58,11 @@ class MessageServiceFrame implements IMessageService {
     LOGGER.info(`[${getDispatcherId()}-${this.id}] onMessage ${message.type}`)
     /* istanbul ignore next */
     if (this.window.closed) {
-      LOGGER.warn(`[${getDispatcherId()}-${this.id}] onMessage /!\\ window closed /!\\`)
+      LOGGER.info(`[${getDispatcherId()}-${this.id}] onMessage /!\\ window closed /!\\`)
       /* istanbul ignore next */
       this.#removeService()
     } else {
-      LOGGER.warn(`[${getDispatcherId()}-${this.id}] onMessage posting message to ${this.#origin}`)
+      LOGGER.debug(`[${getDispatcherId()}-${this.id}] onMessage posting message to ${this.#origin}`)
       this.window.postMessage({
         ...message,
         _serviceId: this.#id
@@ -71,7 +71,7 @@ class MessageServiceFrame implements IMessageService {
   }
 
   sendMessage(message: Message) {
-    LOGGER.info(`[${getDispatcherId()}-${this.id}] sendMessage ${message.type}`)
+    LOGGER.debug(`[${getDispatcherId()}-${this.id}] sendMessage ${message.type}`)
     MessageDispatcher.sendMessage({
       ...message,
       _serviceId: this.id,
@@ -82,9 +82,9 @@ class MessageServiceFrame implements IMessageService {
 
   #handleMessage(event: MessageEvent) {
     const data = event.data || {}
-    LOGGER.info(`[${getDispatcherId()}-${this.id}] handleMessage `)
+    LOGGER.debug(`[${getDispatcherId()}-${this.id}] handleMessage `)
     if (data._serviceId && data._dispatcherId && data._dispatcherId === this.#dispatcherId) {
-      LOGGER.info(`[${getDispatcherId()}-${this.id}] handleMessage ${event.data.type}`)
+      LOGGER.debug(`[${getDispatcherId()}-${this.id}] handleMessage ${event.data.type}`)
       if (data.type === CONNECTION_CLOSING) {
         this.#removeService()
       } else {
@@ -98,7 +98,7 @@ class MessageServiceFrame implements IMessageService {
   }
 
   #removeService() {
-    LOGGER.warn(`[${getDispatcherId()}-${this.id}] remove service`)
+    LOGGER.info(`[${getDispatcherId()}-${this.id}] remove service`)
     MessageDispatcher.removeService(this)
   }
 }

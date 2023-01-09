@@ -99,35 +99,39 @@ export const handlers = {
 const MessageDispatcher = {
 
   start: (dispatcherId?: string) => {
-    setId(dispatcherId)
-    started = true
-    LOGGER.info(`[${id}] created`)
-    window.addEventListener(
-      'message',
-      handlers.handleMessage
-    )
-    if (window !== window.parent) {
-      LOGGER.info(`[${id}] contact parent`)
-      window.parent.postMessage({
-        _dispatcherId: id,
-        type: CONNECTION_REQUEST
-      }, '*')
+    if (!started) {
+      setId(dispatcherId)
+      started = true
+      LOGGER.info(`[${id}] created`)
+      window.addEventListener(
+        'message',
+        handlers.handleMessage
+      )
+      if (window !== window.parent) {
+        LOGGER.info(`[${id}] contact parent`)
+        window.parent.postMessage({
+          _dispatcherId: id,
+          type: CONNECTION_REQUEST
+        }, '*')
+      }
     }
   },
 
   stop: () => {
-    LOGGER.info(`[${id}] stopping`)
-    started = false
-    window.removeEventListener(
-      'message',
-      handlers.handleMessage
-    )
-    if (window !== window.parent) {
-      LOGGER.info(`[${id}] notifying parent`)
-      window.parent.postMessage({
-        _dispatcherId: id,
-        type: CONNECTION_CLOSING
-      }, '*')
+    if (started) {
+      LOGGER.info(`[${id}] stopping`)
+      started = false
+      window.removeEventListener(
+        'message',
+        handlers.handleMessage
+      )
+      if (window !== window.parent) {
+        LOGGER.info(`[${id}] notifying parent`)
+        window.parent.postMessage({
+          _dispatcherId: id,
+          type: CONNECTION_CLOSING
+        }, '*')
+      }
     }
   },
 
