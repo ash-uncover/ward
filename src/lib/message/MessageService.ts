@@ -47,7 +47,7 @@ class MessageService implements IMessageService {
 
   onMessage(message: Message) {
     if (this.#init && this.#handle) {
-      LOGGER.info(`[${getDispatcherId()}-${this.id}] onMessage`)
+      LOGGER.debug(`[${getDispatcherId()}-${this.id}] onMessage`)
       this.#handle(message)
     } else {
       LOGGER.warn(`[${getDispatcherId()}-${this.id}] onMessage but not init`)
