@@ -23,7 +23,8 @@
     "build:tsc": "tsc",
     "start": "npm i && concurrently \"npm:start:*\"",
     "start:main": "webpack serve --progress --mode development --config webpack.config.docs.main.js",
-    "start:child": "webpack serve --progress --mode development --config webpack.config.docs.child.js",
+    "start:messages": "webpack serve --progress --mode development --config webpack.config.docs.messages.js",
+    "start:plugins": "webpack serve --progress --mode development --config webpack.config.docs.plugins.js",
     "test": "jest --env=jsdom",
     "test:coverage": "jest --env=jsdom --collectCoverage"
   },

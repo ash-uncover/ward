@@ -1,0 +1,20 @@
+{
+  "name": "ward-demo",
+  "description": "Ward Demo",
+  "url": "http://localhost:27000",
+  "dependencies": [
+    "http://localhost:27001/plugin.json",
+    "http://localhost:27002/plugin.json"
+  ],
+  "defines": {
+    "viewers": {
+      "attributes": {
+        "id": "string",
+        "name": "string"
+      },
+      "elements": {
+        "viewer": {}
+      }
+    }
+  }
+}

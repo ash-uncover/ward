@@ -14,7 +14,10 @@ class Plugin {
   #name: string
   #url: string
 
-  #dependencies: string[]
+  #dependencies: {
+    url: string
+    loaded: boolean
+  }[]
   #defines: PluginDefine[]
   #provides: PluginProvide[]
 
@@ -28,7 +31,10 @@ class Plugin {
     this.#name = data.name
     this.#url = data.url
 
-    this.#dependencies = data.dependencies || []
+    this.#dependencies = (data.dependencies || []).map(dependency => ({
+      url: dependency,
+      loaded: false
+    }))
 
     const defines = data.defines || {}
     this.#defines = Object.keys(defines).map((defineName: string) => {
@@ -59,7 +65,7 @@ class Plugin {
   get dependencies () { return this.#dependencies.slice() }
 
   get defines () { return this.#defines.slice() }
-  
+
   get provides () { return this.#provides.slice() }
 
   // Public Methods //

@@ -1,0 +1,20 @@
+{
+    "name": "ward-demo/plugins",
+    "description": "Ward Demo - Plugins",
+    "url": "http://localhost:27002",
+    "provides": {
+      "ward-demo/viewers": {
+        "name": "plugins",
+        "attributes": {
+          "id": "plugins",
+          "name": "Plugins"
+        },
+        "elements": {
+          "viewer": {
+            "url": "",
+            "type": "iframe"
+          }
+        }
+      }
+    }
+  }
