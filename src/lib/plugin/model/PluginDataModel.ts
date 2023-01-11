@@ -129,7 +129,7 @@ export const PluginDataValidator = {
 
   checkPluginDataProvides: (provides: PluginDataProvides) => {
     const errors: string[] = []
-    if (typeof provides !== 'object') {
+    if (Array.isArray(provides) || typeof provides !== 'object') {
       errors.push(PluginDataErrors.PROVIDES_TYPE)
     } else {
       Object.keys(provides).forEach((provide) => {
@@ -161,7 +161,7 @@ export const PluginDataValidator = {
 
   checkPluginDataProvideElements: (elements: PluginDataProvideElements) => {
     const errors: string[] = []
-    if (typeof elements !== 'object') {
+    if (Array.isArray(elements) || typeof elements !== 'object') {
       errors.push(PluginDataErrors.PROVIDES_ELEMENTS_TYPE)
     } else {
       Object.keys(elements).forEach((element) => {

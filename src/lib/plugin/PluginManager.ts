@@ -51,7 +51,6 @@ class PluginManager {
     if (this.#loadedUrls[pluginUrl]) {
       return this.getPlugin(this.#loadedUrls[pluginUrl].name)
     }
-    return
   }
 
   get definitions() {
