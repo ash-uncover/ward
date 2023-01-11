@@ -57,6 +57,13 @@ export const PluginDataErrors = {
   URL_TYPE: 'plugin "url" must be a string',
 
   DEFINES_TYPE: 'plugin "defines" must be an object',
+
+  PROVIDES_TYPE: 'plugin "provides" must be an object',
+
+  PROVIDES_ELEMENTS_TYPE: 'provide "elements" must be an object',
+
+  PROVIDES_ELEMENT_TYPE: 'element must have a type',
+  PROVIDES_ELEMENT_URL: 'element must have an url'
 }
 
 export const PluginDataValidator = {
@@ -122,11 +129,28 @@ export const PluginDataValidator = {
 
   checkPluginDataProvides: (provides: PluginDataProvides) => {
     const errors: string[] = []
+    if (Array.isArray(provides) || typeof provides !== 'object') {
+      errors.push(PluginDataErrors.PROVIDES_TYPE)
+    } else {
+      Object.keys(provides).forEach((provide) => {
+        const provideValue = provides[provide]
+        if (Array.isArray(provideValue)) {
+          provideValue.forEach((value) => {
+            errors.push(...PluginDataValidator.checkPluginDataProvide(value))
+          })
+        } else {
+          errors.push(...PluginDataValidator.checkPluginDataProvide(provideValue))
+        }
+      })
+    }
     return errors
   },
 
   checkPluginDataProvide: (provide: PluginDataProvide) => {
     const errors: string[] = []
+    if (provide.elements) {
+      errors.push(...PluginDataValidator.checkPluginDataProvideElements(provide.elements))
+    }
     return errors
   },
 
@@ -137,11 +161,24 @@ export const PluginDataValidator = {
 
   checkPluginDataProvideElements: (elements: PluginDataProvideElements) => {
     const errors: string[] = []
+    if (Array.isArray(elements) || typeof elements !== 'object') {
+      errors.push(PluginDataErrors.PROVIDES_ELEMENTS_TYPE)
+    } else {
+      Object.keys(elements).forEach((element) => {
+        errors.push(...PluginDataValidator.checkPluginDataProvideElement(elements[element]))
+      })
+    }
     return errors
   },
 
   checkPluginDataProvideElement: (element: PluginDataProvideElement) => {
     const errors: string[] = []
+    if (!element.type) {
+      errors.push(PluginDataErrors.PROVIDES_ELEMENT_TYPE)
+    }
+    if (element.url !== '' && !element.url) {
+      errors.push(PluginDataErrors.PROVIDES_ELEMENT_URL)
+    }
     return errors
   }
 }

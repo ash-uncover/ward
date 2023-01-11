@@ -234,36 +234,82 @@ describe('PluginDataModel', () => {
     describe('checkPluginDataProvides', () => {
 
       beforeEach(() => {
-        spyCheckPluginDataDefines = jest.spyOn(PluginDataValidator, 'checkPluginDataDefines')
+        spyCheckPluginDataProvide = jest.spyOn(PluginDataValidator, 'checkPluginDataProvide')
       })
 
-      test('', () => {
+      test('when provides is not an object', () => {
         // Declaration
-        const data = {}
+        const data: any[] = []
+        // Execution
+        // @ts-ignore
+        const result = PluginDataValidator.checkPluginDataProvides(data)
+        // Assertion
+        const expected: string[] = [
+          PluginDataErrors.PROVIDES_TYPE
+        ]
+        expect(result).toEqual(expected)
+      })
+
+      test('when provides contains an array of provide', () => {
+        // Declaration
+        const provide1: PluginDataProvide = { name: 'provide1' }
+        const provide2: PluginDataProvide = { name: 'provide2' }
+        const data = {
+          provide: [
+            provide1,
+            provide2
+          ]
+        }
         // Execution
         const result = PluginDataValidator.checkPluginDataProvides(data)
         // Assertion
         const expected: string[] = []
         expect(result).toEqual(expected)
+        expect(spyCheckPluginDataProvide).toHaveBeenCalledTimes(2)
+        expect(spyCheckPluginDataProvide).toHaveBeenCalledWith(provide1)
+        expect(spyCheckPluginDataProvide).toHaveBeenCalledWith(provide2)
+      })
+
+      test('when provides contains a simple provide', () => {
+        // Declaration
+        const provide: PluginDataProvide = { name: 'provide' }
+        const data = {
+          provide
+        }
+        // Execution
+        const result = PluginDataValidator.checkPluginDataProvides(data)
+        // Assertion
+        const expected: string[] = []
+        expect(result).toEqual(expected)
+        expect(spyCheckPluginDataProvide).toHaveBeenCalledTimes(1)
+        expect(spyCheckPluginDataProvide).toHaveBeenCalledWith(provide)
       })
     })
 
     describe('checkPluginDataProvide', () => {
 
       beforeEach(() => {
-        spyCheckPluginDataDefines = jest.spyOn(PluginDataValidator, 'checkPluginDataDefines')
+        spyCheckPluginDataProvideElements = jest.spyOn(PluginDataValidator, 'checkPluginDataProvideElements')
       })
 
-      test('', () => {
+      test('Properly calls inner checks', () => {
         // Declaration
         const data: PluginDataProvide = {
-          name: 'name'
+          name: 'name',
+          elements: {
+            element: {
+              url: '',
+              type: 'component'
+            }
+          }
         }
         // Execution
         const result = PluginDataValidator.checkPluginDataProvide(data)
         // Assertion
         const expected: string[] = []
         expect(result).toEqual(expected)
+        expect(spyCheckPluginDataProvideElements).toHaveBeenCalledTimes(1)
+        expect(spyCheckPluginDataProvideElements).toHaveBeenCalledWith(data.elements)
       })
     })
 
@@ -287,17 +333,38 @@ describe('PluginDataModel', () => {
     describe('checkPluginDataProvideElements', () => {
 
       beforeEach(() => {
-        spyCheckPluginDataDefines = jest.spyOn(PluginDataValidator, 'checkPluginDataDefines')
+        spyCheckPluginDataProvideElement = jest.spyOn(PluginDataValidator, 'checkPluginDataProvideElement')
       })
 
-      test('', () => {
+      test('when elements is not an object', () => {
         // Declaration
-        const data = {}
+        const data: any[] = []
+        // Execution
+        // @ts-ignore
+        const result = PluginDataValidator.checkPluginDataProvideElements(data)
+        // Assertion
+        const expected: string[] = [
+          PluginDataErrors.PROVIDES_ELEMENTS_TYPE
+        ]
+        expect(result).toEqual(expected)
+      })
+
+      test('When elements are valid', () => {
+        // Declaration
+        const element: PluginDataProvideElement = {
+          url: '',
+          type: 'iframe'
+        }
+        const data = {
+          element1: element
+        }
         // Execution
         const result = PluginDataValidator.checkPluginDataProvideElements(data)
         // Assertion
         const expected: string[] = []
         expect(result).toEqual(expected)
+        expect(spyCheckPluginDataProvideElement).toHaveBeenCalledTimes(1)
+        expect(spyCheckPluginDataProvideElement).toHaveBeenCalledWith(element)
       })
     })
 
@@ -307,7 +374,21 @@ describe('PluginDataModel', () => {
         spyCheckPluginDataDefines = jest.spyOn(PluginDataValidator, 'checkPluginDataDefines')
       })
 
-      test('', () => {
+      test('when type and url are missing', () => {
+        // Declaration
+        // @ts-ignore
+        const data: PluginDataProvideElement = {}
+        // Execution
+        const result = PluginDataValidator.checkPluginDataProvideElement(data)
+        // Assertion
+        const expected: string[] = [
+          PluginDataErrors.PROVIDES_ELEMENT_TYPE,
+          PluginDataErrors.PROVIDES_ELEMENT_URL
+        ]
+        expect(result).toEqual(expected)
+      })
+
+      test('when all info are present', () => {
         // Declaration
         const data: PluginDataProvideElement = {
           url: 'url',

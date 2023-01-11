@@ -35,7 +35,11 @@ describe('Plugin', () => {
       // Execution
       const result = new Plugin(data)
       // Assertion
-      expect(result.dependencies).toEqual(['dep1'])
+      const expected = [{
+        url: 'dep1',
+        loaded: false
+      }]
+      expect(result.dependencies).toEqual(expected)
     })
 
     test('with defines', () => {

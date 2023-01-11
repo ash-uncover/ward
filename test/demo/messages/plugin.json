@@ -1,0 +1,20 @@
+{
+  "name": "ward-demo/messages",
+  "description": "Ward Demo - Messages",
+  "url": "http://localhost:27001",
+  "provides": {
+    "ward-demo/viewers": {
+      "name": "messages",
+        "attributes": {
+          "id": "messages",
+          "name": "Messages"
+        },
+        "elements": {
+          "viewer": {
+            "url": "",
+            "type": "iframe"
+          }
+        }
+    }
+  }
+}

@@ -33,7 +33,7 @@ class PluginManager {
 
   // Constructor //
 
-  constructor () {
+  constructor() {
   }
 
   // Getters & Setters //
@@ -48,7 +48,9 @@ class PluginManager {
     return this.#plugins[pluginId]
   }
   getPluginByUrl(pluginUrl: string): Plugin | undefined {
-    return this.getPlugin(this.#loadedUrls[pluginUrl].name)
+    if (this.#loadedUrls[pluginUrl]) {
+      return this.getPlugin(this.#loadedUrls[pluginUrl].name)
+    }
   }
 
   get definitions() {
@@ -70,15 +72,19 @@ class PluginManager {
 
   // Public Methods //
 
-  reset () {
+  reset() {
     this.#loadedUrls = {}
     this.#plugins = {}
   }
 
   async loadPlugin(url: string) {
-    await this.#loadPluginInternal.call(this, url)
-    // Check all plugins info consistency
-    this.#checkPluginsInternal.call(this)
+    try {
+      await this.#loadPluginInternal.call(this, url)
+      // Check all plugins info consistency
+      this.#checkPluginsInternal.call(this)
+    } catch (error) {
+      // Traces have been logged, we dont want to crash the application
+    }
   }
 
   // Internal Methods //
@@ -86,7 +92,7 @@ class PluginManager {
   async #loadPluginInternal(url: string, parent?: string): Promise<any> {
     if (this.#loadedUrls[url]) {
       LOGGER.warn(`URL already loaded: '${url}'`)
-      return
+      return true
     }
 
     try {
@@ -110,11 +116,20 @@ class PluginManager {
       this.#plugins[plugin.name] = plugin
 
       // Load plugin dependencies
-      await Promise.all(plugin.dependencies.map((dependency: string) => this.#loadPluginInternal(dependency, plugin.name)))
+      await Promise.allSettled(plugin.dependencies.map((dependency) => {
+        return this.#loadPluginInternal(dependency.url, plugin.name)
+          .then((result) => {
+            dependency.loaded = result
+          })
+      }))
+
+      LOGGER.warn(`Succesully loaded plugin from '${url}'`)
+      return true
 
     } catch (error) {
       LOGGER.warn(`Failed to load plugin from '${url}'`)
       LOGGER.warn(String(error))
+      return false
     }
   }
 
@@ -136,9 +151,12 @@ class PluginManager {
         this.#definitions[define.name] = define
       }
     })
-    plugin.dependencies.forEach(dependencyUrl => {
-      const dependency = this.getPluginByUrl(dependencyUrl)
-      this.#checkPluginDefinitions.call(this, dependency!)
+    plugin.dependencies.forEach(dependency => {
+      const dependencyEntry = this.getPluginByUrl(dependency.url)
+      if (dependencyEntry) {
+        // Only perform check on dependencies that were actually loaded
+        this.#checkPluginDefinitions.call(this, dependencyEntry)
+      }
     })
   }
 
@@ -153,9 +171,12 @@ class PluginManager {
         this.#providers[provider.name] = provider
       }
     })
-    plugin.dependencies.forEach(dependencyUrl => {
-      const dependency = this.getPluginByUrl(dependencyUrl)
-      this.#checkPluginProviders.call(this, dependency!)
+    plugin.dependencies.forEach(dependency => {
+      const dependencyEntry = this.getPluginByUrl(dependency.url)
+      if (dependencyEntry) {
+        // Only perform check on dependencies that were actually loaded
+        this.#checkPluginProviders.call(this, dependencyEntry)
+      }
     })
   }
 }
