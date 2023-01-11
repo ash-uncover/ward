@@ -1,8 +1,16 @@
 {
-  "name": "js-utils-microfrontend-demo",
-  "description": "JS Utils Microfrontend Demo",
+  "name": "ward-demo",
+  "description": "Ward Demo",
   "url": "http://localhost:27000",
   "dependencies": [
-    "https://ash-uncover.github.io/ap-games/plugin.json"
-  ]
+    "http://localhost:27001/plugin.json",
+    "http://localhost:27002/plugin.json"
+  ],
+  "defines": {
+    "viewers": {
+      "elements": {
+        "viewer": {}
+      }
+    }
+  }
 }
