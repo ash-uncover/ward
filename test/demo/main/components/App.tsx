@@ -4,12 +4,13 @@ import { Link } from 'react-router-dom'
 import { PluginManager } from '../../../../src'
 
 import './App.css'
+import { useProviders } from '../../commons/WardProvider'
 
-interface AppProperties {
+export interface AppProperties {
   children: ReactNode
 }
 
-const App = ({
+export const App = ({
   children
 }: AppProperties) => {
 
@@ -19,8 +20,7 @@ const App = ({
 
   // Rendering //
 
-  const viewers = PluginManager.getProviders('ward-demo/viewers')
-  console.log(viewers)
+  const viewers = useProviders('ward-demo/viewers') || []
 
   return (
     <div className='app'>
@@ -44,7 +44,4 @@ const App = ({
       </div>
     </div>
   )
-
 }
-
-export default App

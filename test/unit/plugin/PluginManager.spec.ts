@@ -72,8 +72,9 @@ describe('PluginManager', () => {
         // Declaration
         // Execution
         // Assertion
-        expect(PluginManager.plugins).toEqual([])
-        expect(PluginManager.rootPlugins).toEqual([])
+        expect(PluginManager.datas).toEqual({})
+        expect(PluginManager.plugins).toEqual({})
+        expect(PluginManager.roots).toEqual({})
         expect(PluginManager.definitions).toEqual({})
         expect(PluginManager.providers).toEqual({})
       })
@@ -93,13 +94,12 @@ describe('PluginManager', () => {
         // Assertion
         expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
         expect(spyHelpersFetchPlugin).toHaveBeenCalledWith('url')
-        const expectedPlugin = new Plugin(data)
+        const expectedPlugin = new Plugin(data.url, data)
         expect(PluginManager.plugins).toHaveLength(1)
         expect(PluginManager.plugins[0]).toEqual(expectedPlugin)
-        expect(PluginManager.rootPlugins).toHaveLength(1)
-        expect(PluginManager.rootPlugins[0]).toEqual(expectedPlugin)
+        expect(PluginManager.roots).toHaveLength(1)
+        expect(PluginManager.roots[0]).toEqual(expectedPlugin)
         expect(PluginManager.getPlugin('pluginName')).toEqual(expectedPlugin)
-        expect(PluginManager.getPluginByUrl('url')).toEqual(expectedPlugin)
       })
 
       test('plugin with defines', async () => {

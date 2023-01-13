@@ -1,5 +1,5 @@
 import React from 'react'
-import { PluginManager } from '../../../../../src'
+import { useProvider } from '../../../commons/WardProvider'
 
 import './PluginProvider.css'
 
@@ -13,7 +13,7 @@ export const PluginProvider = ({
 
   // Rendering //
 
-  const provider = PluginManager.getProvider(providerId)
+  const provider = useProvider(providerId)
 
   if (!provider) {
     return (

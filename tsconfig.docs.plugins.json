@@ -21,7 +21,8 @@
   },
   "include": [
     "src",
-    "test/demo/plugins"
+    "test/demo/plugins",
+    "test/demo/commons"
   ],
   "exclude": [
     "dist",

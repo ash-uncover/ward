@@ -1,5 +1,5 @@
 import React from 'react'
-import { PluginManager } from '../../../../../src'
+import { usePlugin } from '../../../commons/WardProvider'
 import { Link } from 'react-router-dom'
 
 import './DefineDetails.css'
@@ -16,7 +16,7 @@ export const DefineDetails = ({
 
   // Rendering //
 
-  const plugin = PluginManager.getPlugin(pluginId)
+  const plugin = usePlugin(pluginId)
 
   if (!plugin) {
     return (
@@ -39,22 +39,18 @@ export const DefineDetails = ({
       >
         {plugin.name}
       </Link>
-      {plugin.dependencies ? (
-        <ul className='plugin-side-entry__entries'>
-          {plugin.dependencies
-            .filter(dependency => dependency.loaded)
-            .map(dependency => {
-              const child = PluginManager.getPluginByUrl(dependency.url)
-              return (
-                <DefineDetails
-                  key={child!.name}
-                  selectedPluginId={selectedPluginId}
-                  pluginId={child!.name}
-                />
-              )
-            })}
-        </ul>
-      ) : null}
+      <ul className='plugin-side-entry__entries'>
+        {plugin.dependencies
+          .map(dependency => {
+            return (
+              <DefineDetails
+                key={dependency.name}
+                selectedPluginId={selectedPluginId}
+                pluginId={dependency.name}
+              />
+            )
+          })}
+      </ul>
     </li>
   )
 }
