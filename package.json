@@ -1,12 +1,12 @@
 {
-  "name": "@uncover/js-utils-microfrontend",
-  "version": "1.0.9",
+  "name": "@uncover/ward",
+  "version": "0.1.1",
   "author": "aSH <ash.uncover@gmail.com>",
-  "description": "Util project for micro frontends management",
+  "description": "Ward micro frontends frameworks",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ash-uncover/js-utils-microfrontend"
+    "url": "https://github.com/ash-uncover/ward"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
