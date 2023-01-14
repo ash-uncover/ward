@@ -8,10 +8,9 @@ import CONFIG from './config'
 import Root from './routes/__layout'
 
 PluginManager.loadPlugin(CONFIG.WARD_DEMO_PLUGINS_PLUGIN)
-  .then(() => {
-    const containerRoot = document.getElementById('reactroot')!
-    const root = createRoot(containerRoot)
-    root.render(
-      <Root />
-    )
-  })
+
+const containerRoot = document.getElementById('reactroot')!
+const root = createRoot(containerRoot)
+root.render(
+  <Root />
+)

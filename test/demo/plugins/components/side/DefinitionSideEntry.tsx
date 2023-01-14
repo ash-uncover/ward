@@ -1,6 +1,13 @@
 import React from 'react'
-import {PluginManager} from '../../../../../src'
-import { Link } from 'react-router-dom'
+// Hooks
+import {
+  useDefinition,
+  useProviders
+} from '../../../commons/WardProvider'
+// Components
+import {
+  Link
+} from 'react-router-dom'
 
 import './DefinitionSideEntry.css'
 
@@ -16,8 +23,8 @@ export const DefinitionSideEntry = ({
 
   // Rendering //
 
-  const definition = PluginManager.getDefinition(definitionId)
-  const providers = Object.values(PluginManager.providers).filter(provider => provider.definition === definitionId)
+  const definition = useDefinition(definitionId)
+  const providers = useProviders(definitionId)
 
   if (!definition) {
     return (

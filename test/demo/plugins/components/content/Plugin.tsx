@@ -1,10 +1,11 @@
 import React from 'react'
-import { PluginManager } from '../../../../../src'
 import { PluginDefinition } from './PluginDefinition'
 
-import './Plugin.css'
 import { PluginProvider } from './PluginProvider'
 import { PluginDependency } from './PluginDependency'
+import { usePlugin } from '../../../commons/WardProvider'
+
+import './Plugin.css'
 
 interface PluginProperties {
   pluginId: string
@@ -14,7 +15,7 @@ const Plugin = ({
   pluginId
 }: PluginProperties) => {
 
-  const plugin = PluginManager.getPlugin(pluginId)
+  const plugin = usePlugin(pluginId)
 
   // Hooks //
 
@@ -23,14 +24,12 @@ const Plugin = ({
   // Rendering //
 
   const renderDependencies = () => {
-    console.log(plugin!.dependencies)
-    return plugin!.dependencies
-      .filter(dependency => dependency.loaded)
+    return (plugin.dependencies)
       .map(dependency => {
         return (
           <PluginDependency
-            key={dependency.url}
-            dependencyUrl={dependency.url}
+            key={dependency.name}
+            pluginId={dependency.name}
           />
         )
       })
@@ -70,10 +69,6 @@ const Plugin = ({
         <div className='plugin__info'>
           <label>Url:</label>
           <span>{plugin.url}</span>
-        </div>
-        <div className='plugin__info'>
-          <label>Loader:</label>
-          <span>{plugin.loadedFrom}</span>
         </div>
 
         <h2>{`Dependencies (${plugin!.dependencies.length})`}</h2>

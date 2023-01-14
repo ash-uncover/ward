@@ -1,5 +1,5 @@
 import React from 'react'
-import { PluginManager } from '../../../../../src'
+import { useDefinition } from '../../../commons/WardProvider'
 
 import './PluginDefinition.css'
 
@@ -13,7 +13,7 @@ export const PluginDefinition = ({
 
   // Rendering //
 
-  const definition = PluginManager.getDefinition(definitionId)
+  const definition = useDefinition(definitionId)
 
   if (!definition) {
     return (

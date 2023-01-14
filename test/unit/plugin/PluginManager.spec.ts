@@ -72,14 +72,39 @@ describe('PluginManager', () => {
         // Declaration
         // Execution
         // Assertion
-        expect(PluginManager.plugins).toEqual([])
-        expect(PluginManager.rootPlugins).toEqual([])
+        expect(PluginManager.datas).toEqual({})
+        expect(PluginManager.plugins).toEqual({})
+        expect(PluginManager.roots).toEqual({})
         expect(PluginManager.definitions).toEqual({})
         expect(PluginManager.providers).toEqual({})
+
+        expect(PluginManager.data).toEqual({
+          datas: {},
+          roots: {},
+          plugins: {},
+          definitions: {},
+          providers: {}
+        })
       })
     })
 
     describe('loadPlugin', () => {
+
+      test('when fetch fails', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl'
+        }
+        spyHelpersFetchPlugin.mockImplementation(() => {
+          throw new Error()
+        })
+        // Execution
+        const result = await PluginManager.loadPlugin('url')
+        // Assertion
+        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
+        expect(PluginManager.datas).toEqual({})
+      })
 
       test('basic plugin', async () => {
         // Declaration
@@ -93,13 +118,11 @@ describe('PluginManager', () => {
         // Assertion
         expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
         expect(spyHelpersFetchPlugin).toHaveBeenCalledWith('url')
-        const expectedPlugin = new Plugin(data)
-        expect(PluginManager.plugins).toHaveLength(1)
-        expect(PluginManager.plugins[0]).toEqual(expectedPlugin)
-        expect(PluginManager.rootPlugins).toHaveLength(1)
-        expect(PluginManager.rootPlugins[0]).toEqual(expectedPlugin)
-        expect(PluginManager.getPlugin('pluginName')).toEqual(expectedPlugin)
-        expect(PluginManager.getPluginByUrl('url')).toEqual(expectedPlugin)
+        const expectedPlugin = new Plugin(data.url, data)
+        expect(PluginManager.datas).toEqual({ ['url']: data})
+        expect(PluginManager.plugins).toEqual({ [data.name]: expectedPlugin})
+        expect(PluginManager.roots).toEqual({ [data.name]: expectedPlugin})
+        expect(PluginManager.getPlugin(data.name)).toEqual(expectedPlugin)
       })
 
       test('plugin with defines', async () => {
@@ -228,7 +251,14 @@ describe('PluginManager', () => {
         await PluginManager.loadPlugin('url')
         // Assertion
         expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(2)
-        expect(PluginManager.plugins).toHaveLength(2)
+        expect(PluginManager.datas).toEqual({
+          url: data,
+          depUrl: dataDependency
+        })
+        expect(PluginManager.plugins).toEqual({
+          pluginName: {},
+          dependencyName: {}
+        })
       })
 
       test('load two plugins with same name', async () => {
@@ -243,7 +273,13 @@ describe('PluginManager', () => {
         await PluginManager.loadPlugin('url2')
         // Assertion
         expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(2)
-        expect(PluginManager.plugins).toHaveLength(1)
+        expect(PluginManager.datas).toEqual({
+          url: data,
+          url2: data
+        })
+        expect(PluginManager.plugins).toEqual({
+          pluginName: {}
+        })
       })
 
       test('load plugin with invalid data', async () => {
@@ -256,7 +292,44 @@ describe('PluginManager', () => {
         await PluginManager.loadPlugin('url')
         // Assertion
         expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
-        expect(PluginManager.plugins).toHaveLength(0)
+        expect(PluginManager.datas).toEqual({
+          url: data
+        })
+        expect(PluginManager.plugins).toEqual({})
+      })
+    })
+
+    describe('listeners', () => {
+
+      test('Check that listeners are called', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl'
+        }
+        spyHelpersFetchPlugin.mockImplementation(() => data)
+        // Execution
+        const spyListerner = jest.fn()
+        PluginManager.register(spyListerner)
+        await PluginManager.loadPlugin('url')
+        // Assertion
+        expect(spyListerner).toHaveBeenCalledTimes(1)
+      })
+
+      test('Check that listeners can be removed', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl'
+        }
+        spyHelpersFetchPlugin.mockImplementation(() => data)
+        // Execution
+        const spyListerner = jest.fn()
+        PluginManager.register(spyListerner)
+        PluginManager.unregister(spyListerner)
+        await PluginManager.loadPlugin('url')
+        // Assertion
+        expect(spyListerner).toHaveBeenCalledTimes(0)
       })
     })
   })

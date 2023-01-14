@@ -1,6 +1,6 @@
 import React from 'react'
-import { PluginManager } from '../../../../src'
 import { WardElement } from '../../commons/WardElement'
+import { useProvider } from '../../commons/WardProvider'
 
 export interface ViewerProperties {
   viewerId: string
@@ -12,7 +12,14 @@ export const Viewer = ({
 
   // Rendering //
 
-  const viewer = PluginManager.getProvider(`ward-demo/viewers/${viewerId}`)
+
+  const viewer = useProvider(`ward-demo/viewers/${viewerId}`)
+
+  if (!viewer) {
+    return (
+      <div>VIEWER NOT LOADED</div>
+    )
+  }
   console.log(viewer.elements)
   const element = viewer.elements.viewer
 

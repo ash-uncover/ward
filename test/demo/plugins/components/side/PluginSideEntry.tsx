@@ -1,6 +1,6 @@
 import React from 'react'
-import { PluginManager } from '../../../../../src'
 import { Link } from 'react-router-dom'
+import { usePlugin } from '../../../commons/WardProvider'
 
 import './PluginSideEntry.css'
 
@@ -16,7 +16,7 @@ export const PluginSideEntry = ({
 
   // Rendering //
 
-  const plugin = PluginManager.getPlugin(pluginId)
+  const plugin = usePlugin(pluginId)
 
   if (!plugin) {
     return (
@@ -39,22 +39,18 @@ export const PluginSideEntry = ({
       >
         {plugin.name}
       </Link>
-      {plugin.dependencies ? (
-        <ul className='plugin-side-entry__entries'>
-          {plugin.dependencies
-            .filter(dependency => dependency.loaded)
-            .map(dependency => {
-            const child = PluginManager.getPluginByUrl(dependency.url)
+      <ul className='plugin-side-entry__entries'>
+        {plugin.dependencies
+          .map(dependency => {
             return (
               <PluginSideEntry
-                key={child!.name}
+                key={dependency.name}
                 selectedPluginId={selectedPluginId}
-                pluginId={child!.name}
+                pluginId={dependency.name}
               />
             )
           })}
-        </ul>
-      ) : null}
+      </ul>
     </li>
   )
 }

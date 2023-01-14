@@ -21,7 +21,8 @@
   },
   "include": [
     "src",
-    "test/demo/messages"
+    "test/demo/messages",
+    "test/demo/commons"
   ],
   "exclude": [
     "dist",

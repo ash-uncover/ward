@@ -8,6 +8,7 @@ const base = require('./webpack.config.docs.js')
 
 const DIR_SRC = path.resolve(__dirname, 'src')
 const DIR_DEMO = path.resolve(__dirname, 'test/demo/messages')
+const DIR_DEMO_COMMONS = path.resolve(__dirname, 'test/demo/commons')
 const DIR_PUBLIC = path.resolve(__dirname, 'public')
 const DIR_DOCS = path.resolve(__dirname, 'docs_messages')
 const DIR_NODE_MODULES = path.resolve(__dirname, 'node_modules')
@@ -75,7 +76,7 @@ module.exports = merge(base, {
     rules: [
       {
         test: /\.tsx?$/,
-        include: [DIR_SRC, DIR_DEMO],
+        include: [DIR_SRC, DIR_DEMO, DIR_DEMO_COMMONS],
         exclude: DIR_NODE_MODULES,
         use: [
           {
