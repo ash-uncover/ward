@@ -1,9 +1,9 @@
-# js-utils-microfrontend
+# WARD
 
-[![npm version](https://badge.fury.io/js/@uncover%2Fjs-utils-microfrontend.svg)](https://badge.fury.io/js/@uncover%2Fjs-utils-microfrontend)
-![Last Push](https://github.com/ash-uncover/js-utils-microfrontend/actions/workflows/publish-npm.yml/badge.svg)
+[![npm version](https://badge.fury.io/js/@uncover%2Fward.svg)](https://badge.fury.io/js/@uncover%2Fward)
+![Last Push](https://github.com/ash-uncover/ward/actions/workflows/publish-npm.yml/badge.svg)
 
-js-utils-microfrontend is a small JavaScript library providing tools to ease microfrontend development regardless of the chosen frameworks.
+Ward is a small JavaScript library providing tools to ease microfrontend development regardless of the chosen frameworks.
 
 It provides seamless communication between existing frames by sending standardized messages.
 
@@ -15,7 +15,7 @@ It provides seamless communication between existing frames by sending standardiz
 #### Installation
 
 ```
-npm add @uncover/js-utils-microfrontend
+npm add @uncover/ward
 ```
 
 #### Starting the dispatcher
@@ -23,7 +23,7 @@ npm add @uncover/js-utils-microfrontend
 Once in each frame, start the message dispatcher.
 
 ```
-import MessageDispatcher from '@uncover/js-utils-microfrontend'
+import MessageDispatcher from '@uncover/ward'
 
 MessageDispatcher.start()
 ```
@@ -36,7 +36,7 @@ Create new **MessageService** instances and initialize them with a callback. Thi
 import {
   Message,
   MessageService,
-} from '@uncover/js-utils-microfrontend'
+} from '@uncover/ward'
 
 const myService = new MessageService()
 myService.init((message: Message) => console.log(message))
