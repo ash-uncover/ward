@@ -60,7 +60,7 @@ class Plugin {
     return this.#dependencies.reduce((acc: Plugin[], dependency) => {
       const data = PluginManager.getData(dependency)
       if (data) {
-        const plugin = PluginManager.getPlugin(data?.name)
+        const plugin = PluginManager.getPlugin(data.name)
         if (plugin) {
           acc.push(plugin)
         }

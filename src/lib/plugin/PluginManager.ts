@@ -124,7 +124,7 @@ class PluginManager implements PluginManagerData {
     this.#listeners.push(listener)
   }
   unregister(listener: (data: PluginManagerData) => void) {
-    ArrayUtils.removeElement(this.#listeners, listener)
+    this.#listeners = ArrayUtils.removeElement(this.#listeners, listener)
   }
   notify() {
     this.#listeners.forEach(listener => {
@@ -133,6 +133,7 @@ class PluginManager implements PluginManagerData {
   }
 
   reset() {
+    this.#datas = {}
     this.#plugins = {}
     this.#definitions = {}
     this.#providers = {}

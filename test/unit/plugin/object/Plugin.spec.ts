@@ -30,6 +30,7 @@ describe('Plugin', () => {
       // Execution
       const result = new Plugin(loadUrl, data)
       // Assertion
+      expect(result.loadUrl).toEqual('loadUrl')
       expect(result.name).toEqual('name')
       expect(result.url).toEqual('url')
       expect(result.dependencies).toEqual([])
@@ -53,6 +54,48 @@ describe('Plugin', () => {
       const result = new Plugin(loadUrl, data)
       // Assertion
       const expected = [resultPlugin]
+      expect(result.dependencies).toEqual(expected)
+      expect(spyPluginManagerGetData).toHaveBeenCalledTimes(1)
+      expect(spyPluginManagerGetPlugin).toHaveBeenCalledTimes(1)
+    })
+
+    test('with dependencies when dependency wasnt fetch yet', () => {
+      // Declaration
+      const data: PluginData = {
+        name: 'name',
+        url: 'url',
+        dependencies: ['dep1']
+      }
+      const loadUrl = 'loadUrl'
+      const resultData = { name: 'depName' }
+      const resultPlugin = { data: 'value' }
+      spyPluginManagerGetData.mockImplementation(() => null)
+      spyPluginManagerGetPlugin.mockImplementation(() => resultPlugin)
+      // Execution
+      const result = new Plugin(loadUrl, data)
+      // Assertion
+      const expected: any[] = []
+      expect(result.dependencies).toEqual(expected)
+      expect(spyPluginManagerGetData).toHaveBeenCalledTimes(1)
+      expect(spyPluginManagerGetPlugin).toHaveBeenCalledTimes(0)
+    })
+
+    test('with dependencies when the dependency is not loaded', () => {
+      // Declaration
+      const data: PluginData = {
+        name: 'name',
+        url: 'url',
+        dependencies: ['dep1']
+      }
+      const loadUrl = 'loadUrl'
+      const resultData = { name: 'depName' }
+      const resultPlugin = { data: 'value' }
+      spyPluginManagerGetData.mockImplementation(() => resultData)
+      spyPluginManagerGetPlugin.mockImplementation(() => null)
+      // Execution
+      const result = new Plugin(loadUrl, data)
+      // Assertion
+      const expected: any[] = []
       expect(result.dependencies).toEqual(expected)
       expect(spyPluginManagerGetData).toHaveBeenCalledTimes(1)
       expect(spyPluginManagerGetPlugin).toHaveBeenCalledTimes(1)
