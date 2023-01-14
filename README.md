@@ -1,4 +1,4 @@
-# WARD
+# ward
 
 [![npm version](https://badge.fury.io/js/@uncover%2Fward.svg)](https://badge.fury.io/js/@uncover%2Fward)
 ![Last Push](https://github.com/ash-uncover/ward/actions/workflows/publish-npm.yml/badge.svg)

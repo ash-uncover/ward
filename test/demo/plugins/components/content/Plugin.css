@@ -1,9 +1,0 @@
-.plugin {
-  & .plugin__info {
-    & label {
-      width: 5rem;
-      font-weight: bold;
-      display: inline-block;
-    }
-  }
-}
