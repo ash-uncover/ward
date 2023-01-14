@@ -9,32 +9,26 @@ class Plugin {
 
   // Attributes //
 
-  #loadedFrom: string | undefined
+  #loadUrl: string
 
   #name: string
   #url: string
 
-  #dependencies: {
-    url: string
-    loaded: boolean
-  }[]
+  #dependencies: string[]
   #defines: PluginDefine[]
   #provides: PluginProvide[]
 
   // Constructor //
 
   constructor (
-    data: PluginData,
-    loadedFrom?: string
+    loadUrl: string,
+    data: PluginData
   ) {
-    this.#loadedFrom = loadedFrom
+    this.#loadUrl = loadUrl
     this.#name = data.name
     this.#url = data.url
 
-    this.#dependencies = (data.dependencies || []).map(dependency => ({
-      url: dependency,
-      loaded: false
-    }))
+    this.#dependencies = (data.dependencies || [])
 
     const defines = data.defines || {}
     this.#defines = Object.keys(defines).map((defineName: string) => {
@@ -57,12 +51,23 @@ class Plugin {
 
   // Getters & Setters //
 
-  get loadedFrom () { return this.#loadedFrom }
+  get loadUrl () { return this.#loadUrl }
 
   get name () { return this.#name }
   get url () { return this.#url }
 
-  get dependencies () { return this.#dependencies.slice() }
+  get dependencies (): Plugin[] {
+    return this.#dependencies.reduce((acc: Plugin[], dependency) => {
+      const data = PluginManager.getData(dependency)
+      if (data) {
+        const plugin = PluginManager.getPlugin(data.name)
+        if (plugin) {
+          acc.push(plugin)
+        }
+      }
+      return acc
+    }, [])
+  }
 
   get defines () { return this.#defines.slice() }
 

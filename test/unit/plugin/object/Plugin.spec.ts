@@ -1,11 +1,24 @@
-import { PluginData, PluginDataDefineElement } from '../../../../src/lib/plugin/model/PluginDataModel'
+import PluginManager from '../../../../src/lib/plugin/PluginManager'
+import { PluginData } from '../../../../src/lib/plugin/model/PluginDataModel'
 import Plugin from '../../../../src/lib/plugin/object/Plugin'
 import PluginDefine from '../../../../src/lib/plugin/object/PluginDefine'
 import PluginProvide from '../../../../src/lib/plugin/object/PluginProvide'
 
 describe('Plugin', () => {
 
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
   describe('constructor', () => {
+
+    let spyPluginManagerGetData: any
+    let spyPluginManagerGetPlugin: any
+
+    beforeEach(() => {
+      spyPluginManagerGetData = jest.spyOn(PluginManager, 'getData')
+      spyPluginManagerGetPlugin = jest.spyOn(PluginManager, 'getPlugin')
+    })
 
     test('basic plugin definition', () => {
       // Declaration
@@ -13,11 +26,11 @@ describe('Plugin', () => {
         name: 'name',
         url: 'url'
       }
-      const loadedFrom = 'loadedFrom'
+      const loadUrl = 'loadUrl'
       // Execution
-      const result = new Plugin(data, loadedFrom)
+      const result = new Plugin(loadUrl, data)
       // Assertion
-      expect(result.loadedFrom).toEqual('loadedFrom')
+      expect(result.loadUrl).toEqual('loadUrl')
       expect(result.name).toEqual('name')
       expect(result.url).toEqual('url')
       expect(result.dependencies).toEqual([])
@@ -32,14 +45,60 @@ describe('Plugin', () => {
         url: 'url',
         dependencies: ['dep1']
       }
+      const loadUrl = 'loadUrl'
+      const resultData = { name: 'depName' }
+      const resultPlugin = { data: 'value' }
+      spyPluginManagerGetData.mockImplementation(() => resultData)
+      spyPluginManagerGetPlugin.mockImplementation(() => resultPlugin)
       // Execution
-      const result = new Plugin(data)
+      const result = new Plugin(loadUrl, data)
       // Assertion
-      const expected = [{
-        url: 'dep1',
-        loaded: false
-      }]
+      const expected = [resultPlugin]
       expect(result.dependencies).toEqual(expected)
+      expect(spyPluginManagerGetData).toHaveBeenCalledTimes(1)
+      expect(spyPluginManagerGetPlugin).toHaveBeenCalledTimes(1)
+    })
+
+    test('with dependencies when dependency wasnt fetch yet', () => {
+      // Declaration
+      const data: PluginData = {
+        name: 'name',
+        url: 'url',
+        dependencies: ['dep1']
+      }
+      const loadUrl = 'loadUrl'
+      const resultData = { name: 'depName' }
+      const resultPlugin = { data: 'value' }
+      spyPluginManagerGetData.mockImplementation(() => null)
+      spyPluginManagerGetPlugin.mockImplementation(() => resultPlugin)
+      // Execution
+      const result = new Plugin(loadUrl, data)
+      // Assertion
+      const expected: any[] = []
+      expect(result.dependencies).toEqual(expected)
+      expect(spyPluginManagerGetData).toHaveBeenCalledTimes(1)
+      expect(spyPluginManagerGetPlugin).toHaveBeenCalledTimes(0)
+    })
+
+    test('with dependencies when the dependency is not loaded', () => {
+      // Declaration
+      const data: PluginData = {
+        name: 'name',
+        url: 'url',
+        dependencies: ['dep1']
+      }
+      const loadUrl = 'loadUrl'
+      const resultData = { name: 'depName' }
+      const resultPlugin = { data: 'value' }
+      spyPluginManagerGetData.mockImplementation(() => resultData)
+      spyPluginManagerGetPlugin.mockImplementation(() => null)
+      // Execution
+      const result = new Plugin(loadUrl, data)
+      // Assertion
+      const expected: any[] = []
+      expect(result.dependencies).toEqual(expected)
+      expect(spyPluginManagerGetData).toHaveBeenCalledTimes(1)
+      expect(spyPluginManagerGetPlugin).toHaveBeenCalledTimes(1)
     })
 
     test('with defines', () => {
@@ -53,8 +112,9 @@ describe('Plugin', () => {
           }
         }
       }
+      const loadUrl = 'loadUrl'
       // Execution
-      const result = new Plugin(data)
+      const result = new Plugin(loadUrl, data)
       // Assertion
       const expectedDefine = new PluginDefine(
         'name',
@@ -75,8 +135,9 @@ describe('Plugin', () => {
           }
         }
       }
+      const loadUrl = 'loadUrl'
       // Execution
-      const result = new Plugin(data)
+      const result = new Plugin(loadUrl, data)
       // Assertion
       const expectedProvide = new PluginProvide(
         'name',
@@ -100,8 +161,9 @@ describe('Plugin', () => {
           ]
         }
       }
+      const loadUrl = 'loadUrl'
       // Execution
-      const result = new Plugin(data)
+      const result = new Plugin(loadUrl, data)
       // Assertion
       const expectedProvide1 = new PluginProvide(
         'name',

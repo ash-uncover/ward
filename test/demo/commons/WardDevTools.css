@@ -1,0 +1,59 @@
+.ward-dev-tools {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+  z-index: 5;
+
+  & .ward-dev-tools__button {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    pointer-events: all;
+    cursor: pointer;
+
+    background: grey;
+    color: black;
+    border: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      box-shadow: 0 0 5px 0px grey;
+    }
+  }
+
+  & .ward-dev-tools__dialog {
+    pointer-events: all;
+    display: none;
+
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    bottom: 4rem;
+    width: 50%;
+
+    border-radius: 0.5rem;
+    background: #DDD;
+    box-shadow: 0 0 15px 0px grey;
+  }
+
+  &.ward-dev-tools--open {
+    & .ward-dev-tools__button {
+      background: red;
+      color: white;
+    }
+
+    & .ward-dev-tools__dialog {
+      display: block;
+
+    }
+  }
+}

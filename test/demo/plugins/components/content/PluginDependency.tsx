@@ -1,33 +1,34 @@
 import React from 'react'
 import { PluginManager } from '../../../../../src'
-
-import './PluginDependency.css'
 import { Link } from 'react-router-dom'
 
+import './PluginDependency.css'
+import { usePlugin } from '../../../commons/WardProvider'
+
 export interface PluginDependencyProperties {
-  dependencyUrl: string
+  pluginId: string
 }
 
 export const PluginDependency = ({
-  dependencyUrl
+  pluginId
 }: PluginDependencyProperties) => {
 
   // Rendering //
 
-  const dependency = PluginManager.getPluginByUrl(dependencyUrl)
+  const plugin = usePlugin(pluginId)
 
-  if (!dependency) {
+  if (!plugin) {
     return (
       <li>PROBLEM</li>
     )
   }
-console.log(dependency)
+  
   return (
     <li>
       <Link
-        to={`/plugins/${window.btoa(encodeURIComponent(dependency.name))}`}
+        to={`/plugins/${window.btoa(encodeURIComponent(plugin.name))}`}
       >
-       {dependency.name}
+       {plugin.name}
       </Link>
     </li>
   )

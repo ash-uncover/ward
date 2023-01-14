@@ -1,5 +1,17 @@
-import React, { FormEvent, ReactNode, useEffect, useState } from 'react'
-import { PluginManager} from '../../../../src'
+import React, {
+  FormEvent,
+  ReactNode,
+  useEffect,
+  useState,
+} from 'react'
+import {
+  PluginManager,
+} from '../../../../src'
+import {
+  useDefinitions,
+  usePlugins,
+  usePluginsRoot,
+} from '../../commons/WardProvider'
 
 import { PluginSideEntry } from './side/PluginSideEntry'
 import { DefinitionSideEntry } from './side/DefinitionSideEntry'
@@ -18,25 +30,16 @@ const App = ({
 
   // Hooks //
 
+  const plugins = usePlugins()
+  const rootPlugins = usePluginsRoot()
+  const definitions = useDefinitions()
+
   const [newPluginUrl, setNewPluginUrl] = useState<string>(' ')
 
-  const [plugin, setPlugin] = useState<string>('')
-
   useEffect(() => {
-    console.log('1')
-    setPlugin('http://localhost:27000/plugin.json')
+    PluginManager.reset()
+    PluginManager.loadPlugin('http://localhost:27000/plugin.json')
   }, [])
-
-  useEffect(() => {
-    console.log('2 ' +plugin)
-    if (plugin) {
-      PluginManager.reset()
-      PluginManager.loadPlugin(plugin).then(() => {
-        console.log('3 ' + plugin)
-        setNewPluginUrl('')
-      })
-    }
-  }, [plugin])
 
   // Events //
 
@@ -46,8 +49,10 @@ const App = ({
 
   const handleSetPlugin = (event: FormEvent<HTMLButtonElement>) => {
     event.preventDefault()
-    if (newPluginUrl && !Object.values(PluginManager.plugins).some(plugin => plugin.url === newPluginUrl)) {
-      setPlugin(newPluginUrl)
+    if (newPluginUrl && !Object.values(plugins).some(plugin => plugin.url === newPluginUrl)) {
+      PluginManager.reset()
+      PluginManager.loadPlugin(newPluginUrl)
+      setNewPluginUrl('')
     }
   }
 
@@ -87,7 +92,7 @@ const App = ({
         </h3>
 
         <ul>
-          {Object.values(PluginManager.rootPlugins).map(plugin => {
+          {Object.values(rootPlugins).map(plugin => {
             return (
               <PluginSideEntry
                 key={plugin.name}
@@ -103,7 +108,7 @@ const App = ({
         </h3>
 
         <ul>
-          {Object.values(PluginManager.definitions).map(definition => {
+          {Object.values(definitions).map(definition => {
             return (
               <DefinitionSideEntry
                 key={definition.name}

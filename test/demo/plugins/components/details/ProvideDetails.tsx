@@ -3,6 +3,7 @@ import { PluginManager } from '../../../../../src'
 import { Link } from 'react-router-dom'
 
 import './ProvideDetails.css'
+import { usePlugin } from '../../../commons/WardProvider'
 
 export interface ProvideDetailsProperties {
   pluginId: string
@@ -16,7 +17,7 @@ export const ProvideDetails = ({
 
   // Rendering //
 
-  const plugin = PluginManager.getPlugin(pluginId)
+  const plugin = usePlugin(pluginId)
 
   if (!plugin) {
     return (
@@ -39,22 +40,18 @@ export const ProvideDetails = ({
       >
         {plugin.name}
       </Link>
-      {plugin.dependencies ? (
-        <ul className='plugin-side-entry__entries'>
-          {plugin.dependencies
-            .filter(dependency => dependency.loaded)
-            .map(dependency => {
-              const child = PluginManager.getPluginByUrl(dependency.url)
-              return (
-                <ProvideDetails
-                  key={child!.name}
-                  selectedPluginId={selectedPluginId}
-                  pluginId={child!.name}
-                />
-              )
-            })}
-        </ul>
-      ) : null}
+      <ul className='plugin-side-entry__entries'>
+        {(plugin.dependencies || [])
+          .map(dependency => {
+            return (
+              <ProvideDetails
+                key={dependency.name}
+                selectedPluginId={selectedPluginId}
+                pluginId={dependency.name}
+              />
+            )
+          })}
+      </ul>
     </li>
   )
 }

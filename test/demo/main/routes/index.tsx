@@ -1,7 +1,11 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
 // Components
-import App from '../components/App'
+import { App } from '../components/App'
+import { WardProvider } from '../../commons/WardProvider'
+import { WardDevTools } from '../../commons/WardDevTools'
+
+import CONFIG from '../config'
 
 const RouteRoot = () => {
 
@@ -11,9 +15,12 @@ const RouteRoot = () => {
   // Rendering //
 
   return (
-    <App>
-      <Outlet />
-    </App>
+    <WardProvider plugin={CONFIG.WARD_DEMO_PLUGIN}>
+      <App>
+        <Outlet />
+      </App>
+      <WardDevTools />
+    </WardProvider>
   )
 }
 

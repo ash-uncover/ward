@@ -3,6 +3,7 @@ import { PluginData, PluginDataValidator } from './model/PluginDataModel'
 import Plugin from './object/Plugin'
 import PluginDefine from './object/PluginDefine'
 import PluginProvider from './object/PluginProvider'
+import { ArrayUtils } from '@uncover/js-utils'
 
 const LOGGER = new Logger('PluginManager', LogLevels.WARN)
 
@@ -21,15 +22,36 @@ export const helpers = {
   }
 }
 
-class PluginManager {
+export interface PluginManagerData {
+  datas: PluginManagerDatas
+  roots: PluginManagerPlugins
+  plugins: PluginManagerPlugins
+  definitions: PluginManagerDefinitions
+  providers: PluginManagerProviders
+}
+export interface PluginManagerDatas {
+  [key: string]: PluginData
+}
+export interface PluginManagerPlugins {
+  [key: string]: Plugin
+}
+export interface PluginManagerDefinitions {
+  [key: string]: PluginDefine
+}
+export interface PluginManagerProviders {
+  [key: string]: PluginProvider
+}
+
+class PluginManager implements PluginManagerData {
 
   // Attributes //
 
-  #loadedUrls: { [key: string]: PluginData } = {}
-  #plugins: { [key: string]: Plugin } = {}
+  #listeners: ((data: PluginManagerData) => void)[] = []
 
-  #definitions: { [key: string]: PluginDefine } = {}
-  #providers: { [key: string]: PluginProvider } = {}
+  #datas: PluginManagerDatas = {}
+  #plugins: PluginManagerPlugins = {}
+  #definitions: PluginManagerDefinitions = {}
+  #providers: PluginManagerProviders = {}
 
   // Constructor //
 
@@ -38,19 +60,45 @@ class PluginManager {
 
   // Getters & Setters //
 
-  get plugins(): Plugin[] {
-    return Object.values(this.#plugins)
+  get data(): PluginManagerData {
+    return {
+      datas: this.datas,
+      roots: this.roots,
+      plugins: this.plugins,
+      definitions: this.definitions,
+      providers: this.providers
+    }
   }
-  get rootPlugins(): Plugin[] {
-    return Object.values(this.#plugins).filter(plugin => !plugin.loadedFrom)
+
+  get roots(): PluginManagerPlugins {
+    const dependentEntries: string[] = []
+    Object.values(this.#plugins).forEach(plugin => {
+      plugin.dependencies.forEach(dependency => {
+        if (!dependentEntries.includes(dependency.name)) {
+          dependentEntries.push(dependency.name)
+        }
+      })
+    })
+    return Object.values(this.#plugins).reduce((acc: PluginManagerPlugins, plugin) => {
+      if (!dependentEntries.includes(plugin.name)) {
+        acc[plugin.name] = plugin
+      }
+      return acc
+    }, {})
+  }
+
+  get datas(): PluginManagerDatas {
+    return this.#datas
+  }
+  getData(url: string): PluginData | undefined {
+    return this.#datas[url]
+  }
+
+  get plugins(): PluginManagerPlugins {
+    return this.#plugins
   }
   getPlugin(pluginId: string): Plugin | undefined {
-    return this.#plugins[pluginId]
-  }
-  getPluginByUrl(pluginUrl: string): Plugin | undefined {
-    if (this.#loadedUrls[pluginUrl]) {
-      return this.getPlugin(this.#loadedUrls[pluginUrl].name)
-    }
+    return this.plugins[pluginId]
   }
 
   get definitions() {
@@ -72,9 +120,25 @@ class PluginManager {
 
   // Public Methods //
 
+  register(listener: (data: PluginManagerData) => void) {
+    this.#listeners.push(listener)
+  }
+  unregister(listener: (data: PluginManagerData) => void) {
+    this.#listeners = ArrayUtils.removeElement(this.#listeners, listener)
+  }
+  notify() {
+    this.#listeners.forEach(listener => {
+      listener(this.data)
+    })
+  }
+
   reset() {
-    this.#loadedUrls = {}
+    this.#datas = {}
     this.#plugins = {}
+    this.#definitions = {}
+    this.#providers = {}
+
+    this.notify()
   }
 
   async loadPlugin(url: string) {
@@ -85,64 +149,66 @@ class PluginManager {
     } catch (error) {
       // Traces have been logged, we dont want to crash the application
     }
+    this.notify()
   }
 
   // Internal Methods //
 
   async #loadPluginInternal(url: string, parent?: string): Promise<any> {
-    if (this.#loadedUrls[url]) {
+    if (this.#datas[url]) {
       LOGGER.warn(`URL already loaded: '${url}'`)
       return true
     }
 
+    // Fetch data
+    let data: PluginData
     try {
-      const data = await helpers.fetchPlugin(url)
-      this.#loadedUrls[url] = data
-
-      // Check plugin data
-      const errors: string[] = PluginDataValidator.checkPluginData(data)
-      if (errors.length) {
-        throw new Error('Invalid plugin data: ' + errors.join(', '))
-      }
-
-      // Check plugin not already defined
-      if (this.#plugins[data.name]) {
-        LOGGER.warn(`Plugin '${data.name}' from '${data.url}' already registered from '${this.#plugins[data.name].url}'`)
-        return
-      }
-
-      // Load plugin data
-      const plugin: Plugin = new Plugin(data, parent)
-      this.#plugins[plugin.name] = plugin
-
-      // Load plugin dependencies
-      await Promise.allSettled(plugin.dependencies.map((dependency) => {
-        return this.#loadPluginInternal(dependency.url, plugin.name)
-          .then((result) => {
-            dependency.loaded = result
-          })
-      }))
-
-      LOGGER.warn(`Succesully loaded plugin from '${url}'`)
-      return true
-
+      data = await helpers.fetchPlugin(url)
+      this.#datas[url] = data
     } catch (error) {
       LOGGER.warn(`Failed to load plugin from '${url}'`)
       LOGGER.warn(String(error))
       return false
     }
+
+    // Check no plugin with same name exists
+    if (this.#plugins[data.name]) {
+      const previousUrl = Object.values(this.#datas).find(dat => dat.name === data.name)
+      LOGGER.warn(`Plugin '${data.name}' from '${data.url}' already registered from '${previousUrl}'`)
+      return false
+    }
+
+    // Check data consistency
+    const errors: string[] = PluginDataValidator.checkPluginData(data)
+    if (errors.length) {
+      LOGGER.warn(`Failed to validate plugin from '${url}'`)
+      LOGGER.warn('Invalid plugin data: ' + errors.join(', '))
+      return false
+    }
+
+    // Load plugin data
+    const plugin = new Plugin(url, data)
+    this.#plugins[data.name] = plugin
+
+    // Load plugin dependencies
+    await Promise.allSettled((data.dependencies || []).map((dependency) => {
+      return this.#loadPluginInternal(dependency, data.name)
+    }))
+
+    LOGGER.warn(`Succesully loaded plugin from '${url}'`)
+    return true
   }
 
   #checkPluginsInternal() {
     this.#definitions = {}
     this.#providers = {}
-    this.rootPlugins.forEach(this.#checkPluginDefinitions.bind(this))
-    this.rootPlugins.forEach(this.#checkPluginProviders.bind(this))
+    Object.values(this.roots).forEach((plugin) => this.#checkPluginDefinitions(plugin))
+    Object.values(this.roots).forEach((plugin) => this.#checkPluginProviders(plugin))
   }
 
   #checkPluginDefinitions(plugin: Plugin) {
     plugin.defines.forEach(define => {
-      // Not testazble because the definition name includes the plugin name and this is checked before
+      // Not testable because the definition name includes the plugin name and this is checked before
       /* istanbul ignore next */
       if (this.getDefinition(define.name)) {
         /* istanbul ignore next */
@@ -152,16 +218,11 @@ class PluginManager {
       }
     })
     plugin.dependencies.forEach(dependency => {
-      const dependencyEntry = this.getPluginByUrl(dependency.url)
-      if (dependencyEntry) {
-        // Only perform check on dependencies that were actually loaded
-        this.#checkPluginDefinitions.call(this, dependencyEntry)
-      }
+      this.#checkPluginDefinitions.call(this, dependency)
     })
   }
 
   #checkPluginProviders(plugin: Plugin) {
-
     plugin.provides.forEach(provide => {
       const definition = this.getDefinition(provide.define)
       if (!definition) {
@@ -172,11 +233,7 @@ class PluginManager {
       }
     })
     plugin.dependencies.forEach(dependency => {
-      const dependencyEntry = this.getPluginByUrl(dependency.url)
-      if (dependencyEntry) {
-        // Only perform check on dependencies that were actually loaded
-        this.#checkPluginProviders.call(this, dependencyEntry)
-      }
+      this.#checkPluginProviders.call(this, dependency)
     })
   }
 }
