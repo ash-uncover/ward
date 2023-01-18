@@ -114,7 +114,8 @@ class PluginProvider {
     return this.#elements.reduce((acc: any, element) => {
       acc[element.name] = {
         url: element.url,
-        type: element.type
+        type: element.type,
+        element: element.element
       }
       return acc
     }, {})
