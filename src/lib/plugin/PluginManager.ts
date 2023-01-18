@@ -32,6 +32,12 @@ export interface PluginManagerData {
 export interface PluginManagerDatas {
   [key: string]: PluginData
 }
+export interface PluginManagerDataStates {
+  [key: string]: {
+    data?: PluginData
+    error?: string
+  }
+}
 export interface PluginManagerPlugins {
   [key: string]: Plugin
 }
@@ -46,9 +52,12 @@ class PluginManager implements PluginManagerData {
 
   // Attributes //
 
+  #retryDelay: number = -1
+  #retryInterval: any
+
   #listeners: ((data: PluginManagerData) => void)[] = []
 
-  #datas: PluginManagerDatas = {}
+  #datas: PluginManagerDataStates = {}
   #plugins: PluginManagerPlugins = {}
   #definitions: PluginManagerDefinitions = {}
   #providers: PluginManagerProviders = {}
@@ -59,6 +68,13 @@ class PluginManager implements PluginManagerData {
   }
 
   // Getters & Setters //
+
+  get retryDelay() {
+    return this.#retryDelay
+  }
+  set retryDelay(delay: number) {
+    this.#retryDelay = delay
+  }
 
   get data(): PluginManagerData {
     return {
@@ -88,10 +104,16 @@ class PluginManager implements PluginManagerData {
   }
 
   get datas(): PluginManagerDatas {
-    return this.#datas
+    return Object.keys(this.#datas).reduce((acc: PluginManagerDatas, url) => {
+      const dataState = this.#datas[url]
+      if (dataState && dataState.data) {
+        acc[url] = dataState.data
+      }
+      return acc
+    }, {})
   }
   getData(url: string): PluginData | undefined {
-    return this.#datas[url]
+    return this.#datas[url]?.data
   }
 
   get plugins(): PluginManagerPlugins {
@@ -142,6 +164,7 @@ class PluginManager implements PluginManagerData {
   }
 
   async loadPlugin(url: string) {
+    clearInterval(this.#retryInterval)
     try {
       await this.#loadPluginInternal.call(this, url)
       // Check all plugins info consistency
@@ -149,7 +172,25 @@ class PluginManager implements PluginManagerData {
     } catch (error) {
       // Traces have been logged, we dont want to crash the application
     }
+    if (this.#retryDelay > 0) {
+      this.#retryInterval = setInterval(() => {
+        this.reloadPlugins()
+      }, this.#retryDelay)
+    }
     this.notify()
+  }
+
+  async reloadPlugins() {
+    const rootUrls = Object.values(this.roots).map(plugin => plugin.loadUrl)
+
+    this.#datas = {}
+    this.#plugins = {}
+    this.#definitions = {}
+    this.#providers = {}
+
+    rootUrls.forEach(async (url) => {
+      await this.loadPlugin(url)
+    })
   }
 
   // Internal Methods //
@@ -164,8 +205,13 @@ class PluginManager implements PluginManagerData {
     let data: PluginData
     try {
       data = await helpers.fetchPlugin(url)
-      this.#datas[url] = data
+      this.#datas[url] = {
+        data
+      }
     } catch (error) {
+      this.#datas[url] = {
+        error: String(error)
+      }
       LOGGER.warn(`Failed to load plugin from '${url}'`)
       LOGGER.warn(String(error))
       return false
@@ -173,7 +219,7 @@ class PluginManager implements PluginManagerData {
 
     // Check no plugin with same name exists
     if (this.#plugins[data.name]) {
-      const previousUrl = Object.values(this.#datas).find(dat => dat.name === data.name)
+      const previousUrl = Object.values(this.datas).find(dataState => dataState.name === data.name)
       LOGGER.warn(`Plugin '${data.name}' from '${data.url}' already registered from '${previousUrl}'`)
       return false
     }

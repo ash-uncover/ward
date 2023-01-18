@@ -59,10 +59,12 @@ describe('PluginManager', () => {
   describe('PluginManager', () => {
 
     beforeEach(() => {
+
       spyHelpersFetchPlugin = jest.spyOn(helpers, 'fetchPlugin')
     })
 
     afterEach(() => {
+      PluginManager.retryDelay = -1
       PluginManager.reset()
     })
 
@@ -72,6 +74,7 @@ describe('PluginManager', () => {
         // Declaration
         // Execution
         // Assertion
+        expect(PluginManager.retryDelay).toEqual(-1)
         expect(PluginManager.datas).toEqual({})
         expect(PluginManager.plugins).toEqual({})
         expect(PluginManager.roots).toEqual({})
@@ -85,6 +88,17 @@ describe('PluginManager', () => {
           definitions: {},
           providers: {}
         })
+      })
+    })
+
+    describe('retryDelay', () => {
+      test('set', () => {
+        // Declaration
+        const delay = 5000
+        // Execution
+        PluginManager.retryDelay = delay
+        // Assertion
+        expect(PluginManager.retryDelay).toBe(delay)
       })
     })
 
@@ -104,6 +118,8 @@ describe('PluginManager', () => {
         // Assertion
         expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
         expect(PluginManager.datas).toEqual({})
+        expect(PluginManager.getData('url')).toEqual(undefined)
+        expect(PluginManager.getData('url2')).toEqual(undefined)
       })
 
       test('basic plugin', async () => {
@@ -122,7 +138,23 @@ describe('PluginManager', () => {
         expect(PluginManager.datas).toEqual({ ['url']: data})
         expect(PluginManager.plugins).toEqual({ [data.name]: expectedPlugin})
         expect(PluginManager.roots).toEqual({ [data.name]: expectedPlugin})
+        expect(PluginManager.getData('url')).toEqual(data)
         expect(PluginManager.getPlugin(data.name)).toEqual(expectedPlugin)
+      })
+
+      test('when there is a retry', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl'
+        }
+        PluginManager.retryDelay = 1000
+        spyHelpersFetchPlugin.mockImplementation(() => data)
+        // Execution
+        await PluginManager.loadPlugin('url')
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        // Assertion
+        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(2)
       })
 
       test('plugin with defines', async () => {

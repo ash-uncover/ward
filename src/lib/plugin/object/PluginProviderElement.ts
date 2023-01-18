@@ -1,4 +1,3 @@
-import PluginDefineAttribute from './PluginDefineAttribute'
 import PluginDefineElement from './PluginDefineElement'
 import PluginProvideElement from './PluginProvideElement'
 
@@ -10,6 +9,7 @@ class PluginProviderElement {
 
   #url: string
   #type: string
+  #element?: string
 
   // Constructor //
 
@@ -22,6 +22,7 @@ class PluginProviderElement {
 
     this.#url = `${pluginUrl}${element.url}`
     this.#type = element.type
+    this.#element = element.element
   }
 
   // Getters & Setters //
@@ -29,6 +30,7 @@ class PluginProviderElement {
   get name () { return this.#name }
   get url () { return this.#url }
   get type () { return this.#type }
+  get element () { return this.#element }
 
   // Public Methods //
 

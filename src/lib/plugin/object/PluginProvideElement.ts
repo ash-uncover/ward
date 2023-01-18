@@ -8,6 +8,7 @@ class PluginProvideElement {
   #name: string
   #url: string
   #type: string
+  #element?: string
 
   // Constructor //
 
@@ -20,6 +21,7 @@ class PluginProvideElement {
     this.#name = name
     this.#url = data.url
     this.#type = data.type
+    this.#element = data.element
   }
 
   // Getters & Setters //
@@ -28,6 +30,7 @@ class PluginProvideElement {
   get name () { return this.#name }
   get url () { return this.#url }
   get type () { return this.#type }
+  get element () { return this.#element }
 
   // Public Methods //
 

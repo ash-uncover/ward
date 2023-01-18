@@ -6,7 +6,7 @@ describe('PluginProviderElement', () => {
 
   describe('constructor', () => {
 
-    test('properly fills the object', () => {
+    test('with iframe element', () => {
       // Declaration
       const pluginUrl = 'pluginUrl'
       const elementDefinition = new PluginDefineElement(
@@ -28,6 +28,32 @@ describe('PluginProviderElement', () => {
       expect(result.name).toEqual('elementDefinitionName')
       expect(result.url).toEqual('pluginUrlelementUrl')
       expect(result.type).toEqual('iframe')
+    })
+
+    test('with webcomponent element', () => {
+      // Declaration
+      const pluginUrl = 'pluginUrl'
+      const elementDefinition = new PluginDefineElement(
+        'elementDefinitionPlugin',
+        'elementDefinitionName',
+        {}
+      )
+      const element = new PluginProvideElement(
+        'elementPlugin',
+        'elementName',
+        {
+          url: 'elementUrl',
+          element: 'element',
+          type: 'webcomponent'
+        }
+      )
+      // Execution
+      const result = new PluginProviderElement(pluginUrl, elementDefinition, element)
+      // Assertion
+      expect(result.name).toEqual('elementDefinitionName')
+      expect(result.url).toEqual('pluginUrlelementUrl')
+      expect(result.type).toEqual('webcomponent')
+      expect(result.element).toEqual('element')
     })
   })
 })

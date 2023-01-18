@@ -44,6 +44,7 @@ export interface PluginDataProvideElements {
 }
 export interface PluginDataProvideElement {
   url: string
+  element?: string
   type: 'iframe' | 'webcomponent' | 'component'
 }
 
