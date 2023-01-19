@@ -12,36 +12,42 @@
     "properties": {
       "description": "Define Properties",
       "type": "object",
-      "*": {
-        "description": "Property value",
-        "type": "string"
+      "properties": {
+        "*": {
+          "description": "Property value",
+          "type": "string"
+        }
       }
     },
     "attributes": {
       "description": "Define Attributes",
       "type": "object",
-      "*": {
-        "description": "Attribute value",
-        "type": "string"
+      "properties": {
+        "*": {
+          "description": "Attribute value",
+          "type": "string"
+        }
       }
     },
     "elements": {
       "description": "Define Elements",
       "type": "object",
-      "*": {
-        "type": "object",
-        "properties": {
-          "*": {
-            "type": "object",
-            "properties": {
-              "url": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string"
-              },
-              "element": {
-                "type": "string"
+      "properties": {
+        "*": {
+          "type": "object",
+          "properties": {
+            "*": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "element": {
+                  "type": "string"
+                }
               }
             }
           }

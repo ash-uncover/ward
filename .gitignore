@@ -7,9 +7,6 @@ config.json
 
 # Ignore dist
 dist
-dist_child
-docs
-docs_child
 bundles
 
 # test coverage info
