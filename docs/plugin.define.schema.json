@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ash-uncover.github.io/ward/ward-plugin-define.schema.json",
+  "title": "Ward Plugin Define",
+  "description": "A plugin define in the ward framework",
+  "type": "object",
+  "properties": {
+    "properties": {
+      "description": "Define Properties",
+      "type": "object",
+      "*": {
+        "description": "Property name",
+        "type": "string"
+      }
+    },
+    "attributes": {
+      "description": "Define Attributes",
+      "type": "object",
+      "*": {
+        "description": "Attribute name",
+        "type": "string"
+      }
+    },
+    "elements": {
+      "description": "Define Elements",
+      "type": "object",
+      "*": {
+        "type": "object",
+        "properties": {
+          "*": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+  ],
+  "additionalProperties": false
+}

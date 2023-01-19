@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ash-uncover.github.io/ward/ward-plugin-provide.schema.json",
+  "title": "Ward Plugin Provide",
+  "description": "A plugin provider in the ward framework",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "Name of the provider",
+      "type": "name"
+    },
+    "properties": {
+      "description": "Define Properties",
+      "type": "object",
+      "*": {
+        "description": "Property value",
+        "type": "string"
+      }
+    },
+    "attributes": {
+      "description": "Define Attributes",
+      "type": "object",
+      "*": {
+        "description": "Attribute value",
+        "type": "string"
+      }
+    },
+    "elements": {
+      "description": "Define Elements",
+      "type": "object",
+      "*": {
+        "type": "object",
+        "properties": {
+          "*": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "element": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": false
+}
