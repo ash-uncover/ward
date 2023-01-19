@@ -23,49 +23,23 @@
       "uniqueItems": true
     },
     "defines": {
-      "description": "Definitions from the plugin",
+      "description": "Definitions",
       "type": "object",
-      "properties": {
-        "*": {
-          "type": "object",
-          "properties": {
-            "properties": {
-              "type": "object"
-            },
-            "attributes": {
-              "type": "object"
-            },
-            "elements": {
-              "type": "object"
-            }
-          }
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "https://ash-uncover.github.io/ward/ward-plugin-define.schema.json"
         }
       },
-      "required": [],
       "additionalProperties": false
     },
     "provides": {
-      "description": "Entities provided by the plugin",
+      "description": "Providers",
       "type": "object",
-      "properties": {
-        "*": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "attributes": {
-              "type": "object"
-            },
-            "elements": {
-              "type": "object"
-            }
-          }
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "https://ash-uncover.github.io/ward/ward-plugin-provide.schema.json"
         }
       },
-      "required": [
-        "name"
-      ],
       "additionalProperties": false
     }
   },

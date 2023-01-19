@@ -8,27 +8,33 @@
     "properties": {
       "description": "Define Properties",
       "type": "object",
-      "*": {
-        "description": "Property name",
-        "type": "string"
+      "patternProperties": {
+        "^.*$": {
+          "description": "Property name",
+          "type": "string"
+        }
       }
     },
     "attributes": {
       "description": "Define Attributes",
       "type": "object",
-      "*": {
-        "description": "Attribute name",
-        "type": "string"
+      "patternProperties": {
+        "^.*$": {
+          "description": "Attribute name",
+          "type": "string"
+        }
       }
     },
     "elements": {
       "description": "Define Elements",
       "type": "object",
-      "*": {
-        "type": "object",
-        "properties": {
-          "*": {
-            "type": "object"
+      "patternProperties": {
+        "^.*$": {
+          "type": "object",
+          "properties": {
+            "*": {
+              "type": "object"
+            }
           }
         }
       }

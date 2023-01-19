@@ -12,31 +12,31 @@
     "properties": {
       "description": "Define Properties",
       "type": "object",
-      "properties": {
-        "*": {
+      "patternProperties": {
+        "^.*$": {
           "description": "Property value",
-          "type": "string"
+          "type": ["string", "number", "boolean"]
         }
       }
     },
     "attributes": {
       "description": "Define Attributes",
       "type": "object",
-      "properties": {
-        "*": {
+      "patternProperties": {
+        "^.*$": {
           "description": "Attribute value",
-          "type": "string"
+          "type": ["string", "number", "boolean"]
         }
       }
     },
     "elements": {
       "description": "Define Elements",
       "type": "object",
-      "properties": {
-        "*": {
+      "patternProperties": {
+        "^.*$": {
           "type": "object",
-          "properties": {
-            "*": {
+          "patternProperties": {
+            "^.*$": {
               "type": "object",
               "properties": {
                 "url": {
