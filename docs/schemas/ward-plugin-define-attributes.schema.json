@@ -1,0 +1,18 @@
+{
+  "$id": "https://ash-uncover.github.io/ward/ward-plugin-define-attributes.schema.json",
+  "title": "Ward Plugin Defines Attributes",
+  "description": "Plugin Define Attributes",
+  "type": "object",
+  "patternProperties": {
+    "^.*$": {
+      "description": "Define Attribute",
+      "type": "string",
+      "enum": [
+        "string",
+        "number",
+        "boolean"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

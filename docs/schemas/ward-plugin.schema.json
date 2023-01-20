@@ -1,8 +1,7 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ash-uncover.github.io/ward/ward-plugin.schema.json",
   "title": "Ward Plugin",
-  "description": "A plugin in the ward framework",
+  "description": "Plugin",
   "type": "object",
   "properties": {
     "name": {

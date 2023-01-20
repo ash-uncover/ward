@@ -1,0 +1,23 @@
+export const PluginProvideElementSchema = {
+  $id: 'https://ash-uncover.github.io/ward/ward-plugin-provide-element.schema.json',
+  title: 'Ward Plugin Provide Element',
+  description: 'Plugin Provide Element',
+  type: 'object',
+  properties: {
+    url: {
+      type: 'string'
+    },
+    type: {
+      type: 'string',
+      enum: ['iframe', 'webcomponent', 'component']
+    },
+    element: {
+      type: 'string'
+    }
+  },
+  required: [
+    'url',
+    'type'
+  ],
+  additionalProperties: false
+}
