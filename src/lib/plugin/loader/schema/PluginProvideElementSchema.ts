@@ -1,5 +1,5 @@
 export const PluginProvideElementSchema = {
-  $id: 'https://ash-uncover.github.io/ward/ward-plugin-provide-element.schema.json',
+  $id: 'WardPluginProvideElementSchema',
   title: 'Ward Plugin Provide Element',
   description: 'Plugin Provide Element',
   type: 'object',

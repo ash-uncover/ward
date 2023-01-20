@@ -1,5 +1,5 @@
 {
-  "$id": "https://ash-uncover.github.io/ward/ward-plugin-define-element.schema.json",
+  "$id": "https://ash-uncover.github.io/ward/schemas/ward-plugin-define-element.schema.json",
   "title": "Ward Plugin Define Element",
   "description": "Plugin Define Element",
   "type": "object"

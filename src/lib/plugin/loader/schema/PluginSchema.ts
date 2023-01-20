@@ -1,5 +1,5 @@
 export const PluginSchema = {
-  $id: 'https://ash-uncover.github.io/ward/ward-plugin.schema.json',
+  $id: 'WardPluginSchema',
   title: 'Ward Plugin',
   description: 'Plugin',
   type: 'object',
@@ -30,7 +30,7 @@ export const PluginSchema = {
       type: 'object',
       patternProperties: {
         '^.*$': {
-          $ref: 'https://ash-uncover.github.io/ward/ward-plugin-define.schema.json'
+          $ref: 'WardPluginDefinesSchema'
         }
       },
       additionalProperties: false
@@ -41,7 +41,7 @@ export const PluginSchema = {
       type: 'object',
       patternProperties: {
         '^.*$': {
-          $ref: 'https://ash-uncover.github.io/ward/ward-plugin-provide.schema.json'
+          $ref: 'WardPluginProvidesSchema'
         }
       },
       additionalProperties: false

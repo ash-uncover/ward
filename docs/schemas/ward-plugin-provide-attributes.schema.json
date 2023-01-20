@@ -1,5 +1,5 @@
 {
-  "$id": "https://ash-uncover.github.io/ward/ward-plugin-provide-attributes.schema.json",
+  "$id": "https://ash-uncover.github.io/ward/schemas/ward-plugin-provide-attributes.schema.json",
   "title": "Ward Plugin Provide Attributes",
   "description": "Plugin Provide Attributes",
   "type": "object",

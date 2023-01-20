@@ -1,11 +1,11 @@
 {
-  "$id": "https://ash-uncover.github.io/ward/ward-plugin-defines.schema.json",
+  "$id": "https://ash-uncover.github.io/ward/schemas/ward-plugin-defines.schema.json",
   "title": "Ward Plugin Defines",
   "description": "Plugin Defines",
   "type": "object",
   "patternProperties": {
     "^.*$": {
-      "$ref": "https://ash-uncover.github.io/ward/ward-plugin-define.schema.json"
+      "$ref": "https://ash-uncover.github.io/ward/schemas/ward-plugin-define.schema.json"
     }
   },
   "additionalProperties": false
