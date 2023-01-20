@@ -30,7 +30,7 @@ describe('PluginDefinesSchema', () => {
       ]
     })
     // Execution
-    validate = ajv.getSchema('https://ash-uncover.github.io/ward/ward-plugin-defines.schema.json')!
+    validate = ajv.getSchema('WardPluginDefinesSchema')!
   })
 
   afterEach(() => {

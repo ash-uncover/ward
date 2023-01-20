@@ -37,6 +37,6 @@ const ajv = new Ajv({
   ]
 })
 
-export const validate = ajv.getSchema('https://ash-uncover.github.io/ward/ward-plugin.schema.json')!
+export const validate = ajv.getSchema('WardPluginSchema')!
 
 

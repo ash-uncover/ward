@@ -17,7 +17,7 @@ import {
   PluginSchema
 } from '../../../../../src/lib/plugin/loader/schema'
 
-describe('PluginProvidesSchema', () => {
+describe('PluginSchema', () => {
 
   /* TEST DATA */
 
@@ -48,7 +48,7 @@ describe('PluginProvidesSchema', () => {
       ]
     })
     // Execution
-    validate = ajv.getSchema('https://ash-uncover.github.io/ward/ward-plugin.schema.json')!
+    validate = ajv.getSchema('WardPluginSchema')!
   })
 
   afterEach(() => {
