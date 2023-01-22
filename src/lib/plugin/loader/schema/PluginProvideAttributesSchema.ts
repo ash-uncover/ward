@@ -6,7 +6,18 @@ export const PluginProvideAttributesSchema = {
   patternProperties: {
     '^.*$': {
       description: 'Attribute value',
-      type: ['string', 'number', 'boolean']
+      oneOf: [{
+        type: ['string', 'number', 'boolean']
+      }, {
+        type: 'array',
+        items: { type: 'string' }
+      }, {
+        type: 'array',
+        items: { type: 'number' }
+      }, {
+        type: 'array',
+        items: { type: 'boolean' }
+      }]
     }
   },
   additionalProperties: false

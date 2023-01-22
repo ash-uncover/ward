@@ -1,42 +1,18 @@
 import Logger, { LogLevels } from '@uncover/js-utils-logger'
-import { PluginData, PluginDataValidator } from './model/PluginDataModel'
 import Plugin from './object/Plugin'
 import PluginDefine from './object/PluginDefine'
 import PluginProvider from './object/PluginProvider'
 import { ArrayUtils } from '@uncover/js-utils'
+import { WardPlugin } from './loader/model/PluginDataModel'
+import { PluginLoader } from './loader/PluginLoader'
 
 const LOGGER = new Logger('PluginManager', LogLevels.WARN)
 
-export const helpers = {
-  fetchPlugin: async (url: string) => {
-    try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: new Headers()
-      })
-      const data = await response.json()
-      return data
-    } catch (error) {
-      throw new Error(`[fetchPlugin] Failed to fetch plugin from ${url}: ${error}`)
-    }
-  }
-}
-
 export interface PluginManagerData {
-  datas: PluginManagerDatas
   roots: PluginManagerPlugins
   plugins: PluginManagerPlugins
   definitions: PluginManagerDefinitions
   providers: PluginManagerProviders
-}
-export interface PluginManagerDatas {
-  [key: string]: PluginData
-}
-export interface PluginManagerDataStates {
-  [key: string]: {
-    data?: PluginData
-    error?: string
-  }
 }
 export interface PluginManagerPlugins {
   [key: string]: Plugin
@@ -52,12 +28,13 @@ class PluginManager implements PluginManagerData {
 
   // Attributes //
 
+  #loader = new PluginLoader()
+
   #retryDelay: number = -1
   #retryInterval: any
 
   #listeners: ((data: PluginManagerData) => void)[] = []
 
-  #datas: PluginManagerDataStates = {}
   #plugins: PluginManagerPlugins = {}
   #definitions: PluginManagerDefinitions = {}
   #providers: PluginManagerProviders = {}
@@ -78,12 +55,15 @@ class PluginManager implements PluginManagerData {
 
   get data(): PluginManagerData {
     return {
-      datas: this.datas,
       roots: this.roots,
       plugins: this.plugins,
       definitions: this.definitions,
       providers: this.providers
     }
+  }
+
+  getData(url: string) {
+    return this.#loader.getData(url)
   }
 
   get roots(): PluginManagerPlugins {
@@ -101,19 +81,6 @@ class PluginManager implements PluginManagerData {
       }
       return acc
     }, {})
-  }
-
-  get datas(): PluginManagerDatas {
-    return Object.keys(this.#datas).reduce((acc: PluginManagerDatas, url) => {
-      const dataState = this.#datas[url]
-      if (dataState && dataState.data) {
-        acc[url] = dataState.data
-      }
-      return acc
-    }, {})
-  }
-  getData(url: string): PluginData | undefined {
-    return this.#datas[url]?.data
   }
 
   get plugins(): PluginManagerPlugins {
@@ -155,7 +122,7 @@ class PluginManager implements PluginManagerData {
   }
 
   reset() {
-    this.#datas = {}
+    this.#loader.reset()
     this.#plugins = {}
     this.#definitions = {}
     this.#providers = {}
@@ -183,7 +150,6 @@ class PluginManager implements PluginManagerData {
   async reloadPlugins() {
     const rootUrls = Object.values(this.roots).map(plugin => plugin.loadUrl)
 
-    this.#datas = {}
     this.#plugins = {}
     this.#definitions = {}
     this.#providers = {}
@@ -196,39 +162,24 @@ class PluginManager implements PluginManagerData {
   // Internal Methods //
 
   async #loadPluginInternal(url: string, parent?: string): Promise<any> {
-    if (this.#datas[url]) {
+    if (this.#loader.hasData(url)) {
       LOGGER.warn(`URL already loaded: '${url}'`)
       return true
     }
 
-    // Fetch data
-    let data: PluginData
-    try {
-      data = await helpers.fetchPlugin(url)
-      this.#datas[url] = {
-        data
-      }
-    } catch (error) {
-      this.#datas[url] = {
-        error: String(error)
-      }
-      LOGGER.warn(`Failed to load plugin from '${url}'`)
-      LOGGER.warn(String(error))
+    if (!this.#loader.load(url)) {
+      LOGGER.warn(`Failed to load plugin from: '${url}'`)
+      LOGGER.warn(this.#loader.getErrors(url).join('\n'))
       return false
     }
+
+    // Fetch data
+    const data: WardPlugin = this.#loader.getData(url)!
 
     // Check no plugin with same name exists
     if (this.#plugins[data.name]) {
-      const previousUrl = Object.values(this.datas).find(dataState => dataState.name === data.name)
+      const previousUrl = this.#plugins[data.name].loadUrl
       LOGGER.warn(`Plugin '${data.name}' from '${data.url}' already registered from '${previousUrl}'`)
-      return false
-    }
-
-    // Check data consistency
-    const errors: string[] = PluginDataValidator.checkPluginData(data)
-    if (errors.length) {
-      LOGGER.warn(`Failed to validate plugin from '${url}'`)
-      LOGGER.warn('Invalid plugin data: ' + errors.join(', '))
       return false
     }
 

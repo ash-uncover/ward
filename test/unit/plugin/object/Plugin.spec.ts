@@ -1,5 +1,5 @@
 import PluginManager from '../../../../src/lib/plugin/PluginManager'
-import { PluginData } from '../../../../src/lib/plugin/model/PluginDataModel'
+import { WardPlugin } from '../../../../src/lib/plugin/loader/model/PluginDataModel'
 import Plugin from '../../../../src/lib/plugin/object/Plugin'
 import PluginDefine from '../../../../src/lib/plugin/object/PluginDefine'
 import PluginProvide from '../../../../src/lib/plugin/object/PluginProvide'
@@ -22,7 +22,7 @@ describe('Plugin', () => {
 
     test('basic plugin definition', () => {
       // Declaration
-      const data: PluginData = {
+      const data: WardPlugin = {
         name: 'name',
         url: 'url'
       }
@@ -40,7 +40,7 @@ describe('Plugin', () => {
 
     test('with dependencies', () => {
       // Declaration
-      const data: PluginData = {
+      const data: WardPlugin = {
         name: 'name',
         url: 'url',
         dependencies: ['dep1']
@@ -61,7 +61,7 @@ describe('Plugin', () => {
 
     test('with dependencies when dependency wasnt fetch yet', () => {
       // Declaration
-      const data: PluginData = {
+      const data: WardPlugin = {
         name: 'name',
         url: 'url',
         dependencies: ['dep1']
@@ -82,7 +82,7 @@ describe('Plugin', () => {
 
     test('with dependencies when the dependency is not loaded', () => {
       // Declaration
-      const data: PluginData = {
+      const data: WardPlugin = {
         name: 'name',
         url: 'url',
         dependencies: ['dep1']
@@ -103,7 +103,7 @@ describe('Plugin', () => {
 
     test('with defines', () => {
       // Declaration
-      const data: PluginData = {
+      const data: WardPlugin = {
         name: 'name',
         url: 'url',
         defines: {
@@ -126,12 +126,12 @@ describe('Plugin', () => {
 
     test('with provides', () => {
       // Declaration
-      const data: PluginData = {
+      const data: WardPlugin = {
         name: 'name',
         url: 'url',
         provides: {
           provide: {
-            name: 'provideName'
+            provideName: {}
           }
         }
       }
@@ -151,14 +151,14 @@ describe('Plugin', () => {
 
     test('with provides array', () => {
       // Declaration
-      const data: PluginData = {
+      const data: WardPlugin = {
         name: 'name',
         url: 'url',
         provides: {
-          provide: [
-            { name: 'provideName1' },
-            { name: 'provideName2' },
-          ]
+          provide: {
+            provideName1: {},
+            provideName2: {},
+          }
         }
       }
       const loadUrl = 'loadUrl'

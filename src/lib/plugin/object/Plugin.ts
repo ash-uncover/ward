@@ -1,7 +1,5 @@
 import PluginManager from '../PluginManager'
-import {
-  PluginData,
-} from '../model/PluginDataModel'
+import { WardPlugin, WardPluginProvides } from '../loader/model/PluginDataModel'
 import PluginDefine from './PluginDefine'
 import PluginProvide from './PluginProvide'
 
@@ -22,7 +20,7 @@ class Plugin {
 
   constructor (
     loadUrl: string,
-    data: PluginData
+    data: WardPlugin
   ) {
     this.#loadUrl = loadUrl
     this.#name = data.name
@@ -37,15 +35,12 @@ class Plugin {
     })
 
     const provides = data.provides || {}
-    this.#provides = Object.keys(provides).reduce((acc: PluginProvide[], provideName: string) => {
-      const provide = provides[provideName]
-      if (Array.isArray(provide)) {
-        const newProvides: PluginProvide[] = provide.map(prov => {
-          return new PluginProvide(this.name, provideName, prov)
-        })
-        return [...acc, ...newProvides]
-      }
-      return [...acc, new PluginProvide(this.name, provideName, provide)]
+    this.#provides = Object.keys(provides).reduce((acc: PluginProvide[], defineName: string) => {
+      const provide: WardPluginProvides = provides[defineName]
+      const providers = Object.keys(provide).map((provideName) => {
+        return new PluginProvide(this.name, defineName, provideName, provide[provideName])
+      }, [])
+      return [...acc, ...providers]
     }, [])
   }
 
@@ -69,9 +64,13 @@ class Plugin {
     }, [])
   }
 
-  get defines () { return this.#defines.slice() }
+  get defines () {
+    return this.#defines.slice()
+  }
 
-  get provides () { return this.#provides.slice() }
+  get provides () {
+    return this.#provides.slice()
+  }
 
   // Public Methods //
 

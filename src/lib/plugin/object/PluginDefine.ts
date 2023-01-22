@@ -1,4 +1,4 @@
-import { PluginDataDefine } from '../model/PluginDataModel'
+import { WardPluginDefine } from '../loader/model/PluginDataModel'
 import PluginDefineAttribute from './PluginDefineAttribute'
 import PluginDefineElement from './PluginDefineElement'
 import PluginDefineProperty from './PluginDefineProperty'
@@ -19,7 +19,7 @@ class PluginDefine {
   constructor(
     plugin: string,
     name: string,
-    data: PluginDataDefine
+    data: WardPluginDefine
   ) {
     this.#plugin = plugin
     this.#name = `${plugin}/${name}`

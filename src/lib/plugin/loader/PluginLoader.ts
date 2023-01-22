@@ -17,6 +17,7 @@ import {
 
   PluginSchema,
 } from './schema'
+import { WardPlugin } from './model/PluginDataModel'
 
 const ajv = new Ajv({
   allowUnionTypes: true,
@@ -37,12 +38,33 @@ const ajv = new Ajv({
   ]
 })
 
+type PluginLoadState = 'NONE' | 'LOAD_ERROR' | 'VALIDATION_ERROR' | 'LOADED'
+const PluginLoadStates: {
+  NONE: PluginLoadState
+  LOAD_ERROR: PluginLoadState
+  VALIDATION_ERROR: PluginLoadState
+  LOADED: PluginLoadState
+} = {
+  NONE: 'NONE',
+  LOAD_ERROR: 'LOAD_ERROR',
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  LOADED: 'LOADED'
+}
+
+interface WardPluginState {
+  url: string
+  state: 'NONE' | 'LOAD_ERROR' | 'VALIDATION_ERROR' | 'LOADED'
+  errors: string[]
+  data?: WardPlugin
+  loadDate: number
+}
+
 export class PluginLoader {
 
   // Attributes //
 
   #urls: {
-    [url: string]: any
+    [url: string]: WardPluginState
   } = {}
 
   // Constructors //
@@ -58,35 +80,66 @@ export class PluginLoader {
 
   // Public Methods //
 
+  reset() {
+    this.#urls = {}
+  }
+
   hasData(url: string) {
     return !!this.#urls[url]
   }
+  isLoaded(url: string) {
+    return this.#urls[url]?.state === 'LOADED'
+  }
 
   getData(url: string) {
-    return this.#urls[url]
+    return this.#urls[url].data
+  }
+  getErrors(url: string) {
+    return this.#urls[url].errors
+  }
+  getState(url: string) {
+    return this.#urls[url].state
   }
 
   async load (url: string) {
+    this.#urls[url] = {
+      url,
+      state: 'NONE',
+      errors: [],
+      loadDate: (new Date()).getTime()
+    }
+
     let response: Response
     try {
       response = await this.#fetch(url)
     } catch (error) {
-      throw('Failed to fetch plugin')
+      this.#urls[url].state = 'LOAD_ERROR'
+      this.#urls[url].errors.push(String(error))
+      return false
     }
 
-    let data: any
+    let data: WardPlugin
     try {
       data = await this.#read(response)
+      this.#urls[url].data = data
     } catch (error) {
-      throw('Failed to read plugin data')
+      this.#urls[url].state = 'LOAD_ERROR'
+      this.#urls[url].errors.push(String('Failed to read JSON data'))
+      return false
     }
 
-    const valid = this.#validate(data)
+    const validator = ajv.getSchema<WardPlugin>('WardPluginSchema')!
+    const valid = validator(data)
     if (!valid) {
-      throw('Failed to validate plugin data')
+      this.#urls[url].state = 'VALIDATION_ERROR'
+      if (validator.errors) {
+        this.#urls[url].errors.push(...validator.errors.map(error => String(error)))
+      }
+      return false
     }
 
-    return data
+    this.#urls[url].state = 'LOADED'
+    return true
   }
 
   // Internal Methods //
@@ -100,13 +153,7 @@ export class PluginLoader {
   }
 
   async #read (response: Response) {
-    const data = await response.json()
+    const data: WardPlugin = await response.json()
     return data
-  }
-
-  #validate (data: any) {
-    const validator = ajv.getSchema('https://ash-uncover.github.io/ward/ward-plugin.schema.json')!
-    const result = validator(data)
-    return result
   }
 }

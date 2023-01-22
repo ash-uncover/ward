@@ -1,4 +1,4 @@
-import { PluginDataProvideElement } from '../model/PluginDataModel'
+import { WardPluginProvideElement } from "../loader/model/PluginDataModel"
 
 class PluginProvideElement {
 
@@ -15,7 +15,7 @@ class PluginProvideElement {
   constructor(
     plugin: string,
     name: string,
-    data: PluginDataProvideElement
+    data: WardPluginProvideElement
   ) {
     this.#plugin = plugin
     this.#name = name

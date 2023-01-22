@@ -1,8 +1,6 @@
 import PluginDefine from '../../../../src/lib/plugin/object/PluginDefine'
 import PluginProvide from '../../../../src/lib/plugin/object/PluginProvide'
 import PluginProvider from '../../../../src/lib/plugin/object/PluginProvider'
-import PluginProviderAttribute from '../../../../src/lib/plugin/object/PluginProviderAttribute'
-import PluginProviderElement from '../../../../src/lib/plugin/object/PluginProviderElement'
 
 describe('PluginProvider', () => {
 

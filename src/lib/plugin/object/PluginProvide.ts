@@ -1,4 +1,4 @@
-import { PluginDataProvide } from '../model/PluginDataModel'
+import { WardPluginProvide } from '../loader/model/PluginDataModel'
 import PluginProvideAttribute from './PluginProvideAttribute'
 import PluginProvideElement from './PluginProvideElement'
 
@@ -18,11 +18,12 @@ class PluginProvide {
   constructor(
     plugin: string,
     define: string,
-    data: PluginDataProvide
+    name: string,
+    data: WardPluginProvide
   ) {
     this.#plugin = plugin
     this.#define = define
-    this.#name = data.name
+    this.#name = name
 
     const attributes = data.attributes || {}
     this.#attributes = Object.keys(attributes).map((attributeName) => {

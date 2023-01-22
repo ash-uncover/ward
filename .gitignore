@@ -7,6 +7,7 @@ config.json
 
 # Ignore dist
 dist
+docs_tmp
 bundles
 
 # test coverage info

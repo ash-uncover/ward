@@ -1,4 +1,4 @@
-import { PluginDataProvide } from '../../../../src/lib/plugin/model/PluginDataModel'
+import { WardPluginProvide } from '../../../../src/lib/plugin/loader/model/PluginDataModel'
 import PluginProvide from '../../../../src/lib/plugin/object/PluginProvide'
 
 describe('PluginProvide', () => {
@@ -9,15 +9,12 @@ describe('PluginProvide', () => {
       // Declaration
       const plugin = 'plugin'
       const define = 'define'
-      const data: PluginDataProvide = {
-        name: 'name'
-      }
+      const data: WardPluginProvide = {}
       // Execution
       const result = new PluginProvide(plugin, define, data)
       // Assertion
       expect(result.plugin).toEqual(plugin)
       expect(result.define).toEqual(define)
-      expect(result.name).toEqual(data.name)
       expect(result.attributes).toEqual([])
       expect(result.elements).toEqual([])
     })

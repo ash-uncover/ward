@@ -1,4 +1,4 @@
-import { PluginDataDefineElement } from '../../../../src/lib/plugin/model/PluginDataModel'
+import { WardPluginDefineElement } from '../../../../src/lib/plugin/loader/model/PluginDataModel'
 import PluginDefineElement from '../../../../src/lib/plugin/object/PluginDefineElement'
 
 describe('PluginDefineElement', () => {
@@ -9,7 +9,7 @@ describe('PluginDefineElement', () => {
       // Declaration
       const plugin = 'plugin'
       const name = 'name'
-      const data: PluginDataDefineElement = {}
+      const data: WardPluginDefineElement = {}
       // Execution
       const result = new PluginDefineElement(plugin, name, data)
       // Assertion

@@ -7,7 +7,16 @@ export const PluginDefineAttributesSchema = {
     '^.*$': {
       description: 'Define Attribute',
       type: 'string',
-      enum: ['string', 'number', 'boolean']
+      enum: [
+        'string',
+        'string[]',
+        'url',
+        'url[]',
+        'number',
+        'number[]',
+        'boolean',
+        'boolean[]'
+      ]
     }
   },
   additionalProperties: false

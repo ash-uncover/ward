@@ -1,4 +1,4 @@
-import { PluginDataDefine } from '../../../../src/lib/plugin/model/PluginDataModel'
+import { WardPluginDefine } from '../../../../src/lib/plugin/loader/model/PluginDataModel'
 import PluginDefine from '../../../../src/lib/plugin/object/PluginDefine'
 import PluginDefineAttribute from '../../../../src/lib/plugin/object/PluginDefineAttribute'
 import PluginDefineElement from '../../../../src/lib/plugin/object/PluginDefineElement'
@@ -12,7 +12,7 @@ describe('PluginDefine', () => {
       // Declaration
       const plugin = 'plugin'
       const name = 'name'
-      const data: PluginDataDefine = {}
+      const data: WardPluginDefine = {}
       // Execution
       const result = new PluginDefine(plugin, name, data)
       // Assertion
@@ -27,7 +27,7 @@ describe('PluginDefine', () => {
       // Declaration
       const plugin = 'plugin'
       const name = 'name'
-      const data: PluginDataDefine = {
+      const data: WardPluginDefine = {
         properties: {
           prop1: 'string'
         }
@@ -48,7 +48,7 @@ describe('PluginDefine', () => {
       // Declaration
       const plugin = 'plugin'
       const name = 'name'
-      const data: PluginDataDefine = {
+      const data: WardPluginDefine = {
         attributes: {
           att1: 'string'
         }
@@ -69,7 +69,7 @@ describe('PluginDefine', () => {
       // Declaration
       const plugin = 'plugin'
       const name = 'name'
-      const data: PluginDataDefine = {
+      const data: WardPluginDefine = {
         elements: {
           elem1: {}
         }

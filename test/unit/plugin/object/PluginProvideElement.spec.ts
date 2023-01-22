@@ -1,5 +1,5 @@
+import { WardPluginProvideElement } from '../../../../src/lib/plugin/loader/model/PluginDataModel'
 import PluginProvideElement from '../../../../src/lib/plugin/object/PluginProvideElement'
-import { PluginDataProvideElement } from '../../../../src/lib/plugin/model/PluginDataModel'
 
 describe('PluginProvideElement', () => {
 
@@ -9,7 +9,7 @@ describe('PluginProvideElement', () => {
       // Declaration
       const plugin = 'plugin'
       const name = 'name'
-      const data: PluginDataProvideElement = {
+      const data: WardPluginProvideElement = {
         url: 'url',
         type: 'iframe'
       }
@@ -26,7 +26,7 @@ describe('PluginProvideElement', () => {
       // Declaration
       const plugin = 'plugin'
       const name = 'name'
-      const data: PluginDataProvideElement = {
+      const data: WardPluginProvideElement = {
         url: 'url',
         element: 'element',
         type: 'webcomponent'

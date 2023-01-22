@@ -1,4 +1,3 @@
-import { PluginDataDefineElement } from '../../../../src/lib/plugin/model/PluginDataModel'
 import PluginDefineAttribute from '../../../../src/lib/plugin/object/PluginDefineAttribute'
 
 describe('PluginDefineAttribute', () => {
