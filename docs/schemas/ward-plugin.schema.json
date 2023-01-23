@@ -22,14 +22,7 @@
       "uniqueItems": true
     },
     "defines": {
-      "description": "Definitions",
-      "type": "object",
-      "patternProperties": {
-        "^.*$": {
-          "$ref": "https://ash-uncover.github.io/ward/schemas/ward-plugin-defines.schema.json"
-        }
-      },
-      "additionalProperties": false
+      "$ref": "https://ash-uncover.github.io/ward/schemas/ward-plugin-defines.schema.json"
     },
     "provides": {
       "description": "Providers",
@@ -38,8 +31,7 @@
         "^.*$": {
           "$ref": "https://ash-uncover.github.io/ward/schemas/ward-plugin-provides.schema.json"
         }
-      },
-      "additionalProperties": false
+      }
     }
   },
   "required": [

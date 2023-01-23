@@ -67,7 +67,17 @@ describe('PluginDefinesSchema', () => {
     test('when receiving object with some entries', () => {
       // Declaration
       const data = {
-        define1: {},
+        define1: {
+          properties: {
+            prop: "string"
+          },
+          attributes: {
+            att: "string"
+          },
+          elements: {
+            elem: {}
+          }
+        },
       }
       // Execution
       const valid = validate(data)

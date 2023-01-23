@@ -100,7 +100,7 @@ describe('PluginManager', () => {
       expect(element.element).toBe('test-element')
     })
 
-    test.only('load ward-demo plugin', async () => {
+    test('load ward-demo plugin', async () => {
       // Declaration
       const data = {
         name: "ward-demo",
@@ -141,7 +141,7 @@ describe('PluginManager', () => {
       const plugin = PluginMgr.getPlugin('ward-demo')
       expect(plugin).toBeDefined()
       expect(plugin!.dependencies).toHaveLength(2)
-      
+
     })
   })
 })

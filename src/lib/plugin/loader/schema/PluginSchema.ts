@@ -26,14 +26,7 @@ export const PluginSchema = {
     },
 
     defines: {
-      description: 'Definitions',
-      type: 'object',
-      patternProperties: {
-        '^.*$': {
-          $ref: 'WardPluginDefinesSchema'
-        }
-      },
-      additionalProperties: false
+      $ref: 'WardPluginDefinesSchema'
     },
 
     provides: {
@@ -43,8 +36,7 @@ export const PluginSchema = {
         '^.*$': {
           $ref: 'WardPluginProvidesSchema'
         }
-      },
-      additionalProperties: false
+      }
     }
   },
   required: [

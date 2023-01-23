@@ -18,6 +18,10 @@ import {
   PluginSchema,
 } from './schema'
 
+import {
+  WardPlugin
+} from './model/PluginDataModel'
+
 const ajv = new Ajv({
   allowUnionTypes: true,
   schemas: [
@@ -27,16 +31,20 @@ const ajv = new Ajv({
     PluginDefinePropertiesSchema,
     PluginDefineSchema,
     PluginDefinesSchema,
+
     PluginProvideAttributesSchema,
     PluginProvideElementSchema,
     PluginProvideElementsSchema,
     PluginProvidePropertiesSchema,
     PluginProvideSchema,
     PluginProvidesSchema,
+
     PluginSchema,
   ]
 })
 
 export const validate = ajv.getSchema('WardPluginSchema')!
+
+export const getValidator = () => ajv.getSchema<WardPlugin>('WardPluginSchema')!
 
 

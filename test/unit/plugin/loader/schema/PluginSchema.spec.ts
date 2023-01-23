@@ -78,11 +78,24 @@ describe('PluginSchema', () => {
         name: 'name',
         url: 'url',
         dependencies: ['dep1', 'dep2'],
-        defines: {},
+        defines: {
+          define1: {
+            properties: {
+              prop: "string"
+            },
+            attributes: {
+              att: "string"
+            },
+            elements: {
+              elem: {}
+            }
+          }
+        },
         provides: {}
       }
       // Execution
       const valid = validate(data)
+      console.log(validate.errors)
       // Assertion
       expect(valid).toBe(true)
       expect(validate.errors).toEqual(null)

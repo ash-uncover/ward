@@ -16,12 +16,7 @@ export interface WardPlugin {
    * @minItems 0
    */
   dependencies?: string[]
-  /**
-   * Definitions
-   */
-  defines?: {
-    [k: string]: WardPluginDefines
-  }
+  defines?: WardPluginDefines
   /**
    * Providers
    */
@@ -31,9 +26,6 @@ export interface WardPlugin {
 }
 /**
  * Plugin Defines
- *
- * This interface was referenced by `undefined`'s JSON-Schema definition
- * via the `patternProperty` "^.*$".
  */
 export interface WardPluginDefines {
   [k: string]: WardPluginDefine

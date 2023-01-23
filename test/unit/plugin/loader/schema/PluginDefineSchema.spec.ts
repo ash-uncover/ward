@@ -75,6 +75,26 @@ describe('PluginDefinePropertiesSchema', () => {
       expect(validate.errors).toEqual(null)
     })
 
+    test('when receiving complete object information', () => {
+      // Declaration
+      const data = {
+        properties: {
+          prop: "string"
+        },
+        attributes: {
+          prop: "string"
+        },
+        elements: {
+          elem: {}
+        }
+      }
+      // Execution
+      const valid = validate(data)
+      // Assertion
+      expect(valid).toBe(true)
+      expect(validate.errors).toEqual(null)
+    })
+
     test('when receiving object with invalid entries', () => {
       // Declaration
       const data = {

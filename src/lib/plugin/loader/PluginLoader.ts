@@ -1,42 +1,6 @@
-import Ajv from 'ajv'
-
-import {
-  PluginDefineAttributesSchema,
-  PluginDefineElementSchema,
-  PluginDefineElementsSchema,
-  PluginDefinePropertiesSchema,
-  PluginDefineSchema,
-  PluginDefinesSchema,
-
-  PluginProvideAttributesSchema,
-  PluginProvideElementSchema,
-  PluginProvideElementsSchema,
-  PluginProvidePropertiesSchema,
-  PluginProvideSchema,
-  PluginProvidesSchema,
-
-  PluginSchema,
-} from './schema'
 import { WardPlugin } from './model/PluginDataModel'
+import { getValidator } from './JsonValidator'
 
-const ajv = new Ajv({
-  allowUnionTypes: true,
-  schemas: [
-    PluginDefineAttributesSchema,
-    PluginDefineElementSchema,
-    PluginDefineElementsSchema,
-    PluginDefinePropertiesSchema,
-    PluginDefineSchema,
-    PluginDefinesSchema,
-    PluginProvideAttributesSchema,
-    PluginProvideElementSchema,
-    PluginProvideElementsSchema,
-    PluginProvidePropertiesSchema,
-    PluginProvideSchema,
-    PluginProvidesSchema,
-    PluginSchema,
-  ]
-})
 
 export type PluginLoadState = 'NONE' | 'LOAD_ERROR' | 'VALIDATION_ERROR' | 'LOADED'
 export const PluginLoadStates: {
@@ -138,12 +102,12 @@ class PluginLoader implements IPluginLoader {
       return false
     }
 
-    const validator = ajv.getSchema<WardPlugin>('WardPluginSchema')!
+    const validator = getValidator()
     const valid = validator(data)
     if (!valid) {
       this.#urls[url].state = PluginLoadStates.VALIDATION_ERROR
       if (validator.errors) {
-        this.#urls[url].errors.push(...validator.errors.map(error => String(error)))
+        this.#urls[url].errors.push(...validator.errors.map(error => JSON.stringify(error)))
       }
       return false
     }
