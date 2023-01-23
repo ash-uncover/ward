@@ -138,6 +138,8 @@ class PluginManager implements PluginManagerData {
       // Check all plugins info consistency
       this.#checkPluginsInternal.call(this)
     } catch (error) {
+      /* istanbul ignore next */
+      LOGGER.error(String(error))
       // Traces have been logged, we dont want to crash the application
     }
     if (this.#retryDelay > 0) {
@@ -168,7 +170,8 @@ class PluginManager implements PluginManagerData {
       return true
     }
 
-    if (!this.#loader.load(url)) {
+    const loadValid = await this.#loader.load(url)
+    if (!loadValid) {
       LOGGER.warn(`Failed to load plugin from: '${url}'`)
       LOGGER.warn(this.#loader.getErrors(url).join('\n'))
       return false

@@ -99,6 +99,49 @@ describe('PluginManager', () => {
       expect(element.type).toBe('webcomponent')
       expect(element.element).toBe('test-element')
     })
-  })
 
+    test.only('load ward-demo plugin', async () => {
+      // Declaration
+      const data = {
+        name: "ward-demo",
+        description: "Ward Demo",
+        url: "http://localhost:27000",
+        dependencies: [
+          "http://localhost:27001/plugin.json",
+          "http://localhost:27002/plugin.json"
+        ],
+        defines: {
+          viewers: {
+            attributes: {
+              id: "string",
+              name: "string"
+            },
+            elements: {
+              viewer: {}
+            }
+          }
+        }
+      }
+      mockPluginLoaderHasData.mockImplementation(() => false)
+      mockPluginLoaderLoad.mockImplementation(() => true)
+      mockPluginLoaderGetErrors.mockImplementation(() => [])
+      mockPluginLoaderGetData.mockImplementation((url) => {
+        if (url === `${data.url}/plugin.json`) {
+          return data
+        }
+        return {}
+      })
+      // Execution
+      await PluginMgr.loadPlugin(`${data.url}/plugin.json`)
+      // Assertion
+      expect(mockPluginLoaderLoad).toHaveBeenCalledTimes(3)
+      expect(mockPluginLoaderLoad).toHaveBeenCalledWith(`${data.url}/plugin.json`)
+      expect(mockPluginLoaderLoad).toHaveBeenCalledWith(`http://localhost:27001/plugin.json`)
+      expect(mockPluginLoaderLoad).toHaveBeenCalledWith(`http://localhost:27002/plugin.json`)
+      const plugin = PluginMgr.getPlugin('ward-demo')
+      expect(plugin).toBeDefined()
+      expect(plugin!.dependencies).toHaveLength(2)
+      
+    })
+  })
 })
