@@ -38,8 +38,8 @@ const ajv = new Ajv({
   ]
 })
 
-type PluginLoadState = 'NONE' | 'LOAD_ERROR' | 'VALIDATION_ERROR' | 'LOADED'
-const PluginLoadStates: {
+export type PluginLoadState = 'NONE' | 'LOAD_ERROR' | 'VALIDATION_ERROR' | 'LOADED'
+export const PluginLoadStates: {
   NONE: PluginLoadState
   LOAD_ERROR: PluginLoadState
   VALIDATION_ERROR: PluginLoadState
@@ -53,13 +53,23 @@ const PluginLoadStates: {
 
 interface WardPluginState {
   url: string
-  state: 'NONE' | 'LOAD_ERROR' | 'VALIDATION_ERROR' | 'LOADED'
+  state: PluginLoadState
   errors: string[]
   data?: WardPlugin
   loadDate: number
 }
 
-export class PluginLoader {
+export interface IPluginLoader {
+  urls: string[]
+  reset: () => void
+  hasData: (url: string) => boolean
+  isLoaded: (url: string) => boolean
+  getData: (url: string) => WardPlugin | undefined
+  getErrors: (url: string) => string[]
+  getState: (url: string) => PluginLoadState
+  load: (url: string) => Promise<boolean>
+}
+class PluginLoader implements IPluginLoader {
 
   // Attributes //
 
@@ -85,20 +95,20 @@ export class PluginLoader {
   }
 
   hasData(url: string) {
-    return !!this.#urls[url]
+    return !!this.#urls[url]?.data
   }
   isLoaded(url: string) {
-    return this.#urls[url]?.state === 'LOADED'
+    return this.#urls[url]?.state === PluginLoadStates.LOADED
   }
 
   getData(url: string) {
-    return this.#urls[url].data
+    return this.#urls[url]?.data
   }
   getErrors(url: string) {
-    return this.#urls[url].errors
+    return this.#urls[url]?.errors || []
   }
   getState(url: string) {
-    return this.#urls[url].state
+    return this.#urls[url]?.state || PluginLoadStates.NONE
   }
 
   async load (url: string) {
@@ -113,7 +123,7 @@ export class PluginLoader {
     try {
       response = await this.#fetch(url)
     } catch (error) {
-      this.#urls[url].state = 'LOAD_ERROR'
+      this.#urls[url].state = PluginLoadStates.LOAD_ERROR
       this.#urls[url].errors.push(String(error))
       return false
     }
@@ -123,22 +133,22 @@ export class PluginLoader {
       data = await this.#read(response)
       this.#urls[url].data = data
     } catch (error) {
-      this.#urls[url].state = 'LOAD_ERROR'
-      this.#urls[url].errors.push(String('Failed to read JSON data'))
+      this.#urls[url].state = PluginLoadStates.LOAD_ERROR
+      this.#urls[url].errors.push(String(error))
       return false
     }
 
     const validator = ajv.getSchema<WardPlugin>('WardPluginSchema')!
     const valid = validator(data)
     if (!valid) {
-      this.#urls[url].state = 'VALIDATION_ERROR'
+      this.#urls[url].state = PluginLoadStates.VALIDATION_ERROR
       if (validator.errors) {
         this.#urls[url].errors.push(...validator.errors.map(error => String(error)))
       }
       return false
     }
 
-    this.#urls[url].state = 'LOADED'
+    this.#urls[url].state = PluginLoadStates.LOADED
     return true
   }
 
@@ -157,3 +167,5 @@ export class PluginLoader {
     return data
   }
 }
+
+export default PluginLoader

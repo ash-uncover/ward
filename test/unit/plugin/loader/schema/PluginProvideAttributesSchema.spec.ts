@@ -77,7 +77,7 @@ describe('PluginProvideAttributesSchema', () => {
       const valid = validate(data)
       // Assertion
       expect(valid).toBe(false)
-      expect(validate.errors).toHaveLength(1)
+      expect(validate.errors).toHaveLength(5)
     })
   })
 })

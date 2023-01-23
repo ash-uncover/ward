@@ -1,4 +1,3 @@
-import PluginManager from '../../../../src/lib/plugin/PluginManager'
 import { WardPlugin } from '../../../../src/lib/plugin/loader/model/PluginDataModel'
 import Plugin from '../../../../src/lib/plugin/object/Plugin'
 import PluginDefine from '../../../../src/lib/plugin/object/PluginDefine'
@@ -12,12 +11,7 @@ describe('Plugin', () => {
 
   describe('constructor', () => {
 
-    let spyPluginManagerGetData: any
-    let spyPluginManagerGetPlugin: any
-
     beforeEach(() => {
-      spyPluginManagerGetData = jest.spyOn(PluginManager, 'getData')
-      spyPluginManagerGetPlugin = jest.spyOn(PluginManager, 'getPlugin')
     })
 
     test('basic plugin definition', () => {
@@ -46,59 +40,10 @@ describe('Plugin', () => {
         dependencies: ['dep1']
       }
       const loadUrl = 'loadUrl'
-      const resultData = { name: 'depName' }
-      const resultPlugin = { data: 'value' }
-      spyPluginManagerGetData.mockImplementation(() => resultData)
-      spyPluginManagerGetPlugin.mockImplementation(() => resultPlugin)
       // Execution
       const result = new Plugin(loadUrl, data)
       // Assertion
-      const expected = [resultPlugin]
-      expect(result.dependencies).toEqual(expected)
-      expect(spyPluginManagerGetData).toHaveBeenCalledTimes(1)
-      expect(spyPluginManagerGetPlugin).toHaveBeenCalledTimes(1)
-    })
-
-    test('with dependencies when dependency wasnt fetch yet', () => {
-      // Declaration
-      const data: WardPlugin = {
-        name: 'name',
-        url: 'url',
-        dependencies: ['dep1']
-      }
-      const loadUrl = 'loadUrl'
-      const resultData = { name: 'depName' }
-      const resultPlugin = { data: 'value' }
-      spyPluginManagerGetData.mockImplementation(() => null)
-      spyPluginManagerGetPlugin.mockImplementation(() => resultPlugin)
-      // Execution
-      const result = new Plugin(loadUrl, data)
-      // Assertion
-      const expected: any[] = []
-      expect(result.dependencies).toEqual(expected)
-      expect(spyPluginManagerGetData).toHaveBeenCalledTimes(1)
-      expect(spyPluginManagerGetPlugin).toHaveBeenCalledTimes(0)
-    })
-
-    test('with dependencies when the dependency is not loaded', () => {
-      // Declaration
-      const data: WardPlugin = {
-        name: 'name',
-        url: 'url',
-        dependencies: ['dep1']
-      }
-      const loadUrl = 'loadUrl'
-      const resultData = { name: 'depName' }
-      const resultPlugin = { data: 'value' }
-      spyPluginManagerGetData.mockImplementation(() => resultData)
-      spyPluginManagerGetPlugin.mockImplementation(() => null)
-      // Execution
-      const result = new Plugin(loadUrl, data)
-      // Assertion
-      const expected: any[] = []
-      expect(result.dependencies).toEqual(expected)
-      expect(spyPluginManagerGetData).toHaveBeenCalledTimes(1)
-      expect(spyPluginManagerGetPlugin).toHaveBeenCalledTimes(1)
+      expect(result.dependencies).toEqual(data.dependencies)
     })
 
     test('with defines', () => {
@@ -142,9 +87,8 @@ describe('Plugin', () => {
       const expectedProvide = new PluginProvide(
         'name',
         'provide',
-        {
-          name: 'provideName'
-        }
+        'provideName',
+        {}
       )
       expect(result.provides).toEqual([expectedProvide])
     })
@@ -168,16 +112,14 @@ describe('Plugin', () => {
       const expectedProvide1 = new PluginProvide(
         'name',
         'provide',
-        {
-          name: 'provideName1'
-        }
+        'provideName',
+        {}
       )
       const expectedProvide2 = new PluginProvide(
         'name',
         'provide',
-        {
-          name: 'provideName2'
-        }
+        'provideName',
+        {}
       )
       expect(result.provides).toEqual([expectedProvide1, expectedProvide2])
     })

@@ -1,25 +1,48 @@
-import PluginManager, { helpers } from '../../../src/lib/plugin/PluginManager'
+import PluginManager from '../../../src/lib/plugin/PluginManager'
 import { LogConfig } from '@uncover/js-utils-logger'
-import Plugin from '../../../src/lib/plugin/object/Plugin'
-import PluginDefine from '../../../src/lib/plugin/object/PluginDefine'
-import PluginProvider from '../../../src/lib/plugin/object/PluginProvider'
-import PluginProvide from '../../../src/lib/plugin/object/PluginProvide'
+import PluginLoader from '../../../src/lib/plugin//loader/PluginLoader'
+
 
 LogConfig.off()
 
 describe('PluginManager', () => {
 
-  let spyHelpersFetchPlugin: any
+  /* TEST DATA */
+
+  let mockPluginLoaderReset = jest.fn()
+  let mockPluginLoaderHasData = jest.fn()
+  let mockPluginLoaderIsLoaded = jest.fn()
+  let mockPluginLoaderGetData = jest.fn()
+  let mockPluginLoaderGetErrors = jest.fn()
+  let mockPluginLoaderGetState = jest.fn()
+  let mockPluginLoaderLoad = jest.fn()
+
+  let PluginMgr: PluginManager
+
+  /* TEST SETUP */
+
+  beforeEach(() => {
+    jest.restoreAllMocks()
+    const mockPluginLoader = {
+      reset: mockPluginLoaderReset,
+      urls: [],
+      hasData: mockPluginLoaderHasData,
+      isLoaded: mockPluginLoaderIsLoaded,
+      getData: mockPluginLoaderGetData,
+      getErrors: mockPluginLoaderGetErrors,
+      getState: mockPluginLoaderGetState,
+      load: mockPluginLoaderLoad
+    }
+    PluginMgr = new PluginManager(mockPluginLoader)
+  })
 
   afterEach(() => {
     jest.restoreAllMocks()
   })
 
-  describe('loadPlugin', () => {
+  /* TEST CASES */
 
-    beforeEach(() => {
-      spyHelpersFetchPlugin = jest.spyOn(helpers, 'fetchPlugin')
-    })
+  describe('loadPlugin', () => {
 
     test('', async () => {
       // Declaration
@@ -38,30 +61,32 @@ describe('PluginManager', () => {
         },
         provides: {
           'test/example': {
-            name: 'default',
-            elements: {
-              'my-element': {
-                url: '/test.wc.js',
-                type: 'webcomponent',
-                element: 'test-element',
+            default: {
+              elements: {
+                'my-element': {
+                  url: '/test.wc.js',
+                  type: 'webcomponent',
+                  element: 'test-element',
+                }
               }
             }
           }
         }
       }
-      spyHelpersFetchPlugin.mockImplementation(() => data)
+      mockPluginLoaderHasData.mockImplementation(() => false)
+      mockPluginLoaderLoad.mockImplementation(() => true)
+      mockPluginLoaderGetErrors.mockImplementation(() => [])
+      mockPluginLoaderGetData.mockImplementation(() => data)
       // Execution
-      await PluginManager.loadPlugin(`${data.url}/plugin.json`)
+      await PluginMgr.loadPlugin(`${data.url}/plugin.json`)
       // Assertion
-      expect(PluginManager.datas).toEqual({ [`${data.url}/plugin.json`]: data })
-
-      const plugin = PluginManager.getPlugin('test')
+      const plugin = PluginMgr.getPlugin('test')
       expect(plugin).toBeDefined()
 
-      const define = PluginManager.getDefinition('test/example')
+      const define = PluginMgr.getDefinition('test/example')
       expect(define).toBeDefined()
 
-      const provider = PluginManager.getProvider('test/example/default')
+      const provider = PluginMgr.getProvider('test/example/default')
       expect(provider).toBeDefined()
       expect(provider.name).toBe('test/example/default')
       expect(provider.plugin).toBe('test')

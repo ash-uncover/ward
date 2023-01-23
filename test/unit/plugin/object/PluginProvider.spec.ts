@@ -17,9 +17,8 @@ describe('PluginProvider', () => {
       const provide = new PluginProvide(
         'providePlugin',
         'provideDefine',
-        {
-          name: 'provideName'
-        }
+        'provideName',
+        {}
       )
       // Execution
       const result = new PluginProvider(pluginUrl, definition, provide)
@@ -50,8 +49,8 @@ describe('PluginProvider', () => {
       const provide = new PluginProvide(
         'providePlugin',
         'provideDefine',
+        'provideName',
         {
-          name: 'provideName',
           attributes: {
            att1: 'value1'
           },
@@ -102,8 +101,8 @@ describe('PluginProvider', () => {
       const provide = new PluginProvide(
         'providePlugin',
         'provideDefine',
+        'provideName',
         {
-          name: 'provideName',
           attributes: {
            att1: 'value1'
           },
@@ -138,8 +137,8 @@ describe('PluginProvider', () => {
       const provide = new PluginProvide(
         'providePlugin',
         'provideDefine',
+        'provideName',
         {
-          name: 'provideName',
           attributes: {
            att1: ['value1', 'value2']
           },
@@ -174,8 +173,8 @@ describe('PluginProvider', () => {
       const provide = new PluginProvide(
         'providePlugin',
         'provideDefine',
+        'provideName',
         {
-          name: 'provideName',
           attributes: {},
           elements: {
             element1: {
@@ -208,8 +207,8 @@ describe('PluginProvider', () => {
       const provide = new PluginProvide(
         'providePlugin',
         'provideDefine',
+        'provideName',
         {
-          name: 'provideName',
           attributes: {
            att1: 'value1'
           }

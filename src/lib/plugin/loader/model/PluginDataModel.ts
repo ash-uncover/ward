@@ -59,7 +59,7 @@ export interface WardPluginDefineProperties {
    * This interface was referenced by `WardPluginDefineProperties`'s JSON-Schema definition
    * via the `patternProperty` "^.*$".
    */
-  [k: string]: 'string' | 'number' | 'boolean'
+  [k: string]: 'string' | 'string[]' | 'url' | 'url[]' | 'number' | 'number[]' | 'boolean' | 'boolean[]'
 }
 /**
  * Plugin Define Attributes
@@ -71,7 +71,7 @@ export interface WardPluginDefinesAttributes {
    * This interface was referenced by `WardPluginDefinesAttributes`'s JSON-Schema definition
    * via the `patternProperty` "^.*$".
    */
-  [k: string]: 'string' | 'number' | 'boolean'
+  [k: string]: 'string' | 'string[]' | 'url' | 'url[]' | 'number' | 'number[]' | 'boolean' | 'boolean[]'
 }
 /**
  * Plugin Define Elements
@@ -118,7 +118,7 @@ export interface WardPluginProvideProperties {
    * This interface was referenced by `WardPluginProvideProperties`'s JSON-Schema definition
    * via the `patternProperty` "^.*$".
    */
-  [k: string]: string | number | boolean
+  [k: string]: (string | number | boolean) | string[] | number[] | boolean[]
 }
 /**
  * Plugin Provide Attributes
@@ -130,7 +130,7 @@ export interface WardPluginProvideAttributes {
    * This interface was referenced by `WardPluginProvideAttributes`'s JSON-Schema definition
    * via the `patternProperty` "^.*$".
    */
-  [k: string]: string | number | boolean
+  [k: string]: (string | number | boolean) | string[] | number[] | boolean[]
 }
 /**
  * Plugin Provide Elements

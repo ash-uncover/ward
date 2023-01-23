@@ -1,4 +1,4 @@
-import PluginManager, { helpers } from '../../../src/lib/plugin/PluginManager'
+import PluginManager from '../../../src/lib/plugin/PluginManager'
 import { LogConfig } from '@uncover/js-utils-logger'
 import Plugin from '../../../src/lib/plugin/object/Plugin'
 import PluginDefine from '../../../src/lib/plugin/object/PluginDefine'
@@ -11,61 +11,45 @@ describe('PluginManager', () => {
 
   /* TEST DATA */
 
+  let mockPluginLoaderReset = jest.fn()
+  let mockPluginLoaderHasData = jest.fn()
+  let mockPluginLoaderIsLoaded = jest.fn()
+  let mockPluginLoaderGetData = jest.fn()
+  let mockPluginLoaderGetErrors = jest.fn()
+  let mockPluginLoaderGetState = jest.fn()
+  let mockPluginLoaderLoad = jest.fn()
+
+  let PluginMgr: PluginManager
 
   /* TEST SETUP */
 
-  let spyHelpersFetchPlugin: any
-
   beforeEach(() => {
+    const mockPluginLoader = {
+      reset: mockPluginLoaderReset,
+      urls: [],
+      hasData: mockPluginLoaderHasData,
+      isLoaded: mockPluginLoaderIsLoaded,
+      getData: mockPluginLoaderGetData,
+      getErrors: mockPluginLoaderGetErrors,
+      getState: mockPluginLoaderGetState,
+      load: mockPluginLoaderLoad
+    }
+    PluginMgr = new PluginManager(mockPluginLoader)
   })
 
   afterEach(() => {
     jest.restoreAllMocks()
   })
 
-
   /* TEST CASES */
 
-  // helpers.fetchPlugin //
-
-  describe('helpers.fetchPlugin', () => {
-
-    test('When fetch is correct', async () => {
-      // Declaration
-      const url = 'url'
-      const data = {}
-      // @ts-ignore
-      global.fetch = jest.fn((input: URL) => Promise.resolve({
-        json: () => Promise.resolve(data)
-      }))
-      // Execution
-      const result = await helpers.fetchPlugin(url)
-      // Assertion
-      expect(result).toEqual(data)
-    })
-
-    test('When fetch throws', async () => {
-      // Declaration
-      const url = 'url'
-      // @ts-ignore
-      global.fetch = jest.fn(() => Promise.reject())
-      // Execution
-      await expect(helpers.fetchPlugin(url))
-        .rejects
-        .toThrow()
-    })
-  })
 
   describe('PluginManager', () => {
 
     beforeEach(() => {
-
-      spyHelpersFetchPlugin = jest.spyOn(helpers, 'fetchPlugin')
     })
 
     afterEach(() => {
-      PluginManager.retryDelay = -1
-      PluginManager.reset()
     })
 
     describe('constructor', () => {
@@ -73,16 +57,15 @@ describe('PluginManager', () => {
       test('initial values', () => {
         // Declaration
         // Execution
+        PluginMgr = new PluginManager()
         // Assertion
-        expect(PluginManager.retryDelay).toEqual(-1)
-        expect(PluginManager.datas).toEqual({})
-        expect(PluginManager.plugins).toEqual({})
-        expect(PluginManager.roots).toEqual({})
-        expect(PluginManager.definitions).toEqual({})
-        expect(PluginManager.providers).toEqual({})
+        expect(PluginMgr.retryDelay).toEqual(-1)
+        expect(PluginMgr.plugins).toEqual({})
+        expect(PluginMgr.roots).toEqual({})
+        expect(PluginMgr.definitions).toEqual({})
+        expect(PluginMgr.providers).toEqual({})
 
-        expect(PluginManager.data).toEqual({
-          datas: {},
+        expect(PluginMgr.data).toEqual({
           roots: {},
           plugins: {},
           definitions: {},
@@ -96,65 +79,90 @@ describe('PluginManager', () => {
         // Declaration
         const delay = 5000
         // Execution
-        PluginManager.retryDelay = delay
+        PluginMgr.retryDelay = delay
         // Assertion
-        expect(PluginManager.retryDelay).toBe(delay)
+        expect(PluginMgr.retryDelay).toBe(delay)
       })
     })
 
     describe('loadPlugin', () => {
 
-      test('when fetch fails', async () => {
+      test('when plugin with same url is already loaded', async () => {
         // Declaration
+        const url = 'url'
         const data = {
           name: 'pluginName',
           url: 'pluginUrl'
         }
-        spyHelpersFetchPlugin.mockImplementation(() => {
-          throw new Error()
-        })
+        mockPluginLoaderHasData.mockImplementation(() => true)
         // Execution
-        const result = await PluginManager.loadPlugin('url')
+        await PluginMgr.loadPlugin('url')
         // Assertion
-        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
-        expect(PluginManager.datas).toEqual({})
-        expect(PluginManager.getData('url')).toEqual(undefined)
-        expect(PluginManager.getData('url2')).toEqual(undefined)
+        expect(PluginMgr.plugins).toEqual({})
+        expect(PluginMgr.roots).toEqual({})
+        expect(PluginMgr.definitions).toEqual({})
+        expect(PluginMgr.providers).toEqual({})
       })
 
-      test('basic plugin', async () => {
+      test('when plugin fails to load', async () => {
         // Declaration
+        const url = 'url'
         const data = {
           name: 'pluginName',
           url: 'pluginUrl'
         }
-        spyHelpersFetchPlugin.mockImplementation(() => data)
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => false)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
         // Execution
-        await PluginManager.loadPlugin('url')
+        await PluginMgr.loadPlugin('url')
         // Assertion
-        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
-        expect(spyHelpersFetchPlugin).toHaveBeenCalledWith('url')
-        const expectedPlugin = new Plugin(data.url, data)
-        expect(PluginManager.datas).toEqual({ ['url']: data})
-        expect(PluginManager.plugins).toEqual({ [data.name]: expectedPlugin})
-        expect(PluginManager.roots).toEqual({ [data.name]: expectedPlugin})
-        expect(PluginManager.getData('url')).toEqual(data)
-        expect(PluginManager.getPlugin(data.name)).toEqual(expectedPlugin)
+        expect(PluginMgr.plugins).toEqual({})
+        expect(PluginMgr.roots).toEqual({})
+        expect(PluginMgr.definitions).toEqual({})
+        expect(PluginMgr.providers).toEqual({})
       })
 
-      test('when there is a retry', async () => {
+      test('when plugin loads normally', async () => {
         // Declaration
+        const url = 'url'
         const data = {
           name: 'pluginName',
           url: 'pluginUrl'
         }
-        PluginManager.retryDelay = 1000
-        spyHelpersFetchPlugin.mockImplementation(() => data)
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => true)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
+        mockPluginLoaderGetData.mockImplementation(() => data)
         // Execution
-        await PluginManager.loadPlugin('url')
-        await new Promise(resolve => setTimeout(resolve, 1500))
+        await PluginMgr.loadPlugin(url)
         // Assertion
-        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(2)
+        expect(PluginMgr.getData(url)).toEqual(data)
+        expect(PluginMgr.plugins).toEqual({ [data.name]: new Plugin(url, data) })
+        expect(PluginMgr.roots).toEqual({ [data.name]: new Plugin(url, data) })
+        expect(PluginMgr.definitions).toEqual({})
+        expect(PluginMgr.providers).toEqual({})
+      })
+
+      test('when plugin with same name is already loaded', async () => {
+        // Declaration
+        const url = 'url'
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl'
+        }
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => true)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
+        mockPluginLoaderGetData.mockImplementation(() => data)
+        // Execution
+        await PluginMgr.loadPlugin(url)
+        await PluginMgr.loadPlugin('url2')
+        // Assertion
+        expect(PluginMgr.plugins).toEqual({ [data.name]: new Plugin(url, data) })
+        expect(PluginMgr.roots).toEqual({ [data.name]: new Plugin(url, data) })
+        expect(PluginMgr.definitions).toEqual({})
+        expect(PluginMgr.providers).toEqual({})
       })
 
       test('plugin with defines', async () => {
@@ -162,23 +170,37 @@ describe('PluginManager', () => {
         const data = {
           name: 'pluginName',
           url: 'pluginUrl',
+          dependencies: ['url2'],
           defines: {
             define1: {}
           }
         }
-        spyHelpersFetchPlugin.mockImplementation(() => data)
+        const dataDependency = {
+          name: 'dependencyName',
+          url: 'dependencyUrl'
+        }
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => true)
+        mockPluginLoaderIsLoaded.mockImplementation(() => true)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
+        mockPluginLoaderGetData.mockImplementation((url) => {
+          if (url === 'url') {
+            return data
+          }
+          return dataDependency
+        })
         // Execution
-        await PluginManager.loadPlugin('url')
+        await PluginMgr.loadPlugin('url')
         // Assertion
         const expectedDefine = new PluginDefine(
           'pluginName',
           'define1',
           data.defines.define1
         )
-        expect(PluginManager.definitions).toEqual({
+        expect(PluginMgr.definitions).toEqual({
           'pluginName/define1': expectedDefine
         })
-        expect(PluginManager.getDefinition('pluginName/define1')).toEqual(expectedDefine)
+        expect(PluginMgr.getDefinition('pluginName/define1')).toEqual(expectedDefine)
       })
 
       test('plugin with provides', async () => {
@@ -195,19 +217,19 @@ describe('PluginManager', () => {
           url: 'childUrl',
           provides: {
             'pluginName/define1': {
-              name: 'child'
+              'child': {}
             }
           }
         }
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => true)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
         // Execution
-        spyHelpersFetchPlugin.mockImplementation(() => data)
-        await PluginManager.loadPlugin('url')
-        spyHelpersFetchPlugin.mockImplementation(() => dataChild)
-        await PluginManager.loadPlugin('urlChild')
+        mockPluginLoaderGetData.mockImplementation(() => data)
+        await PluginMgr.loadPlugin('url')
+        mockPluginLoaderGetData.mockImplementation(() => dataChild)
+        await PluginMgr.loadPlugin('urlChild')
         // Assertion
-        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(2)
-        expect(spyHelpersFetchPlugin).toHaveBeenCalledWith('url')
-        expect(spyHelpersFetchPlugin).toHaveBeenCalledWith('urlChild')
         const expectedDefine = new PluginDefine(
           'pluginName',
           'define1',
@@ -216,18 +238,36 @@ describe('PluginManager', () => {
         const expectedProvide = new PluginProvide(
           'childName',
           'pluginName/define1',
-          dataChild.provides['pluginName/define1']
+          '',
+          dataChild.provides['pluginName/define1'].child
         )
         const expectedProvider = new PluginProvider(
           'childName',
           expectedDefine,
           expectedProvide
         )
-        expect(PluginManager.providers).toEqual({
+        expect(PluginMgr.providers).toEqual({
           'pluginName/define1/child': expectedProvider
         })
-        expect(PluginManager.getProviders('pluginName/define1')).toEqual([expectedProvider])
-        expect(PluginManager.getProvider('pluginName/define1/child')).toEqual(expectedProvider)
+        expect(PluginMgr.getProviders('pluginName/define1')).toEqual([expectedProvider])
+        expect(PluginMgr.getProvider('pluginName/define1/child')).toEqual(expectedProvider)
+      })
+
+      test('when there is a retry', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl'
+        }
+        PluginMgr.retryDelay = 1000
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => true)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
+        mockPluginLoaderGetData.mockImplementation(() => data)
+        // Execution
+        await PluginMgr.loadPlugin('url')
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        // Assertion
       })
 
       test('load plugin with undefined provide', async () => {
@@ -241,25 +281,14 @@ describe('PluginManager', () => {
             }
           }
         }
-        spyHelpersFetchPlugin.mockImplementation(() => data)
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => true)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
+        mockPluginLoaderGetData.mockImplementation(() => data)
         // Execution
-        await PluginManager.loadPlugin('url')
+        await PluginMgr.loadPlugin('url')
         // Assertion
-        expect(PluginManager.providers).toEqual({})
-      })
-
-      test('load same url twice', async () => {
-        // Declaration
-        const data = {
-          name: 'pluginName',
-          url: 'pluginUrl'
-        }
-        spyHelpersFetchPlugin.mockImplementation(() => data)
-        // Execution
-        await PluginManager.loadPlugin('url')
-        await PluginManager.loadPlugin('url')
-        // Assertion
-        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
+        expect(PluginMgr.providers).toEqual({})
       })
 
       test('load plugin with dependency', async () => {
@@ -273,61 +302,55 @@ describe('PluginManager', () => {
           name: 'dependencyName',
           url: 'dependencyUrl'
         }
-        spyHelpersFetchPlugin.mockImplementation((url: string) => {
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => true)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
+        mockPluginLoaderGetData.mockImplementation((url) => {
           if (url === 'url') {
             return data
           }
           return dataDependency
         })
         // Execution
-        await PluginManager.loadPlugin('url')
+        await PluginMgr.loadPlugin('url')
         // Assertion
-        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(2)
-        expect(PluginManager.datas).toEqual({
-          url: data,
-          depUrl: dataDependency
-        })
-        expect(PluginManager.plugins).toEqual({
+        expect(PluginMgr.plugins).toEqual({
           pluginName: {},
           dependencyName: {}
         })
       })
+    })
 
-      test('load two plugins with same name', async () => {
+    // reset //
+
+    describe('reset', () => {
+
+      test('properly cleans all internal data', async () => {
         // Declaration
+        const url = 'url'
         const data = {
           name: 'pluginName',
           url: 'pluginUrl'
         }
-        spyHelpersFetchPlugin.mockImplementation(() => data)
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => true)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
+        mockPluginLoaderGetData.mockImplementation(() => data)
         // Execution
-        await PluginManager.loadPlugin('url')
-        await PluginManager.loadPlugin('url2')
+        await PluginMgr.loadPlugin(url)
+        PluginMgr.reset()
         // Assertion
-        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(2)
-        expect(PluginManager.datas).toEqual({
-          url: data,
-          url2: data
-        })
-        expect(PluginManager.plugins).toEqual({
-          pluginName: {}
-        })
-      })
+        expect(PluginMgr.plugins).toEqual({})
+        expect(PluginMgr.roots).toEqual({})
+        expect(PluginMgr.definitions).toEqual({})
+        expect(PluginMgr.providers).toEqual({})
 
-      test('load plugin with invalid data', async () => {
-        // Declaration
-        const data = {
-          name: 'pluginName'
-        }
-        spyHelpersFetchPlugin.mockImplementation(() => data)
-        // Execution
-        await PluginManager.loadPlugin('url')
-        // Assertion
-        expect(spyHelpersFetchPlugin).toHaveBeenCalledTimes(1)
-        expect(PluginManager.datas).toEqual({
-          url: data
+        expect(PluginMgr.data).toEqual({
+          roots: {},
+          plugins: {},
+          definitions: {},
+          providers: {}
         })
-        expect(PluginManager.plugins).toEqual({})
       })
     })
 
@@ -339,11 +362,14 @@ describe('PluginManager', () => {
           name: 'pluginName',
           url: 'pluginUrl'
         }
-        spyHelpersFetchPlugin.mockImplementation(() => data)
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => true)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
+        mockPluginLoaderGetData.mockImplementation(() => data)
         // Execution
         const spyListerner = jest.fn()
-        PluginManager.register(spyListerner)
-        await PluginManager.loadPlugin('url')
+        PluginMgr.register(spyListerner)
+        await PluginMgr.loadPlugin('url')
         // Assertion
         expect(spyListerner).toHaveBeenCalledTimes(1)
       })
@@ -354,12 +380,15 @@ describe('PluginManager', () => {
           name: 'pluginName',
           url: 'pluginUrl'
         }
-        spyHelpersFetchPlugin.mockImplementation(() => data)
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => true)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
+        mockPluginLoaderGetData.mockImplementation(() => data)
         // Execution
         const spyListerner = jest.fn()
-        PluginManager.register(spyListerner)
-        PluginManager.unregister(spyListerner)
-        await PluginManager.loadPlugin('url')
+        PluginMgr.register(spyListerner)
+        PluginMgr.unregister(spyListerner)
+        await PluginMgr.loadPlugin('url')
         // Assertion
         expect(spyListerner).toHaveBeenCalledTimes(0)
       })

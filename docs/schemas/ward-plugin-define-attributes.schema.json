@@ -9,8 +9,13 @@
       "type": "string",
       "enum": [
         "string",
+        "string[]",
+        "url",
+        "url[]",
         "number",
-        "boolean"
+        "number[]",
+        "boolean",
+        "boolean[]"
       ]
     }
   },

@@ -51,17 +51,8 @@ class Plugin {
   get name () { return this.#name }
   get url () { return this.#url }
 
-  get dependencies (): Plugin[] {
-    return this.#dependencies.reduce((acc: Plugin[], dependency) => {
-      const data = PluginManager.getData(dependency)
-      if (data) {
-        const plugin = PluginManager.getPlugin(data.name)
-        if (plugin) {
-          acc.push(plugin)
-        }
-      }
-      return acc
-    }, [])
+  get dependencies (): string[] {
+    return this.#dependencies.slice()
   }
 
   get defines () {

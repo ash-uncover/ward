@@ -4,7 +4,7 @@ import PluginDefine from './object/PluginDefine'
 import PluginProvider from './object/PluginProvider'
 import { ArrayUtils } from '@uncover/js-utils'
 import { WardPlugin } from './loader/model/PluginDataModel'
-import { PluginLoader } from './loader/PluginLoader'
+import PluginLoader, { IPluginLoader } from './loader/PluginLoader'
 
 const LOGGER = new Logger('PluginManager', LogLevels.WARN)
 
@@ -28,7 +28,7 @@ class PluginManager implements PluginManagerData {
 
   // Attributes //
 
-  #loader = new PluginLoader()
+  #loader: IPluginLoader
 
   #retryDelay: number = -1
   #retryInterval: any
@@ -41,7 +41,8 @@ class PluginManager implements PluginManagerData {
 
   // Constructor //
 
-  constructor() {
+  constructor(loader?: IPluginLoader) {
+    this.#loader = loader || new PluginLoader()
   }
 
   // Getters & Setters //
@@ -70,13 +71,13 @@ class PluginManager implements PluginManagerData {
     const dependentEntries: string[] = []
     Object.values(this.#plugins).forEach(plugin => {
       plugin.dependencies.forEach(dependency => {
-        if (!dependentEntries.includes(dependency.name)) {
-          dependentEntries.push(dependency.name)
+        if (!dependentEntries.includes(dependency)) {
+          dependentEntries.push(dependency)
         }
       })
     })
     return Object.values(this.#plugins).reduce((acc: PluginManagerPlugins, plugin) => {
-      if (!dependentEntries.includes(plugin.name)) {
+      if (!dependentEntries.includes(plugin.loadUrl)) {
         acc[plugin.name] = plugin
       }
       return acc
@@ -215,7 +216,11 @@ class PluginManager implements PluginManagerData {
       }
     })
     plugin.dependencies.forEach(dependency => {
-      this.#checkPluginDefinitions.call(this, dependency)
+      if (this.#loader.isLoaded(dependency)) {
+        const data = this.#loader.getData(dependency)!
+        const object = this.getPlugin(data.name)!
+        this.#checkPluginDefinitions.call(this, object)
+      }
     })
   }
 
@@ -230,9 +235,11 @@ class PluginManager implements PluginManagerData {
       }
     })
     plugin.dependencies.forEach(dependency => {
-      this.#checkPluginProviders.call(this, dependency)
+      const data = this.#loader.getData(dependency)!
+      const object = this.getPlugin(data.name)!
+      this.#checkPluginProviders.call(this, object)
     })
   }
 }
 
-export default new PluginManager()
+export default PluginManager

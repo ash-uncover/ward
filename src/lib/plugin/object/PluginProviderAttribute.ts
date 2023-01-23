@@ -11,7 +11,7 @@ class PluginProviderAttribute {
   #mandatory: boolean
   #array: boolean
 
-  #value: string | string[]
+  #value: string | string[] | number | number[] | boolean | boolean[]
 
   // Constructor //
 

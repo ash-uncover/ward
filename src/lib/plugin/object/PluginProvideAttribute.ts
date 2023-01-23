@@ -5,14 +5,14 @@ class PluginProvideAttribute {
 
   #plugin: string
   #name: string
-  #value: string | string[]
+  #value: string | string[] | number | number[] | boolean | boolean[]
 
   // Constructor //
 
   constructor(
     plugin: string,
     name: string,
-    value: string | string[]
+    value: string | string[] | number | number[] | boolean | boolean[]
   ) {
     this.#plugin = plugin
     this.#name = name
