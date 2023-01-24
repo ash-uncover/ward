@@ -5,6 +5,7 @@ import PluginProvider from './object/PluginProvider'
 import { ArrayUtils } from '@uncover/js-utils'
 import { WardPlugin } from './loader/model/PluginDataModel'
 import PluginLoader, { IPluginLoader } from './loader/PluginLoader'
+import { fdatasync } from 'fs'
 
 const LOGGER = new Logger('PluginManager', LogLevels.WARN)
 
@@ -89,6 +90,12 @@ class PluginManager implements PluginManagerData {
   }
   getPlugin(pluginId: string): Plugin | undefined {
     return this.plugins[pluginId]
+  }
+  getPluginByUrl(pluginUrl: string): Plugin | undefined {
+    const data = this.getData(pluginUrl)
+    if (data) {
+      return this.plugins[data.name]
+    }
   }
 
   get definitions() {
@@ -238,9 +245,11 @@ class PluginManager implements PluginManagerData {
       }
     })
     plugin.dependencies.forEach(dependency => {
-      const data = this.#loader.getData(dependency)!
-      const object = this.getPlugin(data.name)!
-      this.#checkPluginProviders.call(this, object)
+      if (this.#loader.isLoaded(dependency)) {
+        const data = this.#loader.getData(dependency)!
+        const object = this.getPlugin(data.name)!
+        this.#checkPluginProviders.call(this, object)
+      }
     })
   }
 }

@@ -75,6 +75,7 @@ describe('PluginManager', () => {
     })
 
     describe('retryDelay', () => {
+
       test('set', () => {
         // Declaration
         const delay = 5000
@@ -90,13 +91,9 @@ describe('PluginManager', () => {
       test('when plugin with same url is already loaded', async () => {
         // Declaration
         const url = 'url'
-        const data = {
-          name: 'pluginName',
-          url: 'pluginUrl'
-        }
         mockPluginLoaderHasData.mockImplementation(() => true)
         // Execution
-        await PluginMgr.loadPlugin('url')
+        await PluginMgr.loadPlugin(url)
         // Assertion
         expect(PluginMgr.plugins).toEqual({})
         expect(PluginMgr.roots).toEqual({})
@@ -107,16 +104,13 @@ describe('PluginManager', () => {
       test('when plugin fails to load', async () => {
         // Declaration
         const url = 'url'
-        const data = {
-          name: 'pluginName',
-          url: 'pluginUrl'
-        }
         mockPluginLoaderHasData.mockImplementation(() => false)
         mockPluginLoaderLoad.mockImplementation(() => false)
         mockPluginLoaderGetErrors.mockImplementation(() => [])
         // Execution
-        await PluginMgr.loadPlugin('url')
+        await PluginMgr.loadPlugin(url)
         // Assertion
+        expect(PluginMgr.getPluginByUrl(url)).toBeUndefined()
         expect(PluginMgr.plugins).toEqual({})
         expect(PluginMgr.roots).toEqual({})
         expect(PluginMgr.definitions).toEqual({})
@@ -137,9 +131,11 @@ describe('PluginManager', () => {
         // Execution
         await PluginMgr.loadPlugin(url)
         // Assertion
+        const expectedPlugin = new Plugin(url, data)
         expect(PluginMgr.getData(url)).toEqual(data)
-        expect(PluginMgr.plugins).toEqual({ [data.name]: new Plugin(url, data) })
-        expect(PluginMgr.roots).toEqual({ [data.name]: new Plugin(url, data) })
+        expect(PluginMgr.getPluginByUrl(url)).toEqual(expectedPlugin)
+        expect(PluginMgr.plugins).toEqual({ [data.name]: expectedPlugin })
+        expect(PluginMgr.roots).toEqual({ [data.name]: expectedPlugin })
         expect(PluginMgr.definitions).toEqual({})
         expect(PluginMgr.providers).toEqual({})
       })
