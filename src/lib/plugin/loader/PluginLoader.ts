@@ -107,7 +107,7 @@ class PluginLoader implements IPluginLoader {
     if (!valid) {
       this.#urls[url].state = PluginLoadStates.VALIDATION_ERROR
       if (validator.errors) {
-        this.#urls[url].errors.push(...validator.errors.map(error => JSON.stringify(error)))
+        this.#urls[url].errors.push(...validator.errors.map(error => JSON.stringify(error, null, 2)))
       }
       return false
     }
