@@ -4,6 +4,7 @@ import Plugin from '../../../src/lib/plugin/object/Plugin'
 import PluginDefine from '../../../src/lib/plugin/object/PluginDefine'
 import PluginProvider from '../../../src/lib/plugin/object/PluginProvider'
 import PluginProvide from '../../../src/lib/plugin/object/PluginProvide'
+import PluginLoader from '../../../src/lib/plugin/loader/PluginLoader'
 
 LogConfig.off()
 
@@ -11,6 +12,7 @@ describe('PluginManager', () => {
 
   /* TEST DATA */
 
+  let mockPluginLoader: PluginLoader
   let mockPluginLoaderReset = jest.fn()
   let mockPluginLoaderHasData = jest.fn()
   let mockPluginLoaderIsLoaded = jest.fn()
@@ -24,7 +26,8 @@ describe('PluginManager', () => {
   /* TEST SETUP */
 
   beforeEach(() => {
-    const mockPluginLoader = {
+    // @ts-ignore
+    mockPluginLoader = {
       reset: mockPluginLoaderReset,
       urls: [],
       hasData: mockPluginLoaderHasData,
@@ -66,6 +69,7 @@ describe('PluginManager', () => {
         expect(PluginMgr.providers).toEqual({})
 
         expect(PluginMgr.data).toEqual({
+          urls: {},
           roots: {},
           plugins: {},
           definitions: {},
@@ -86,6 +90,32 @@ describe('PluginManager', () => {
       })
     })
 
+    describe('loader access', () => {
+
+      test('Properly build info from the loader', async () => {
+        // Declaration
+        // @ts-ignore
+        mockPluginLoader.urls = ['1', '2']
+        mockPluginLoaderGetData.mockImplementation((url) => `data${url}`)
+        mockPluginLoaderGetState.mockImplementation((url) => `state${url}`)
+        mockPluginLoaderGetErrors.mockImplementation((url) => `errors${url}`)
+        // Execution
+        // Assertion
+        expect(PluginMgr.urls).toEqual({
+          1: {
+            data: 'data1',
+            state: 'state1',
+            errors: 'errors1'
+          },
+          2: {
+            data: 'data2',
+            state: 'state2',
+            errors: 'errors2'
+          }
+        })
+      })
+    })
+
     describe('loadPlugin', () => {
 
       test('when plugin with same url is already loaded', async () => {
@@ -95,6 +125,7 @@ describe('PluginManager', () => {
         // Execution
         await PluginMgr.loadPlugin(url)
         // Assertion
+        expect(PluginMgr.urls).toEqual({})
         expect(PluginMgr.plugins).toEqual({})
         expect(PluginMgr.roots).toEqual({})
         expect(PluginMgr.definitions).toEqual({})
@@ -111,6 +142,7 @@ describe('PluginManager', () => {
         await PluginMgr.loadPlugin(url)
         // Assertion
         expect(PluginMgr.getPluginByUrl(url)).toBeUndefined()
+        expect(PluginMgr.urls).toEqual({})
         expect(PluginMgr.plugins).toEqual({})
         expect(PluginMgr.roots).toEqual({})
         expect(PluginMgr.definitions).toEqual({})
@@ -342,6 +374,7 @@ describe('PluginManager', () => {
         expect(PluginMgr.providers).toEqual({})
 
         expect(PluginMgr.data).toEqual({
+          urls: {},
           roots: {},
           plugins: {},
           definitions: {},

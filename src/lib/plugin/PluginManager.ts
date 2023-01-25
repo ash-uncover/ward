@@ -4,16 +4,24 @@ import PluginDefine from './object/PluginDefine'
 import PluginProvider from './object/PluginProvider'
 import { ArrayUtils } from '@uncover/js-utils'
 import { WardPlugin } from './loader/model/PluginDataModel'
-import PluginLoader, { IPluginLoader } from './loader/PluginLoader'
-import { fdatasync } from 'fs'
+import PluginLoader, { IPluginLoader, PluginLoadState } from './loader/PluginLoader'
 
 const LOGGER = new Logger('PluginManager', LogLevels.WARN)
 
 export interface PluginManagerData {
+  urls: PluginManagerUrls
   roots: PluginManagerPlugins
   plugins: PluginManagerPlugins
   definitions: PluginManagerDefinitions
   providers: PluginManagerProviders
+}
+export interface PluginManagerUrls {
+  [key: string]: PluginUrl
+}
+export interface PluginUrl {
+  state: PluginLoadState
+  errors: string[]
+  data?: WardPlugin
 }
 export interface PluginManagerPlugins {
   [key: string]: Plugin
@@ -57,6 +65,7 @@ class PluginManager implements PluginManagerData {
 
   get data(): PluginManagerData {
     return {
+      urls: this.urls,
       roots: this.roots,
       plugins: this.plugins,
       definitions: this.definitions,
@@ -64,8 +73,24 @@ class PluginManager implements PluginManagerData {
     }
   }
 
+  get urls () {
+    return this.#loader.urls.reduce((acc: PluginManagerUrls, url) => {
+      acc[url] = {
+        state: this.getState(url),
+        errors: this.getErrors(url),
+        data: this.getData(url)
+      }
+      return acc
+    }, {})
+  }
   getData(url: string) {
     return this.#loader.getData(url)
+  }
+  getState(url: string) {
+    return this.#loader.getState(url)
+  }
+  getErrors(url: string) {
+    return this.#loader.getErrors(url)
   }
 
   get roots(): PluginManagerPlugins {
