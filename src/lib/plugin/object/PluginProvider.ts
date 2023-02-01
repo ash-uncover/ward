@@ -101,18 +101,44 @@ class PluginProvider {
   get definition() { return this.#definition }
   get name() { return this.#name }
 
-  get attributes() {
+  get attributes(): {
+    [key: string]: string | number | boolean | string[] | number[] | boolean[]
+  } {
+    return this.#attributes.reduce((acc: any, attribute) => {
+      acc[attribute.name] = attribute.value
+      return acc
+    }, {})
+  }
+  getAttributes() {
     return this.#attributes.slice()
   }
   getAttribute (attributeId: string) {
-    return this.attributes.find(attribute => attribute.name === attributeId)
+    return this.attributes[attributeId]
   }
 
-  get elements() {
+  get elements(): {
+    [key: string]: {
+      plugin: string,
+      url: string,
+      type: string,
+      element: string
+    }
+  } {
+    return this.#elements.reduce((acc: any, element) => {
+      acc[element.name] = {
+        plugin: this.plugin,
+        url: element.url,
+        type: element.type,
+        element: element.element
+      }
+      return acc
+    }, {})
+  }
+  getElements() {
     return this.#elements.slice()
   }
   getElement(elementId: string) {
-    return this.elements.find(element => element.name === elementId)
+    return this.elements[elementId]
   }
 
   // Public Methods //

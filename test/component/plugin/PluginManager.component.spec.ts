@@ -90,8 +90,8 @@ describe('PluginManager', () => {
       expect(provider).toBeDefined()
       expect(provider.name).toBe('test/example/default')
       expect(provider.plugin).toBe('test')
-      expect(provider.attributes).toEqual([])
-      expect(provider.elements).toHaveLength(1)
+      expect(provider.getAttributes()).toEqual([])
+      expect(provider.getElements()).toHaveLength(1)
 
       const element = provider.getElement('my-element')!
       expect(element).toBeDefined()
