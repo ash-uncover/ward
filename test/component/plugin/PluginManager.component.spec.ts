@@ -90,10 +90,10 @@ describe('PluginManager', () => {
       expect(provider).toBeDefined()
       expect(provider.name).toBe('test/example/default')
       expect(provider.plugin).toBe('test')
-      expect(provider.attributes).toEqual({})
-      expect(provider.elements['my-element']).toBeDefined()
+      expect(provider.attributes).toEqual([])
+      expect(provider.elements).toHaveLength(1)
 
-      const element = provider.getElement('my-element')
+      const element = provider.getElement('my-element')!
       expect(element).toBeDefined()
       expect(element.url).toBe('http://test.com/test.wc.js')
       expect(element.type).toBe('webcomponent')

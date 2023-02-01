@@ -95,7 +95,6 @@ describe('PluginSchema', () => {
       }
       // Execution
       const valid = validate(data)
-      console.log(validate.errors)
       // Assertion
       expect(valid).toBe(true)
       expect(validate.errors).toEqual(null)

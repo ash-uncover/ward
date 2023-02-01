@@ -6,6 +6,7 @@ import PluginProviderElement from './PluginProviderElement'
 import { LogLevels } from '@uncover/js-utils-logger'
 
 const LOGGER = new Logger('PluginManager', LogLevels.WARN)
+
 class PluginProvider {
 
   // Attributes //
@@ -101,27 +102,17 @@ class PluginProvider {
   get name() { return this.#name }
 
   get attributes() {
-    return this.#attributes.reduce((acc: any, attribute) => {
-      acc[attribute.name] = attribute.value
-      return acc
-    }, {})
+    return this.#attributes.slice()
   }
   getAttribute (attributeId: string) {
-    return this.attributes[attributeId]
+    return this.attributes.find(attribute => attribute.name === attributeId)
   }
 
   get elements() {
-    return this.#elements.reduce((acc: any, element) => {
-      acc[element.name] = {
-        url: element.url,
-        type: element.type,
-        element: element.element
-      }
-      return acc
-    }, {})
+    return this.#elements.slice()
   }
   getElement(elementId: string) {
-    return this.elements[elementId]
+    return this.elements.find(element => element.name === elementId)
   }
 
   // Public Methods //
