@@ -1,19 +1,10 @@
 import { LogConfig } from '@uncover/js-utils-logger'
-import MessageService from '../../../src/lib/message/MessageService'
 import MessageDispatcher, {
   CONNECTION_ACKNOWLEDGE,
   CONNECTION_CLOSING,
   CONNECTION_REQUEST,
-  getDispatcherId,
-  getDispatchers,
-  getService,
-  getServices,
-  getStarted,
-  handlers,
-  reset
 } from '../../../src/lib/message/MessageDispatcher'
-
-jest.mock('../../../src/lib/message/MessageServiceFrame')
+import { MessageService } from '../../../src/lib/message/model/model'
 
 LogConfig.off()
 
@@ -23,326 +14,299 @@ describe('MessageDispatcher', () => {
 
   /* TEST SETUP */
 
+  let spyWindow: any
+  let spyWindowParent: any
+  let spyWindowPostMessage: any
   let spyWindowAddEventListener: any
   let spyWindowRemoveEventListener: any
 
   beforeEach(() => {
-    reset()
+    jest.clearAllMocks()
+    jest.resetAllMocks()
+
+    spyWindowParent = jest.spyOn(window, 'parent', 'get')
+
+    spyWindowPostMessage = jest.spyOn(window, 'postMessage')
     spyWindowAddEventListener = jest.spyOn(window, 'addEventListener')
     spyWindowRemoveEventListener = jest.spyOn(window, 'removeEventListener')
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
   })
 
   /* TEST CASES */
 
-  // MessageDispatcher.start //
+  // constructor //
 
-  describe('MessageDispatcher.start', () => {
+  describe('constructor', () => {
+
     test('when an id is provided', () => {
       // Declaration
-      const dispatcherId: string = 'dispatcherId'
+      const id = 'dispatcherId'
+      spyWindowParent.mockImplementation(() => window)
       // Execution
-      MessageDispatcher.start(dispatcherId)
+      const dispatcher = new MessageDispatcher(id)
       // Assertion
-      expect(window.parent).toBe(window)
-      expect(getStarted()).toBe(true)
-      expect(getDispatcherId()).toBe(dispatcherId)
+      expect(dispatcher.id).toBe('dispatcherId')
+      expect(dispatcher.services).toEqual([])
+      expect(dispatcher.dispatchers).toEqual([])
       expect(spyWindowAddEventListener).toHaveBeenCalledTimes(1)
+      expect(spyWindowPostMessage).toHaveBeenCalledTimes(0)
     })
 
     test('when no id is provided', () => {
       // Declaration
       // Execution
-      MessageDispatcher.start()
+      const dispatcher = new MessageDispatcher()
       // Assertion
-      expect(window.parent).toBe(window)
-      expect(getStarted()).toBe(true)
-      expect(getDispatcherId()).not.toBeNull()
+      expect(dispatcher.id).toBeDefined()
+      expect(dispatcher.services).toEqual([])
+      expect(dispatcher.dispatchers).toEqual([])
+    })
+
+    test('when the parent window is different', () => {
+      // Declaration
+      const postMessage = jest.fn()
+      const windowParent = {
+        ...window,
+        postMessage
+      }
+      spyWindowParent.mockImplementation(() => windowParent)
+      // Execution
+      new MessageDispatcher()
+      // Assertion
       expect(spyWindowAddEventListener).toHaveBeenCalledTimes(1)
+      expect(postMessage).toHaveBeenCalledTimes(1)
     })
   })
 
-  // MessageDispatcher.stop //
+  // terminate //
 
-  describe('MessageDispatcher.stop', () => {
-    test('when called in the main window', () => {
+  describe('terminate', () => {
+
+    test('properly unregister listeners', () => {
       // Declaration
+      const dispatcher = new MessageDispatcher()
       // Execution
-      MessageDispatcher.start()
-      MessageDispatcher.stop()
+      dispatcher.terminate()
       // Assertion
-      expect(getStarted()).toBe(false)
-      expect(window.parent).toBe(window)
       expect(spyWindowRemoveEventListener).toHaveBeenCalledTimes(1)
+      expect(spyWindowPostMessage).toHaveBeenCalledTimes(0)
+    })
+
+    test('when the parent window is different', () => {
+      // Declaration
+      const postMessage = jest.fn()
+      const windowParent = {
+        ...window,
+        postMessage
+      }
+      spyWindowParent.mockImplementation(() => windowParent)
+      const dispatcher = new MessageDispatcher()
+      // Execution
+      dispatcher.terminate()
+      // Assertion
+      expect(spyWindowRemoveEventListener).toHaveBeenCalledTimes(1)
+      expect(postMessage).toHaveBeenCalledTimes(2)
     })
   })
 
-  // MessageDispatcher.addService //
+  // reset //
 
-  describe('MessageDispatcher.addService', () => {
-    test('when service adding a service the first time', () => {
+  describe('reset', () => {
+  })
+
+  describe('getService / addService / removeService', () => {
+
+    test('service can be add properly', () => {
       // Declaration
-      const service = new MessageService()
+      const dispatcher = new MessageDispatcher()
+      const service: MessageService = {
+        id: 'serviceId',
+        type: 'event',
+        onMessage: jest.fn(),
+        sendMessage: jest.fn()
+      }
       // Execution
-      MessageDispatcher.addService(service)
+      dispatcher.addService(service)
       // Assertion
-      expect(getServices()).toEqual([service])
+      expect(dispatcher.services).toHaveLength(1)
+      expect(dispatcher.getService('serviceId')).toEqual(service)
     })
 
-    test('when service adding a service two times', () => {
+
+    test('service can be removed using return callback properly', () => {
       // Declaration
-      const service = new MessageService()
+      const dispatcher = new MessageDispatcher()
+      const service: MessageService = {
+        id: 'serviceId',
+        type: 'event',
+        onMessage: jest.fn(),
+        sendMessage: jest.fn()
+      }
       // Execution
-      MessageDispatcher.addService(service)
-      MessageDispatcher.addService(service)
+      const removeCallback = dispatcher.addService(service)
+      removeCallback()
       // Assertion
-      expect(getServices()).toEqual([service])
+      expect(dispatcher.services).toHaveLength(0)
+      expect(dispatcher.getService('serviceId')).toBeUndefined()
     })
 
-    test('when calling the callback function', () => {
+    test('service can be removed using remove methods', () => {
       // Declaration
-      const service = new MessageService()
+      const dispatcher = new MessageDispatcher()
+      const service: MessageService = {
+        id: 'serviceId',
+        type: 'event',
+        onMessage: jest.fn(),
+        sendMessage: jest.fn()
+      }
       // Execution
-      MessageDispatcher.addService(service)()
+      dispatcher.addService(service)
+      dispatcher.removeService(service)
       // Assertion
-      expect(getServices()).toEqual([])
+      expect(dispatcher.services).toHaveLength(0)
+      expect(dispatcher.getService('serviceId')).toBeUndefined()
+    })
+
+
+    test('service can be removed using reset methods', () => {
+      // Declaration
+      const dispatcher = new MessageDispatcher()
+      const service: MessageService = {
+        id: 'serviceId',
+        type: 'event',
+        onMessage: jest.fn(),
+        sendMessage: jest.fn()
+      }
+      // Execution
+      dispatcher.addService(service)
+      dispatcher.reset()
+      // Assertion
+      expect(dispatcher.services).toHaveLength(0)
+      expect(dispatcher.getService('serviceId')).toBeUndefined()
     })
   })
 
-  // MessageDispatcher.removeService //
+  // sendMessage //
 
-  describe('MessageDispatcher.removeService', () => {
-    test('when removing a service that was added before', () => {
+  describe('sendMessage', () => {
+
+    test('Message is sent to relevant services', () => {
       // Declaration
-      const service = new MessageService()
+      const dispatcher = new MessageDispatcher()
+      const service1: MessageService = {
+        id: 'service1',
+        type: 'event',
+        onMessage: jest.fn(),
+        sendMessage: jest.fn()
+      }
+      const service2: MessageService = {
+        id: 'service2',
+        type: 'event',
+        onMessage: jest.fn(),
+        sendMessage: jest.fn()
+      }
       // Execution
-      MessageDispatcher.addService(service)
-      MessageDispatcher.removeService(service)
-      // Assertion
-      expect(getServices()).toEqual([])
-    })
-
-    test('when removing a service that was not added', () => {
-      // Declaration
-      const service = new MessageService()
-      // Execution
-      MessageDispatcher.removeService(service)
-      // Assertion
-      expect(getServices()).toEqual([])
-    })
-  })
-
-  // MessageDispatcher.sendMessage //
-
-  describe('MessageDispatcher.sendMessage', () => {
-    test('when not started', () => {
-      // Declaration
-      const service1 = new MessageService('service1')
-      const spyService1OnMesssage = jest.spyOn(service1, 'onMessage')
-      const service2 = new MessageService('service2')
-      const spyService2OnMesssage = jest.spyOn(service2, 'onMessage')
-      jest.spyOn(service2, 'onMessage')
-      // Execution
-      MessageDispatcher.addService(service1)
-      MessageDispatcher.addService(service2)
-      MessageDispatcher.sendMessage({ type: 'type', payload: 'payload' })
-      // Assertion
-      expect(spyService1OnMesssage).toHaveBeenCalledTimes(0)
-      expect(spyService2OnMesssage).toHaveBeenCalledTimes(0)
-    })
-
-    test('when started', () => {
-      // Declaration
-      const service1 = new MessageService('service1')
-      const spyService1OnMesssage = jest.spyOn(service1, 'onMessage')
-      const service2 = new MessageService('service2')
-      const spyService2OnMesssage = jest.spyOn(service2, 'onMessage')
-      jest.spyOn(service2, 'onMessage')
-      // Execution
-      MessageDispatcher.start()
-      MessageDispatcher.addService(service1)
-      MessageDispatcher.addService(service2)
-      MessageDispatcher.sendMessage({
+      dispatcher.addService(service1)
+      dispatcher.addService(service2)
+      dispatcher.sendMessage({
         type: 'type',
         payload: 'payload',
         _serviceId: 'service1'
-
       })
       // Assertion
-      expect(spyService1OnMesssage).toHaveBeenCalledTimes(0)
-      expect(spyService2OnMesssage).toHaveBeenCalledTimes(1)
-    })
-
-    test('when started and no service id provided', () => {
-      // Declaration
-      const service1 = new MessageService('service1')
-      const spyService1OnMesssage = jest.spyOn(service1, 'onMessage')
-      jest.spyOn(service1, 'onMessage')
-      // Execution
-      MessageDispatcher.start()
-      MessageDispatcher.addService(service1)
-      MessageDispatcher.sendMessage({
-        type: 'type',
-        payload: 'payload'
-      })
-      // Assertion
-      expect(spyService1OnMesssage).toHaveBeenCalledTimes(1)
+      expect(service1.onMessage).toHaveBeenCalledTimes(0)
+      expect(service2.onMessage).toHaveBeenCalledTimes(1)
     })
   })
 
-  // getService //
+  // #handleMessage //
 
-  describe('getService', () => {
+  describe('#handleMessage', () => {
 
-    test('when receiving any message', () => {
+    test('when receiving connection request message', () => {
       // Declaration
-      const service = new MessageService('service1')
-      MessageDispatcher.addService(service)
+      const dispatcherId = 'dispatcherId'
+      const dispatcher = new MessageDispatcher(dispatcherId)
       // Execution
-      const result = getService('service1')
-      // Assertion
-      expect(result).toBe(service)
-    })
-  })
+      const eventData = {
+        origin: '*',
+        source: window,
+        data: {
+          _dispatcherId: 'dispatcherIdChild',
+          type: CONNECTION_REQUEST,
 
-  // handlers.handleMessage //
-
-  describe('handlers.handleMessage', () => {
-
-    let spyHandlersConnectionRequest: any
-    let spyHandlersConnectionAcknowledge: any
-    let spyHandlersConnectionClosing: any
-
-    beforeEach(() => {
-      spyHandlersConnectionRequest = jest.spyOn(handlers, 'handleConnectionRequest')
-      spyHandlersConnectionAcknowledge = jest.spyOn(handlers, 'handleConnectionAcknowledge')
-      spyHandlersConnectionClosing = jest.spyOn(handlers, 'handleConnectionClosing')
-    })
-
-    test('when receiving any message', () => {
-      // Declaration
-      const data = {
-        type: 'type'
+        }
       }
-      const event = new MessageEvent('message', { data: data })
-      // Execution
-      MessageDispatcher.start()
-      handlers.handleMessage(event)
+      const event = new MessageEvent('message', eventData)
+      window.dispatchEvent(event)
       // Assertion
-      expect(spyHandlersConnectionRequest).toHaveBeenCalledTimes(0)
-      expect(spyHandlersConnectionAcknowledge).toHaveBeenCalledTimes(0)
-      expect(spyHandlersConnectionClosing).toHaveBeenCalledTimes(0)
+      expect(dispatcher.dispatchers).toHaveLength(1)
+      expect(dispatcher.services).toHaveLength(1)
     })
 
-    test('when receiving a connection request message', () => {
+    test('when same dispatcher try to connect twice', () => {
       // Declaration
-      const dispatcherId = 'anotherDispatcherId'
-      const data = {
-        _dispatcherId: dispatcherId,
-        type: CONNECTION_REQUEST
-      }
-      const event = new MessageEvent('message', { data: data })
+      const dispatcherId = 'dispatcherId'
+      const dispatcher = new MessageDispatcher(dispatcherId)
       // Execution
-      MessageDispatcher.start()
-      handlers.handleMessage(event)
+      const eventData = {
+        origin: '*',
+        source: window,
+        data: {
+          _dispatcherId: 'dispatcherIdChild',
+          type: CONNECTION_REQUEST,
+        }
+      }
+      const event = new MessageEvent('message', eventData)
+      window.dispatchEvent(event)
+      window.dispatchEvent(event)
       // Assertion
-      expect(spyHandlersConnectionRequest).toHaveBeenCalledTimes(1)
-      expect(spyHandlersConnectionAcknowledge).toHaveBeenCalledTimes(0)
-      expect(spyHandlersConnectionClosing).toHaveBeenCalledTimes(0)
+      expect(dispatcher.dispatchers).toHaveLength(1)
+      expect(dispatcher.services).toHaveLength(1)
     })
 
-    test('when receiving a connection acknoledge message', () => {
+    test('when receiving connection acknowledge message', () => {
       // Declaration
-      const dispatcherId = 'anotherDispatcherId'
-      const data = {
-        _dispatcherId: dispatcherId,
-        type: CONNECTION_ACKNOWLEDGE
-      }
-      const event = new MessageEvent('message', { data: data })
+      const dispatcherId = 'dispatcherId'
+      const dispatcher = new MessageDispatcher(dispatcherId)
       // Execution
-      MessageDispatcher.start()
-      handlers.handleMessage(event)
+      const eventData = {
+        origin: '*',
+        data: {
+          _dispatcherId: 'dispatcherIdParent',
+          _serviceId: 'serviceChild',
+          type: CONNECTION_ACKNOWLEDGE,
+
+        }
+      }
+      const event = new MessageEvent('message', eventData)
+      window.dispatchEvent(event)
       // Assertion
-      expect(spyHandlersConnectionRequest).toHaveBeenCalledTimes(0)
-      expect(spyHandlersConnectionAcknowledge).toHaveBeenCalledTimes(1)
-      expect(spyHandlersConnectionClosing).toHaveBeenCalledTimes(0)
+      expect(dispatcher.dispatchers).toHaveLength(0)
+      expect(dispatcher.services).toHaveLength(1)
     })
 
-    test('when receiving a connection closing message', () => {
+    test('when receiving connection closing message', () => {
       // Declaration
-      const dispatcherId = 'anotherDispatcherId'
-      const data = {
-        _dispatcherId: dispatcherId,
-        type: CONNECTION_CLOSING
-      }
-      const event = new MessageEvent('message', { data: data })
+      const dispatcherId = 'dispatcherId'
+      const dispatcher = new MessageDispatcher(dispatcherId)
       // Execution
-      MessageDispatcher.start()
-      handlers.handleMessage(event)
-      // Assertion
-      expect(spyHandlersConnectionRequest).toHaveBeenCalledTimes(0)
-      expect(spyHandlersConnectionAcknowledge).toHaveBeenCalledTimes(0)
-      expect(spyHandlersConnectionClosing).toHaveBeenCalledTimes(1)
-    })
-  })
+      const eventData = {
+        origin: '*',
+        data: {
+          _dispatcherId: 'dispatcherIdParent',
+          _serviceId: 'serviceChild',
+          type: CONNECTION_CLOSING,
 
-  // handlers.handleConnectionRequest //
-
-  describe('handlers.handleConnectionRequest', () => {
-    test('when receiving a connection request from a new dispatcher', () => {
-      // Declaration
-      const dispatcherId = 'anotherDispatcherId'
-      const data = {
-        _dispatcherId: dispatcherId
+        }
       }
-      const event = new MessageEvent('message', { data: data })
-      // Execution
-      handlers.handleConnectionRequest(event)
+      const event = new MessageEvent('message', eventData)
+      window.dispatchEvent(event)
       // Assertion
-      expect(getServices()).toHaveLength(1)
-      expect(getDispatchers()).toEqual([dispatcherId])
+      expect(dispatcher.dispatchers).toHaveLength(0)
+      expect(dispatcher.services).toHaveLength(0)
     })
-
-    test('when receiving a connection request from a dispatcher already registered', () => {
-      // Declaration
-      const dispatcherId = 'anotherDispatcherId'
-      const data = {
-        _dispatcherId: dispatcherId
-      }
-      const event = new MessageEvent('message', { data: data })
-      // Execution
-      handlers.handleConnectionRequest(event)
-      handlers.handleConnectionRequest(event)
-      // Assertion
-      expect(getServices()).toHaveLength(1)
-      expect(getDispatchers()).toEqual([dispatcherId])
-    })
-  })
-
-  // handlers.handleConnectionAcknowledge //
-
-  describe('handlers.handleConnectionAcknowledge', () => {
-    test('when receiving a connection acknowledge message', () => {
-      // Declaration
-      const dispatcherId = 'anotherDispatcherId'
-      const serviceId = 'anotherServiceId'
-      const data = {
-        _dispatcherId: dispatcherId,
-        _serviceId: serviceId
-      }
-      const event = new MessageEvent('message', { data: data })
-      // Execution
-      handlers.handleConnectionAcknowledge(event)
-      // Assertion
-      expect(getServices()).toHaveLength(1)
-    })
-  })
-
-  // handlers.handleConnectionClosing //
-
-  describe('handlers.handleConnectionClosing', () => {
   })
 })

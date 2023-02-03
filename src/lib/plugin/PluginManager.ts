@@ -9,31 +9,31 @@ import PluginLoader, { IPluginLoader, PluginLoadState } from './loader/PluginLoa
 const LOGGER = new Logger('PluginManager', LogLevels.WARN)
 
 export interface PluginManagerData {
-  urls: PluginManagerUrls
-  roots: PluginManagerPlugins
-  plugins: PluginManagerPlugins
-  definitions: PluginManagerDefinitions
-  providers: PluginManagerProviders
+  urls: PluginManagerDataUrls
+  roots: PluginManagerDataPlugins
+  plugins: PluginManagerDataPlugins
+  definitions: PluginManagerDataDefinitions
+  providers: PluginManagerDataProviders
 }
-export interface PluginManagerUrls {
-  [key: string]: PluginUrl
+export interface PluginManagerDataUrls {
+  [key: string]: PluginManagerDataUrl
 }
-export interface PluginUrl {
+export interface PluginManagerDataUrl {
   state: PluginLoadState
   errors: string[]
   data?: WardPlugin
 }
-export interface PluginManagerPlugins {
+export interface PluginManagerDataPlugins {
   [key: string]: Plugin
 }
-export interface PluginManagerDefinitions {
+export interface PluginManagerDataDefinitions {
   [key: string]: PluginDefine
 }
-export interface PluginManagerProviders {
+export interface PluginManagerDataProviders {
   [key: string]: PluginProvider
 }
 
-class PluginManager implements PluginManagerData {
+export class PluginManager implements PluginManagerData {
 
   // Attributes //
 
@@ -44,9 +44,9 @@ class PluginManager implements PluginManagerData {
 
   #listeners: ((data: PluginManagerData) => void)[] = []
 
-  #plugins: PluginManagerPlugins = {}
-  #definitions: PluginManagerDefinitions = {}
-  #providers: PluginManagerProviders = {}
+  #plugins: PluginManagerDataPlugins = {}
+  #definitions: PluginManagerDataDefinitions = {}
+  #providers: PluginManagerDataProviders = {}
 
   // Constructor //
 
@@ -74,7 +74,7 @@ class PluginManager implements PluginManagerData {
   }
 
   get urls () {
-    return this.#loader.urls.reduce((acc: PluginManagerUrls, url) => {
+    return this.#loader.urls.reduce((acc: PluginManagerDataUrls, url) => {
       acc[url] = {
         state: this.getState(url),
         errors: this.getErrors(url),
@@ -93,7 +93,7 @@ class PluginManager implements PluginManagerData {
     return this.#loader.getErrors(url)
   }
 
-  get roots(): PluginManagerPlugins {
+  get roots(): PluginManagerDataPlugins {
     const dependentEntries: string[] = []
     Object.values(this.#plugins).forEach(plugin => {
       plugin.dependencies.forEach(dependency => {
@@ -102,7 +102,7 @@ class PluginManager implements PluginManagerData {
         }
       })
     })
-    return Object.values(this.#plugins).reduce((acc: PluginManagerPlugins, plugin) => {
+    return Object.values(this.#plugins).reduce((acc: PluginManagerDataPlugins, plugin) => {
       if (!dependentEntries.includes(plugin.loadUrl)) {
         acc[plugin.name] = plugin
       }
@@ -110,7 +110,7 @@ class PluginManager implements PluginManagerData {
     }, {})
   }
 
-  get plugins(): PluginManagerPlugins {
+  get plugins(): PluginManagerDataPlugins {
     return this.#plugins
   }
   getPlugin(pluginId: string): Plugin | undefined {
@@ -278,5 +278,3 @@ class PluginManager implements PluginManagerData {
     })
   }
 }
-
-export default PluginManager

@@ -1,4 +1,4 @@
-import PluginManager from '../../../src/lib/plugin/PluginManager'
+import { PluginManager } from '../../../src/lib/plugin/PluginManager'
 import { LogConfig } from '@uncover/js-utils-logger'
 import Plugin from '../../../src/lib/plugin/object/Plugin'
 import PluginDefine from '../../../src/lib/plugin/object/PluginDefine'

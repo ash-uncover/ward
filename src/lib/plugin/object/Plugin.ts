@@ -1,5 +1,7 @@
-import PluginManager from '../PluginManager'
-import { WardPlugin, WardPluginProvides } from '../loader/model/PluginDataModel'
+import {
+  WardPlugin,
+  WardPluginProvides
+} from '../loader/model/PluginDataModel'
 import PluginDefine from './PluginDefine'
 import PluginProvide from './PluginProvide'
 
