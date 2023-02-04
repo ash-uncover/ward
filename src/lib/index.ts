@@ -9,7 +9,7 @@ import MessageDispatcher, {
 
 export { Message, MessageService } from './message/model/model'
 
-interface WardData extends MessageDispatcherData, PluginManagerData {
+export interface WardData extends MessageDispatcherData, PluginManagerData {
 
 }
 
@@ -34,8 +34,8 @@ class Ward {
     this.#wardId = wardId || UUID.next()
     this.#pluginManager = pluginManager || new PluginManager()
     this.#messageDispatcher = messageDispatcher || new MessageDispatcher()
-    this.#pluginManager.register(this.notify)
-    this.#messageDispatcher.register(this.notify)
+    this.#pluginManager.register(this.notify.bind(this))
+    this.#messageDispatcher.register(this.notify.bind(this))
   }
 
   // Getters & Setters //
