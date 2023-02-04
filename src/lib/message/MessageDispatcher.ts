@@ -1,4 +1,4 @@
-import { UUID } from '@uncover/js-utils'
+import { ArrayUtils, UUID } from '@uncover/js-utils'
 import Logger, { LogLevels } from '@uncover/js-utils-logger'
 import { MessageService, Message } from './model/model'
 import FrameService from './services/FrameService'
@@ -9,13 +9,21 @@ export const CONNECTION_CLOSING = '__CONNNECTION_CLOSING__'
 
 const LOGGER = new Logger('MessageDispatcher', LogLevels.WARN)
 
-class MessageDispatcher {
+export interface MessageDispatcherData {
+  services: MessageDispatcherDataServices
+}
+export interface MessageDispatcherDataServices {
+  [key: string]: MessageService
+}
+class MessageDispatcher implements MessageDispatcherData {
 
   // Attributes //
 
   #id: string
   #services: MessageService[] = []
   #dispatchers: string[] = []
+
+  #listeners: ((data: MessageDispatcherData) => void)[] = []
 
   #handler: (event: MessageEvent) => void
 
@@ -40,12 +48,21 @@ class MessageDispatcher {
 
   // Getters & Setters //
 
+  get data(): MessageDispatcherData {
+    return {
+      services: this.services,
+    }
+  }
+
   get id() {
     return this.#id
   }
 
   get services() {
-    return this.#services.slice()
+    return this.#services.reduce((acc: MessageDispatcherDataServices, service) => {
+      acc[service.id] = service
+      return acc
+    }, {})
   }
 
   get dispatchers() {
@@ -53,6 +70,19 @@ class MessageDispatcher {
   }
 
   // Public Methods //
+
+  register(listener: (data: MessageDispatcherData) => void) {
+    this.#listeners.push(listener)
+    return () => this.unregister(listener)
+  }
+  unregister(listener: (data: MessageDispatcherData) => void) {
+    this.#listeners = ArrayUtils.removeElement(this.#listeners, listener)
+  }
+  notify() {
+    this.#listeners.forEach(listener => {
+      listener(this.data)
+    })
+  }
 
   terminate() {
     LOGGER.info(`[${this.id}] stopping`)
@@ -72,6 +102,8 @@ class MessageDispatcher {
   reset() {
     this.#services = []
     this.#dispatchers = []
+
+    this.notify()
   }
 
   getService(serviceId: string) {
@@ -82,11 +114,13 @@ class MessageDispatcher {
     if (!this.#services.includes(service)) {
       this.#services.push(service)
     }
+    this.notify()
     return () => this.removeService(service)
   }
   removeService(service: MessageService) {
     LOGGER.info(`[${this.#id}] remove service [${service.id}]`)
     this.#services = this.#services.filter(serv => serv !== service)
+    this.notify()
   }
 
   sendMessage(message: Message) {

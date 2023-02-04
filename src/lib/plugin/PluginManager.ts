@@ -144,6 +144,7 @@ export class PluginManager implements PluginManagerData {
 
   register(listener: (data: PluginManagerData) => void) {
     this.#listeners.push(listener)
+    return () => this.unregister(listener)
   }
   unregister(listener: (data: PluginManagerData) => void) {
     this.#listeners = ArrayUtils.removeElement(this.#listeners, listener)

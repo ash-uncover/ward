@@ -3,8 +3,7 @@ import { UUID } from '@uncover/js-utils'
 import { PluginManager } from './plugin/PluginManager'
 import MessageDispatcher from './message/MessageDispatcher'
 
-export { Message } from './message/model/model'
-export { PluginManagerData } from './plugin/PluginManager'
+export { Message, MessageService } from './message/model/model'
 
 class Ward {
 
@@ -34,7 +33,10 @@ class Ward {
   }
 
   get data () {
-    return this.#pluginManager.data
+    return {
+      ...this.#messageDispatcher.data,
+      ...this.#pluginManager.data
+    }
   }
 
   // Public methods //
@@ -50,9 +52,11 @@ class Ward {
 
   register(cb: () => void) {
     this.#pluginManager.register(cb)
+    this.#messageDispatcher.register(cb)
   }
   unregister(cb: () => void) {
     this.#pluginManager.unregister(cb)
+    this.#messageDispatcher.unregister(cb)
   }
 }
 
