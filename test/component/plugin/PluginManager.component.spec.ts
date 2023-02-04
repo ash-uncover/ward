@@ -1,5 +1,5 @@
-import { PluginManager } from '../../../src/lib/plugin/PluginManager'
 import { LogConfig } from '@uncover/js-utils-logger'
+import PluginManager from '../../../src/lib/plugin/PluginManager'
 
 LogConfig.off()
 

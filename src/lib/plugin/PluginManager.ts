@@ -33,7 +33,7 @@ export interface PluginManagerDataProviders {
   [key: string]: PluginProvider
 }
 
-export class PluginManager implements PluginManagerData {
+class PluginManager implements PluginManagerData {
 
   // Attributes //
 
@@ -279,3 +279,5 @@ export class PluginManager implements PluginManagerData {
     })
   }
 }
+
+export default PluginManager

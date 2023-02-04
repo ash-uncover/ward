@@ -1,9 +1,17 @@
-import { UUID } from '@uncover/js-utils'
+import { ArrayUtils, UUID } from '@uncover/js-utils'
 
-import { PluginManager } from './plugin/PluginManager'
-import MessageDispatcher from './message/MessageDispatcher'
+import PluginManager, {
+  PluginManagerData
+} from './plugin/PluginManager'
+import MessageDispatcher, {
+  MessageDispatcherData
+} from './message/MessageDispatcher'
 
 export { Message, MessageService } from './message/model/model'
+
+interface WardData extends MessageDispatcherData, PluginManagerData {
+
+}
 
 class Ward {
 
@@ -13,6 +21,8 @@ class Ward {
 
   #pluginManager: PluginManager
   #messageDispatcher: MessageDispatcher
+
+  #listeners: ((data: WardData) => void)[] = []
 
   // Constructors //
 
@@ -24,15 +34,17 @@ class Ward {
     this.#wardId = wardId || UUID.next()
     this.#pluginManager = pluginManager || new PluginManager()
     this.#messageDispatcher = messageDispatcher || new MessageDispatcher()
+    this.#pluginManager.register(this.notify)
+    this.#messageDispatcher.register(this.notify)
   }
 
   // Getters & Setters //
 
-  get id () {
+  get id() {
     return this.#wardId
   }
 
-  get data () {
+  get data(): WardData {
     return {
       ...this.#messageDispatcher.data,
       ...this.#pluginManager.data
@@ -41,22 +53,26 @@ class Ward {
 
   // Public methods //
 
-  reset () {
+  register(listener: (data: WardData) => void) {
+    this.#listeners.push(listener)
+    return () => this.unregister(listener)
+  }
+  unregister(listener: (data: WardData) => void) {
+    this.#listeners = ArrayUtils.removeElement(this.#listeners, listener)
+  }
+  notify() {
+    this.#listeners.forEach(listener => {
+      listener(this.data)
+    })
+  }
+
+  reset() {
     this.#pluginManager.reset()
     this.#messageDispatcher.reset()
   }
 
   loadPlugin(plugin: string) {
     this.#pluginManager.loadPlugin(plugin)
-  }
-
-  register(cb: () => void) {
-    this.#pluginManager.register(cb)
-    this.#messageDispatcher.register(cb)
-  }
-  unregister(cb: () => void) {
-    this.#pluginManager.unregister(cb)
-    this.#messageDispatcher.unregister(cb)
   }
 }
 

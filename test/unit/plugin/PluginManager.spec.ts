@@ -1,5 +1,5 @@
-import { PluginManager } from '../../../src/lib/plugin/PluginManager'
 import { LogConfig } from '@uncover/js-utils-logger'
+import PluginManager from '../../../src/lib/plugin/PluginManager'
 import Plugin from '../../../src/lib/plugin/object/Plugin'
 import PluginDefine from '../../../src/lib/plugin/object/PluginDefine'
 import PluginProvider from '../../../src/lib/plugin/object/PluginProvider'
@@ -417,6 +417,24 @@ describe('PluginManager', () => {
         const spyListerner = jest.fn()
         PluginMgr.register(spyListerner)
         PluginMgr.unregister(spyListerner)
+        await PluginMgr.loadPlugin('url')
+        // Assertion
+        expect(spyListerner).toHaveBeenCalledTimes(0)
+      })
+
+      test('Check that listeners can be removed with callback', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl'
+        }
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => true)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
+        mockPluginLoaderGetData.mockImplementation(() => data)
+        // Execution
+        const spyListerner = jest.fn()
+        PluginMgr.register(spyListerner)()
         await PluginMgr.loadPlugin('url')
         // Assertion
         expect(spyListerner).toHaveBeenCalledTimes(0)

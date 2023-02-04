@@ -48,8 +48,9 @@ describe('MessageDispatcher', () => {
       const dispatcher = new MessageDispatcher(id)
       // Assertion
       expect(dispatcher.id).toBe('dispatcherId')
-      expect(dispatcher.services).toEqual([])
+      expect(dispatcher.services).toEqual({})
       expect(dispatcher.dispatchers).toEqual([])
+      expect(dispatcher.data).toEqual({ services: {} })
       expect(spyWindowAddEventListener).toHaveBeenCalledTimes(1)
       expect(spyWindowPostMessage).toHaveBeenCalledTimes(0)
     })
@@ -60,7 +61,7 @@ describe('MessageDispatcher', () => {
       const dispatcher = new MessageDispatcher()
       // Assertion
       expect(dispatcher.id).toBeDefined()
-      expect(dispatcher.services).toEqual([])
+      expect(dispatcher.services).toEqual({})
       expect(dispatcher.dispatchers).toEqual([])
     })
 
@@ -130,7 +131,6 @@ describe('MessageDispatcher', () => {
       // Execution
       dispatcher.addService(service)
       // Assertion
-      expect(dispatcher.services).toHaveLength(1)
       expect(dispatcher.getService('serviceId')).toEqual(service)
     })
 
@@ -148,7 +148,7 @@ describe('MessageDispatcher', () => {
       const removeCallback = dispatcher.addService(service)
       removeCallback()
       // Assertion
-      expect(dispatcher.services).toHaveLength(0)
+      expect(dispatcher.services).toEqual({})
       expect(dispatcher.getService('serviceId')).toBeUndefined()
     })
 
@@ -165,7 +165,7 @@ describe('MessageDispatcher', () => {
       dispatcher.addService(service)
       dispatcher.removeService(service)
       // Assertion
-      expect(dispatcher.services).toHaveLength(0)
+      expect(dispatcher.services).toEqual({})
       expect(dispatcher.getService('serviceId')).toBeUndefined()
     })
 
@@ -183,7 +183,7 @@ describe('MessageDispatcher', () => {
       dispatcher.addService(service)
       dispatcher.reset()
       // Assertion
-      expect(dispatcher.services).toHaveLength(0)
+      expect(dispatcher.services).toEqual({})
       expect(dispatcher.getService('serviceId')).toBeUndefined()
     })
   })
@@ -243,7 +243,7 @@ describe('MessageDispatcher', () => {
       window.dispatchEvent(event)
       // Assertion
       expect(dispatcher.dispatchers).toHaveLength(1)
-      expect(dispatcher.services).toHaveLength(1)
+      expect(Object.keys(dispatcher.services)).toHaveLength(1)
     })
 
     test('when same dispatcher try to connect twice', () => {
@@ -264,7 +264,7 @@ describe('MessageDispatcher', () => {
       window.dispatchEvent(event)
       // Assertion
       expect(dispatcher.dispatchers).toHaveLength(1)
-      expect(dispatcher.services).toHaveLength(1)
+      expect(Object.keys(dispatcher.services)).toHaveLength(1)
     })
 
     test('when receiving connection acknowledge message', () => {
@@ -285,7 +285,7 @@ describe('MessageDispatcher', () => {
       window.dispatchEvent(event)
       // Assertion
       expect(dispatcher.dispatchers).toHaveLength(0)
-      expect(dispatcher.services).toHaveLength(1)
+      expect(Object.keys(dispatcher.services)).toHaveLength(1)
     })
 
     test('when receiving connection closing message', () => {
@@ -306,7 +306,44 @@ describe('MessageDispatcher', () => {
       window.dispatchEvent(event)
       // Assertion
       expect(dispatcher.dispatchers).toHaveLength(0)
-      expect(dispatcher.services).toHaveLength(0)
+      expect(dispatcher.services).toEqual({})
+    })
+  })
+
+  describe('listeners', () => {
+
+    test('Check that listeners are called', async () => {
+      // Declaration
+      const dispatcher = new MessageDispatcher()
+      // Execution
+      const spyListerner = jest.fn()
+      dispatcher.register(spyListerner)
+      dispatcher.reset()
+      // Assertion
+      expect(spyListerner).toHaveBeenCalledTimes(1)
+    })
+
+    test('Check that listeners can be removed', async () => {
+      // Declaration
+      const dispatcher = new MessageDispatcher()
+      // Execution
+      const spyListerner = jest.fn()
+      dispatcher.register(spyListerner)
+      dispatcher.unregister(spyListerner)
+      dispatcher.reset()
+      // Assertion
+      expect(spyListerner).toHaveBeenCalledTimes(0)
+    })
+
+    test('Check that listeners can be removed with callback', async () => {
+      // Declaration
+      const dispatcher = new MessageDispatcher()
+      // Execution
+      const spyListerner = jest.fn()
+      dispatcher.register(spyListerner)()
+      dispatcher.reset()
+      // Assertion
+      expect(spyListerner).toHaveBeenCalledTimes(0)
     })
   })
 })
