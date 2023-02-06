@@ -7,7 +7,7 @@ export const CONNECTION_REQUEST = '__CONNNECTION_REQUEST__'
 export const CONNECTION_ACKNOWLEDGE = '__CONNECTION_ACKNOWLEDGE__'
 export const CONNECTION_CLOSING = '__CONNNECTION_CLOSING__'
 
-const LOGGER = new Logger('MessageDispatcher', LogLevels.WARN)
+const LOGGER = new Logger('MessageDispatcher', LogLevels.DEBUG)
 
 export interface MessageDispatcherData {
   services: MessageDispatcherDataServices
@@ -31,15 +31,15 @@ class MessageDispatcher implements MessageDispatcherData {
   // Constructor //
 
   constructor(id?: string) {
-    this.#id = id || `message-dispatcher-${UUID.next()}`
-    LOGGER.info(`[${this.#id}] created`)
+    this.#id = id || UUID.next()
+    LOGGER.info(`[DISP-${this.id}] created`)
     this.#handler = this.#handleMessage.bind(this)
     window.addEventListener(
       'message',
       this.#handler
     )
     if (window !== window.parent) {
-      LOGGER.info(`[${this.#id}] contact parent`)
+      LOGGER.info(`[DISP-${this.id}] contact parent`)
       window.parent.postMessage({
         _dispatcherId: this.#id,
         type: CONNECTION_REQUEST
@@ -87,13 +87,13 @@ class MessageDispatcher implements MessageDispatcherData {
   }
 
   terminate() {
-    LOGGER.info(`[${this.id}] stopping`)
+    LOGGER.info(`[DISP-${this.id}] stopping`)
     window.removeEventListener(
       'message',
       this.#handler
     )
     if (window !== window.parent) {
-      LOGGER.info(`[${this.#id}] notifying parent`)
+      LOGGER.info(`[DISP-${this.id}] notifying parent`)
       window.parent.postMessage({
         _dispatcherId: this.#id,
         type: CONNECTION_CLOSING
@@ -112,7 +112,7 @@ class MessageDispatcher implements MessageDispatcherData {
     return this.#services.find(service => service.id === serviceId)
   }
   addService(service: MessageService) {
-    LOGGER.info(`[${this.#id}] add service [${service.id}]`)
+    LOGGER.info(`[DISP-${this.id}] add service [${service.id}]`)
     if (!this.#services.includes(service)) {
       this.#services.push(service)
     }
@@ -120,16 +120,16 @@ class MessageDispatcher implements MessageDispatcherData {
     return () => this.removeService(service)
   }
   removeService(service: MessageService) {
-    LOGGER.info(`[${this.#id}] remove service [${service.id}]`)
+    LOGGER.info(`[DISP-${this.id}] remove service [${service.id}]`)
     this.#services = this.#services.filter(serv => serv !== service)
     this.notify()
   }
 
   sendMessage(message: Message) {
-    LOGGER.info(`[${this.#id}] send message to ${this.#services.length - 1} services from [${this.#id}-${message._serviceId}]`)
+    LOGGER.info(`[DISP-${this.id}] send message to ${this.#services.length - 1} services from [${this.#id}-${message._serviceId}]`)
     this.#services.forEach((service) => {
       if (service.id !== message._serviceId) {
-        LOGGER.info(`[${this.#id}] send message on service [${service.id}]`)
+        LOGGER.info(`[DISP-${this.id}] send message on service [${service.id}]`)
         service.onMessage({
           _dispatcherId: this.#id,
           ...message,
@@ -161,12 +161,17 @@ class MessageDispatcher implements MessageDispatcherData {
 
   #handleConnectionRequest(event: MessageEvent) {
     const dispatcherId = event.data._dispatcherId
-    LOGGER.info(`[${this.id}] child trying to connect [${dispatcherId.substring(dispatcherId.length - 3)}]`)
-    LOGGER.info(`[${this.id}] current childs: ${this.dispatchers.join(', ')}`)
+    LOGGER.info(`[DISP-${this.id}] child trying to connect [${dispatcherId}]`)
+    LOGGER.info(`[DISP-${this.id}] current childs: ${this.dispatchers.join(', ')}`)
     const wdow = <Window>event.source!
     const origin = event.origin
     if (!this.#dispatchers.includes(dispatcherId)) {
-      const service = new FrameService(dispatcherId, wdow, origin)
+      const service = new FrameService(
+        this,
+        wdow,
+        origin,
+        dispatcherId
+      )
       this.#dispatchers.push(dispatcherId)
       this.addService(service)
       service.onMessage({
@@ -179,18 +184,19 @@ class MessageDispatcher implements MessageDispatcherData {
   }
 
   #handleConnectionAcknowledge(event: MessageEvent) {
-    LOGGER.info(`[${this.id}] parent acknowledge connection`)
+    LOGGER.info(`[DISP-${this.id}] parent acknowledge connection`)
     const service = new FrameService(
       this,
       window.parent,
       event.origin,
+      event.data._dispatcherId,
       event.data._serviceId
     )
     this.addService(service)
   }
 
   #handleConnectionClosing(event: MessageEvent) {
-    LOGGER.info(`[${this.id}] child notify closing`)
+    LOGGER.info(`[DISP-${this.id}] child notify closing`)
   }
 }
 

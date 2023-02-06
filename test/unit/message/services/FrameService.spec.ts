@@ -52,13 +52,14 @@ describe('FrameService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
+      const remoteDispatcherId: string = 'remoteDispather'
       const serviceId: string = 'serviceId'
       spyWindow.mockImplementation(() => ({
         addEventListener: spyWindowAddEventListener,
         postMessage: spyWindowPostMessage
       }))
       // Execution
-      const service = new FrameService(dispatcher, window, origin, serviceId)
+      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId, serviceId)
       // Assertion
       expect(service.id).toBe(serviceId)
       expect(service.dispatcherId).toBe(DISPATCHER_ID)
@@ -71,12 +72,13 @@ describe('FrameService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
+      const remoteDispatcherId: string = 'remoteDispather'
       spyWindow.mockImplementation(() => ({
         addEventListener: spyWindowAddEventListener,
         postMessage: spyWindowPostMessage
       }))
       // Execution
-      const service = new FrameService(dispatcher, window, origin)
+      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
       // Assertion
       expect(service.id).toBeDefined()
       expect(service.dispatcherId).toBe(DISPATCHER_ID)
@@ -94,12 +96,13 @@ describe('FrameService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const origin: string = 'http://localhost'
+      const remoteDispatcherId: string = 'remoteDispather'
       spyWindow.mockImplementation(() => ({
         closed: false,
         addEventListener: spyWindowAddEventListener,
         postMessage: spyWindowPostMessage
       }))
-      const service = new FrameService(dispatcher, window, origin)
+      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
       // Execution
       service.onMessage({
         type: 'type',
@@ -119,12 +122,13 @@ describe('FrameService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
+      const remoteDispatcherId: string = 'remoteDispather'
       spyWindow.mockImplementation(() => ({
         closed: true,
         addEventListener: spyWindowAddEventListener,
         postMessage: spyWindowPostMessage
       }))
-      const service = new FrameService(dispatcher, window, origin)
+      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
       // Execution
       service.onMessage({
         type: 'type',
@@ -144,7 +148,8 @@ describe('FrameService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
-      const service = new FrameService(dispatcher, window, origin)
+      const remoteDispatcherId: string = 'remoteDispather'
+      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
       // Execution
       service.sendMessage({ type: 'type', payload: 'payload' })
       // Assertion
@@ -167,7 +172,8 @@ describe('FrameService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
-      const service = new FrameService(dispatcher, window, origin)
+      const remoteDispatcherId: string = 'remoteDispather'
+      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
       spyServiceOnMessage = jest.spyOn(service, 'onMessage')
       // Execution
       const event = new MessageEvent('unload')
@@ -188,7 +194,8 @@ describe('FrameService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
-      const service = new FrameService(dispatcher, window, origin)
+      const remoteDispatcherId: string = 'remoteDispather'
+      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const message = {
@@ -205,7 +212,8 @@ describe('FrameService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
-      const service = new FrameService(dispatcher, window, origin)
+      const remoteDispatcherId: string = 'remoteDispather'
+      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const message = {
@@ -224,7 +232,8 @@ describe('FrameService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
-      const service = new FrameService(dispatcher, window, origin)
+      const remoteDispatcherId: string = 'remoteDispather'
+      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const event = new MessageEvent('message', {})
@@ -237,14 +246,15 @@ describe('FrameService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
-      const service = new FrameService(dispatcher, window, origin)
+      const remoteDispatcherId: string = 'remoteDispather'
+      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const message = {
         type: 'type',
         payload: 'payload',
         _serviceId: 'dummy',
-        _dispatcherId: DISPATCHER_ID
+        _dispatcherId: remoteDispatcherId
       }
       const event = new MessageEvent('message', { data: message })
       window.dispatchEvent(event)
@@ -262,14 +272,15 @@ describe('FrameService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
-      const service = new FrameService(dispatcher, window, origin)
+      const remoteDispatcherId: string = 'remoteDispather'
+      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const message = {
         type: CONNECTION_CLOSING,
         payload: 'payload',
         _serviceId: service.id,
-        _dispatcherId: DISPATCHER_ID
+        _dispatcherId: remoteDispatcherId
       }
       const event = new MessageEvent('message', { data: message })
       window.dispatchEvent(event)

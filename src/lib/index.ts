@@ -14,6 +14,9 @@ export {
   Message,
   MessageService
 } from './message/model/model'
+export {
+  EventService
+} from './message/services/ServiceEvent'
 
 export interface WardData extends MessageDispatcherData, PluginManagerData {
 

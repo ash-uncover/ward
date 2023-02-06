@@ -1,5 +1,5 @@
 import { LogConfig } from '@uncover/js-utils-logger'
-import EventService from '../../../../src/lib/message/services/EventService'
+import ServiceEvent from '../../../../src/lib/message/services/ServiceEvent'
 import MessageDispatcher from '../../../../src/lib/message/MessageDispatcher'
 import { MessageServiceTypes } from '../../../../src/lib/message/model/model'
 
@@ -32,7 +32,7 @@ describe('EventService', () => {
 
   /* TEST CASES */
 
-  // new EventService //
+  // new ServiceEvent //
 
   describe('constructor', () => {
 
@@ -42,7 +42,7 @@ describe('EventService', () => {
       const id = 'serviceId'
       spyDispatcherId.mockImplementation(() => 'dispatcherId')
       // Execution
-      const service = new EventService(dispatcher, id)
+      const service = new ServiceEvent(dispatcher, id)
       // Assertion
       expect(service.id).toEqual(id)
       expect(service.dispatcherId).toEqual('dispatcherId')
@@ -57,7 +57,7 @@ describe('EventService', () => {
     test('when terminating a service', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
-      const service = new EventService(dispatcher)
+      const service = new ServiceEvent(dispatcher)
       // Execution
       service.terminate()
       // Assertion
@@ -73,7 +73,7 @@ describe('EventService', () => {
     test('when initialized', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
-      const service = new EventService(dispatcher)
+      const service = new ServiceEvent(dispatcher)
       const handleMessage = jest.fn()
       const message = {
         type: 'type',
@@ -96,7 +96,7 @@ describe('EventService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const handleMessage = jest.fn()
-      const service = new EventService(dispatcher)
+      const service = new ServiceEvent(dispatcher)
       const message = {
         type: 'type',
         payload: 'payload'
@@ -113,7 +113,7 @@ describe('EventService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const handleMessage = jest.fn()
-      const service = new EventService(dispatcher)
+      const service = new ServiceEvent(dispatcher)
       const message = {
         type: 'type',
         payload: 'payload'
@@ -135,7 +135,7 @@ describe('EventService', () => {
       const dispatcher = new MessageDispatcher()
       const handleMessage = jest.fn()
       const handleMessage2 = jest.fn()
-      const service = new EventService(dispatcher)
+      const service = new ServiceEvent(dispatcher)
       service.addHandler(handleMessage)
       service.addHandler(handleMessage2)
       const message = {
@@ -160,7 +160,7 @@ describe('EventService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const handleMessage = jest.fn()
-      const service = new EventService(dispatcher)
+      const service = new ServiceEvent(dispatcher)
       service.addHandler(handleMessage)
       // Execution
       service.sendMessage({ type: 'type', payload: 'payload' })

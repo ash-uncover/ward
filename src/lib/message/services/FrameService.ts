@@ -3,7 +3,7 @@ import Logger, { LogLevels } from '@uncover/js-utils-logger'
 import { Message, MessageService, MessageServiceTypes } from '../model/model'
 import MessageDispatcher, { CONNECTION_CLOSING } from '../MessageDispatcher'
 
-const LOGGER = new Logger('FrameService', LogLevels.WARN)
+const LOGGER = new Logger('FrameService', LogLevels.DEBUG)
 
 class FrameService implements MessageService {
 
@@ -11,6 +11,7 @@ class FrameService implements MessageService {
 
   #id: string
   #dispatcher: MessageDispatcher
+  #remoteDispatcherId: string
   #window: Window
   #origin: string
 
@@ -20,13 +21,15 @@ class FrameService implements MessageService {
     dispatcher: MessageDispatcher,
     wdow: Window,
     origin: string,
+    remoteDispatcherId: string,
     id?: string
   ) {
     this.#dispatcher = dispatcher
     this.#id = id || UUID.next()
     this.#window = wdow
     this.#origin = origin
-    LOGGER.info(`[${this.dispatcherId}-${this.id}] created`)
+    this.#remoteDispatcherId = remoteDispatcherId
+    LOGGER.info(`[DISP-${this.dispatcherId}/FRAME-${this.id}] created`)
     window.addEventListener(
       'message',
       this.#handleMessage.bind(this)
@@ -57,12 +60,12 @@ class FrameService implements MessageService {
   // Public Methods //
 
   onMessage(message: Message) {
-    LOGGER.info(`[${this.dispatcherId}-${this.id}] onMessage ${message.type}`)
+    LOGGER.info(`[DISP-${this.dispatcherId}/FRAME-${this.id}] onMessage ${message.type}`)
     if (this.#window.closed) {
-      LOGGER.info(`[${this.dispatcherId}-${this.id}] onMessage /!\\ window closed /!\\`)
+      LOGGER.info(`[DISP-${this.dispatcherId}/FRAME-${this.id}] onMessage /!\\ window closed /!\\`)
       this.terminate()
     } else {
-      LOGGER.debug(`[${this.dispatcherId}-${this.id}] onMessage posting message to ${this.#origin}`)
+      LOGGER.debug(`[DISP-${this.dispatcherId}/FRAME-${this.id}] onMessage posting message to ${this.#origin}`)
       this.#window.postMessage({
         ...message,
         _serviceId: this.#id
@@ -71,7 +74,7 @@ class FrameService implements MessageService {
   }
 
   sendMessage(message: Message) {
-    LOGGER.debug(`[${this.dispatcherId}-${this.id}] sendMessage ${message.type}`)
+    LOGGER.debug(`[DISP-${this.dispatcherId}/FRAME-${this.id}] sendMessage ${message.type}`)
     this.#dispatcher.sendMessage({
       ...message,
       _serviceId: this.id,
@@ -79,7 +82,7 @@ class FrameService implements MessageService {
   }
 
   terminate() {
-    LOGGER.info(`[${this.dispatcherId}-${this.id}] terminate`)
+    LOGGER.info(`[DISP-${this.dispatcherId}/FRAME-${this.id}] terminate`)
     this.#dispatcher.removeService(this)
   }
 
@@ -96,9 +99,9 @@ class FrameService implements MessageService {
 
   #handleMessage(event: MessageEvent) {
     const data = event.data || {}
-    LOGGER.debug(`[${this.dispatcherId}-${this.id}] handleMessage `)
-    if (data._serviceId && data._dispatcherId && data._dispatcherId === this.dispatcherId) {
-      LOGGER.debug(`[${this.dispatcherId}-${this.id}] handleMessage ${event.data.type}`)
+    LOGGER.debug(`[DISP-${this.dispatcherId}/FRAME-${this.id}] handleMessage `)
+    if (data._serviceId && data._dispatcherId && data._dispatcherId === this.#remoteDispatcherId) {
+      LOGGER.debug(`[DISP-${this.dispatcherId}/FRAME-${this.id}] handleMessage ${event.data.type}`)
       if (data.type === CONNECTION_CLOSING) {
         this.terminate()
       } else {

@@ -3,7 +3,7 @@ import Logger, { LogLevels } from '@uncover/js-utils-logger'
 import { Message, MessageService, MessageServiceTypes } from '../model/model'
 import MessageDispatcher from '../MessageDispatcher'
 
-const LOGGER = new Logger('EventService', LogLevels.WARN)
+const LOGGER = new Logger('EventService', LogLevels.DEBUG)
 
 export interface EventService extends MessageService {
   addHandler: (handler: (message: Message) => void) => ((message: Message) => void)
@@ -28,7 +28,7 @@ class ServiceEvent implements EventService {
     this.#id = id || UUID.next()
     this.#dispatcher = dispatcher
     this.#dispatcher.addService(this)
-    LOGGER.info(`[${this.dispatcherId}-${this.id}] created`)
+    LOGGER.info(`[DISP-${this.dispatcherId}/EVENT-${this.id}] created`)
   }
 
   // Getters & Setters //
@@ -46,27 +46,27 @@ class ServiceEvent implements EventService {
   // Public methods //
 
   terminate() {
-    LOGGER.info(`[${this.dispatcherId}-${this.id}] terminate`)
+    LOGGER.info(`[DISP-${this.dispatcherId}/EVENT-${this.id}] terminate`)
     this.#dispatcher.removeService(this)
   }
 
   addHandler(handler: (message: Message) => void) {
-    LOGGER.debug(`[${this.dispatcherId}-${this.id}] add handler`)
+    LOGGER.debug(`[DISP-${this.dispatcherId}/EVENT-${this.id}] add handler`)
     this.#handlers.push(handler)
     return this.removeHandler.bind(this, handler)
   }
   removeHandler(handler: (message: Message) => void) {
-    LOGGER.debug(`[${this.dispatcherId}-${this.id}] add handler`)
+    LOGGER.debug(`[DISP-${this.dispatcherId}/EVENT-${this.id}] add handler`)
     this.#handlers = ArrayUtils.removeElement(this.#handlers, handler)
   }
 
   onMessage(message: Message) {
-    LOGGER.debug(`[${this.dispatcherId}-${this.id}] onMessage`)
+    LOGGER.debug(`[DISP-${this.dispatcherId}/EVENT-${this.id}] onMessage`)
     this.#handlers.forEach(handler => handler(message))
   }
 
   sendMessage(message: Message) {
-    LOGGER.info(`[${this.dispatcherId}-${this.id}] sendMessage`)
+    LOGGER.info(`[DISP-${this.dispatcherId}/EVENT-${this.id}] sendMessage`)
     this.#dispatcher.sendMessage({
       ...message,
       _serviceId: this.id,
