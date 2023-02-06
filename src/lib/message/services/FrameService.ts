@@ -60,7 +60,7 @@ class FrameService implements MessageService {
     LOGGER.info(`[${this.dispatcherId}-${this.id}] onMessage ${message.type}`)
     if (this.#window.closed) {
       LOGGER.info(`[${this.dispatcherId}-${this.id}] onMessage /!\\ window closed /!\\`)
-      this.#removeService()
+      this.terminate()
     } else {
       LOGGER.debug(`[${this.dispatcherId}-${this.id}] onMessage posting message to ${this.#origin}`)
       this.#window.postMessage({
@@ -78,6 +78,11 @@ class FrameService implements MessageService {
     })
   }
 
+  terminate() {
+    LOGGER.info(`[${this.dispatcherId}-${this.id}] terminate`)
+    this.#dispatcher.removeService(this)
+  }
+
   // Private Methods //
 
   #handleUnload() {
@@ -86,7 +91,7 @@ class FrameService implements MessageService {
       _dispatcherId: this.dispatcherId,
       payload: {},
     })
-    this.#removeService()
+    this.terminate()
   }
 
   #handleMessage(event: MessageEvent) {
@@ -95,7 +100,7 @@ class FrameService implements MessageService {
     if (data._serviceId && data._dispatcherId && data._dispatcherId === this.dispatcherId) {
       LOGGER.debug(`[${this.dispatcherId}-${this.id}] handleMessage ${event.data.type}`)
       if (data.type === CONNECTION_CLOSING) {
-        this.#removeService()
+        this.terminate()
       } else {
         this.sendMessage({
           _serviceId: this.#id,
@@ -104,11 +109,6 @@ class FrameService implements MessageService {
         })
       }
     }
-  }
-
-  #removeService() {
-    LOGGER.info(`[${this.dispatcherId}-${this.id}] remove service`)
-    this.#dispatcher.removeService(this)
   }
 }
 

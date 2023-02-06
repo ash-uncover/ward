@@ -20,8 +20,9 @@ class EventService implements MessageService {
     dispatcher: MessageDispatcher,
     handleMessage: (message: Message) => void
   ) {
-    this.#dispatcher = dispatcher
     this.#id = UUID.next()
+    this.#dispatcher = dispatcher
+    this.#dispatcher.addService(this)
     this.#handle = handleMessage
     LOGGER.info(`[${this.dispatcherId}-${this.id}] created`)
   }

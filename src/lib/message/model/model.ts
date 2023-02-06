@@ -23,6 +23,7 @@ export const MessageServiceTypes: {
 export interface MessageService {
   id: string
   type: MessageServiceType
+  terminate: () => void
   onMessage: (message: Message) => void
   sendMessage: (message: Message) => void
 }
