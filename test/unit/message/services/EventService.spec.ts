@@ -39,12 +39,12 @@ describe('EventService', () => {
     test('properly initialize object', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
-      const handleMessage = jest.fn()
+      const id = 'serviceId'
       spyDispatcherId.mockImplementation(() => 'dispatcherId')
       // Execution
-      const service = new EventService(dispatcher, handleMessage)
+      const service = new EventService(dispatcher, id)
       // Assertion
-      expect(service.id).toBeDefined()
+      expect(service.id).toEqual(id)
       expect(service.dispatcherId).toEqual('dispatcherId')
       expect(service.type).toEqual(MessageServiceTypes.EVENT)
     })
@@ -57,13 +57,72 @@ describe('EventService', () => {
     test('when terminating a service', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
-      const handleMessage = jest.fn()
-      const service = new EventService(dispatcher, handleMessage)
+      const service = new EventService(dispatcher)
       // Execution
       service.terminate()
       // Assertion
       expect(spyDispatcherRemoveService).toHaveBeenCalledTimes(1)
       expect(spyDispatcherRemoveService).toHaveBeenCalledWith(service)
+    })
+  })
+
+  // EventService.addHandler //
+
+  describe('addHandler', () => {
+
+    test('when initialized', () => {
+      // Declaration
+      const dispatcher = new MessageDispatcher()
+      const service = new EventService(dispatcher)
+      const handleMessage = jest.fn()
+      const message = {
+        type: 'type',
+        payload: 'payload'
+      }
+      // Execution
+      service.addHandler(handleMessage)
+      service.onMessage(message)
+      // Assertion
+      expect(handleMessage).toHaveBeenCalledTimes(1)
+      expect(handleMessage).toHaveBeenCalledWith(message)
+    })
+  })
+
+  // EventService.removeHandler //
+
+  describe('removeHandler', () => {
+
+    test('when called explicitly', () => {
+      // Declaration
+      const dispatcher = new MessageDispatcher()
+      const handleMessage = jest.fn()
+      const service = new EventService(dispatcher)
+      const message = {
+        type: 'type',
+        payload: 'payload'
+      }
+      // Execution
+      service.addHandler(handleMessage)
+      service.removeHandler(handleMessage)
+      service.onMessage(message)
+      // Assertion
+      expect(handleMessage).toHaveBeenCalledTimes(0)
+    })
+
+    test('when called from returned callback', () => {
+      // Declaration
+      const dispatcher = new MessageDispatcher()
+      const handleMessage = jest.fn()
+      const service = new EventService(dispatcher)
+      const message = {
+        type: 'type',
+        payload: 'payload'
+      }
+      // Execution
+      service.addHandler(handleMessage)()
+      service.onMessage(message)
+      // Assertion
+      expect(handleMessage).toHaveBeenCalledTimes(0)
     })
   })
 
@@ -75,15 +134,21 @@ describe('EventService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const handleMessage = jest.fn()
-      const service = new EventService(dispatcher, handleMessage)
+      const handleMessage2 = jest.fn()
+      const service = new EventService(dispatcher)
+      service.addHandler(handleMessage)
+      service.addHandler(handleMessage2)
+      const message = {
+        type: 'type',
+        payload: 'payload'
+      }
       // Execution
-      service.onMessage({ type: 'type', payload: 'paylaod' })
+      service.onMessage(message)
       // Assertion
       expect(handleMessage).toHaveBeenCalledTimes(1)
-      expect(handleMessage).toHaveBeenCalledWith({
-        type: 'type',
-        payload: 'paylaod'
-      })
+      expect(handleMessage).toHaveBeenCalledWith(message)
+      expect(handleMessage2).toHaveBeenCalledTimes(1)
+      expect(handleMessage2).toHaveBeenCalledWith(message)
     })
   })
 
@@ -95,7 +160,8 @@ describe('EventService', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
       const handleMessage = jest.fn()
-      const service = new EventService(dispatcher, handleMessage)
+      const service = new EventService(dispatcher)
+      service.addHandler(handleMessage)
       // Execution
       service.sendMessage({ type: 'type', payload: 'payload' })
       // Assertion

@@ -50,7 +50,10 @@ describe('MessageDispatcher', () => {
       expect(dispatcher.id).toBe('dispatcherId')
       expect(dispatcher.services).toEqual({})
       expect(dispatcher.dispatchers).toEqual([])
-      expect(dispatcher.data).toEqual({ services: {} })
+      expect(dispatcher.data).toEqual({
+        services: {},
+        dispatchers: []
+      })
       expect(spyWindowAddEventListener).toHaveBeenCalledTimes(1)
       expect(spyWindowPostMessage).toHaveBeenCalledTimes(0)
     })
@@ -126,7 +129,8 @@ describe('MessageDispatcher', () => {
         id: 'serviceId',
         type: 'event',
         onMessage: jest.fn(),
-        sendMessage: jest.fn()
+        sendMessage: jest.fn(),
+        terminate: jest.fn(),
       }
       // Execution
       dispatcher.addService(service)
@@ -142,7 +146,8 @@ describe('MessageDispatcher', () => {
         id: 'serviceId',
         type: 'event',
         onMessage: jest.fn(),
-        sendMessage: jest.fn()
+        sendMessage: jest.fn(),
+        terminate: jest.fn(),
       }
       // Execution
       const removeCallback = dispatcher.addService(service)
@@ -159,7 +164,8 @@ describe('MessageDispatcher', () => {
         id: 'serviceId',
         type: 'event',
         onMessage: jest.fn(),
-        sendMessage: jest.fn()
+        sendMessage: jest.fn(),
+        terminate: jest.fn(),
       }
       // Execution
       dispatcher.addService(service)
@@ -177,7 +183,8 @@ describe('MessageDispatcher', () => {
         id: 'serviceId',
         type: 'event',
         onMessage: jest.fn(),
-        sendMessage: jest.fn()
+        sendMessage: jest.fn(),
+        terminate: jest.fn(),
       }
       // Execution
       dispatcher.addService(service)
@@ -199,13 +206,15 @@ describe('MessageDispatcher', () => {
         id: 'service1',
         type: 'event',
         onMessage: jest.fn(),
-        sendMessage: jest.fn()
+        sendMessage: jest.fn(),
+        terminate: jest.fn(),
       }
       const service2: MessageService = {
         id: 'service2',
         type: 'event',
         onMessage: jest.fn(),
-        sendMessage: jest.fn()
+        sendMessage: jest.fn(),
+        terminate: jest.fn(),
       }
       // Execution
       dispatcher.addService(service1)

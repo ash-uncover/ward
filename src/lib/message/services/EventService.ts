@@ -1,4 +1,4 @@
-import { UUID } from '@uncover/js-utils'
+import { ArrayUtils, UUID } from '@uncover/js-utils'
 import Logger, { LogLevels } from '@uncover/js-utils-logger'
 import { Message, MessageService, MessageServiceTypes } from '../model/model'
 import MessageDispatcher from '../MessageDispatcher'
@@ -12,18 +12,17 @@ class EventService implements MessageService {
   #id: string
   #dispatcher: MessageDispatcher
 
-  #handle: (message: Message) => void
+  #handlers: ((message: Message) => void)[] = []
 
   // Constructor //
 
   constructor(
     dispatcher: MessageDispatcher,
-    handleMessage: (message: Message) => void
+    id?: string
   ) {
-    this.#id = UUID.next()
+    this.#id = id || UUID.next()
     this.#dispatcher = dispatcher
     this.#dispatcher.addService(this)
-    this.#handle = handleMessage
     LOGGER.info(`[${this.dispatcherId}-${this.id}] created`)
   }
 
@@ -35,7 +34,6 @@ class EventService implements MessageService {
   get dispatcherId() {
     return this.#dispatcher.id
   }
-
   get type() {
     return MessageServiceTypes.EVENT
   }
@@ -47,9 +45,19 @@ class EventService implements MessageService {
     this.#dispatcher.removeService(this)
   }
 
+  addHandler(handler: (message: Message) => void) {
+    LOGGER.debug(`[${this.dispatcherId}-${this.id}] add handler`)
+    this.#handlers.push(handler)
+    return this.removeHandler.bind(this, handler)
+  }
+  removeHandler(handler: (message: Message) => void) {
+    LOGGER.debug(`[${this.dispatcherId}-${this.id}] add handler`)
+    this.#handlers = ArrayUtils.removeElement(this.#handlers, handler)
+  }
+
   onMessage(message: Message) {
     LOGGER.debug(`[${this.dispatcherId}-${this.id}] onMessage`)
-    this.#handle(message)
+    this.#handlers.forEach(handler => handler(message))
   }
 
   sendMessage(message: Message) {

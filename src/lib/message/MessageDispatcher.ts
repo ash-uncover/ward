@@ -11,6 +11,7 @@ const LOGGER = new Logger('MessageDispatcher', LogLevels.WARN)
 
 export interface MessageDispatcherData {
   services: MessageDispatcherDataServices
+  dispatchers: string[]
 }
 export interface MessageDispatcherDataServices {
   [key: string]: MessageService
@@ -51,6 +52,7 @@ class MessageDispatcher implements MessageDispatcherData {
   get data(): MessageDispatcherData {
     return {
       services: this.services,
+      dispatchers: this.dispatchers
     }
   }
 
