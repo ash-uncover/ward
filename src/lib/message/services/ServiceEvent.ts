@@ -5,7 +5,12 @@ import MessageDispatcher from '../MessageDispatcher'
 
 const LOGGER = new Logger('EventService', LogLevels.WARN)
 
-class EventService implements MessageService {
+export interface EventService extends MessageService {
+  addHandler: (handler: (message: Message) => void) => ((message: Message) => void)
+  removeHandler: (handler: (message: Message) => void) => void
+}
+
+class ServiceEvent implements EventService {
 
   // Attributes //
 
@@ -71,4 +76,4 @@ class EventService implements MessageService {
   // Internal methods //
 }
 
-export default EventService
+export default ServiceEvent

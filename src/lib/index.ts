@@ -6,10 +6,14 @@ import PluginManager, {
 import MessageDispatcher, {
   MessageDispatcherData
 } from './message/MessageDispatcher'
-import EventService from './message/services/EventService'
-import { Message } from './message/model/model'
+import ServiceEvent, {
+  EventService
+} from './message/services/ServiceEvent'
 
-export { Message, MessageService } from './message/model/model'
+export {
+  Message,
+  MessageService
+} from './message/model/model'
 
 export interface WardData extends MessageDispatcherData, PluginManagerData {
 
@@ -77,8 +81,8 @@ class Ward {
     this.#pluginManager.loadPlugin(plugin)
   }
 
-  addService(handleMessage: (message: Message) => void) {
-    return new EventService(this.#messageDispatcher, handleMessage)
+  addService(id?: string): EventService {
+    return new ServiceEvent(this.#messageDispatcher, id)
   }
 }
 
