@@ -102,7 +102,7 @@ class PluginProvider {
   get name() { return this.#name }
 
   get attributes(): {
-    [key: string]: string | number | boolean | string[] | number[] | boolean[]
+    [key: string]: any
   } {
     return this.#attributes.reduce((acc: any, attribute) => {
       acc[attribute.name] = attribute.value
