@@ -10,7 +10,7 @@ export interface EventService extends MessageService {
   removeHandler: (handler: (message: Message) => void) => void
 }
 
-class ServiceEvent implements EventService {
+export class ServiceEvent implements EventService {
 
   // Attributes //
 
@@ -75,5 +75,3 @@ class ServiceEvent implements EventService {
 
   // Internal methods //
 }
-
-export default ServiceEvent

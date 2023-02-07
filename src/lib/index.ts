@@ -6,7 +6,8 @@ import PluginManager, {
 import MessageDispatcher, {
   MessageDispatcherData
 } from './message/MessageDispatcher'
-import ServiceEvent, {
+import {
+  ServiceEvent,
   EventService
 } from './message/services/ServiceEvent'
 
@@ -15,6 +16,7 @@ export {
   MessageService
 } from './message/model/model'
 export {
+  ServiceEvent,
   EventService
 } from './message/services/ServiceEvent'
 
