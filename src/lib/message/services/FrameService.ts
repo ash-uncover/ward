@@ -35,8 +35,8 @@ class FrameService implements MessageService {
       this.#handleMessage.bind(this)
     )
     window.addEventListener(
-      'unload',
-      this.#handleUnload.bind(this)
+      'beforeUnload',
+      this.#handleBeforeUnload.bind(this)
     )
   }
 
@@ -88,7 +88,7 @@ class FrameService implements MessageService {
 
   // Private Methods //
 
-  #handleUnload() {
+  #handleBeforeUnload() {
     this.onMessage({
       type: CONNECTION_CLOSING,
       _dispatcherId: this.dispatcherId,

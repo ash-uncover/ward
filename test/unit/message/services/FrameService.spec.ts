@@ -23,14 +23,13 @@ describe('FrameService', () => {
   let spyDispatcherRemoveService: any
   let spyDispatcherSendMessage: any
 
+  const previousClosed = window.closed
+
   beforeEach(() => {
-    jest.clearAllMocks()
-    jest.resetAllMocks()
+    jest.restoreAllMocks()
 
-    spyWindowPostMessage = jest.fn()
-    spyWindowAddEventListener = jest.fn()
-
-    spyWindow = jest.spyOn(window, 'window', 'get')
+    spyWindowPostMessage = jest.spyOn(window, 'postMessage')
+    spyWindowAddEventListener = jest.spyOn(window, 'addEventListener')
 
     spyDispatcherId = jest.spyOn(MessageDispatcher.prototype, 'id', 'get')
     spyDispatcherRemoveService = jest.spyOn(MessageDispatcher.prototype, 'removeService')
@@ -40,6 +39,11 @@ describe('FrameService', () => {
   })
 
   afterEach(() => {
+    Object.defineProperty(window, 'closed', {
+      configurable: true,
+      value: previousClosed,
+      writable: true,
+    })
   })
 
   /* TEST CASES */
@@ -51,13 +55,10 @@ describe('FrameService', () => {
     test('properly initialize object', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
+      spyWindowAddEventListener.mockReset()
       const origin: string = '*'
       const remoteDispatcherId: string = 'remoteDispather'
       const serviceId: string = 'serviceId'
-      spyWindow.mockImplementation(() => ({
-        addEventListener: spyWindowAddEventListener,
-        postMessage: spyWindowPostMessage
-      }))
       // Execution
       const service = new FrameService(dispatcher, window, origin, remoteDispatcherId, serviceId)
       // Assertion
@@ -71,12 +72,9 @@ describe('FrameService', () => {
     test('when the id is auto generated', () => {
       // Declaration
       const dispatcher = new MessageDispatcher()
+      spyWindowAddEventListener.mockReset()
       const origin: string = '*'
       const remoteDispatcherId: string = 'remoteDispather'
-      spyWindow.mockImplementation(() => ({
-        addEventListener: spyWindowAddEventListener,
-        postMessage: spyWindowPostMessage
-      }))
       // Execution
       const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
       // Assertion
@@ -97,11 +95,6 @@ describe('FrameService', () => {
       const dispatcher = new MessageDispatcher()
       const origin: string = 'http://localhost'
       const remoteDispatcherId: string = 'remoteDispather'
-      spyWindow.mockImplementation(() => ({
-        closed: false,
-        addEventListener: spyWindowAddEventListener,
-        postMessage: spyWindowPostMessage
-      }))
       const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
       // Execution
       service.onMessage({
@@ -123,12 +116,13 @@ describe('FrameService', () => {
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
       const remoteDispatcherId: string = 'remoteDispather'
-      spyWindow.mockImplementation(() => ({
-        closed: true,
-        addEventListener: spyWindowAddEventListener,
-        postMessage: spyWindowPostMessage
-      }))
-      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
+      const serviceId: string = 'FrameServiceTest-onMessage-WindowClosed'
+      Object.defineProperty(window, 'closed', {
+        configurable: true,
+        value: true,
+        writable: true,
+      })
+      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId, serviceId)
       // Execution
       service.onMessage({
         type: 'type',
@@ -162,9 +156,9 @@ describe('FrameService', () => {
     })
   })
 
-  // FrameService.#handleUnload //
+  // FrameService.#handleBeforeUnload //
 
-  describe('#handleUnload', () => {
+  describe('#handleBeforeUnload', () => {
 
     let spyServiceOnMessage: any
 
@@ -176,7 +170,7 @@ describe('FrameService', () => {
       const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
       spyServiceOnMessage = jest.spyOn(service, 'onMessage')
       // Execution
-      const event = new MessageEvent('unload')
+      const event = new MessageEvent('beforeUnload')
       window.dispatchEvent(event)
       // Assertion
       expect(spyServiceOnMessage).toHaveBeenCalledTimes(1)

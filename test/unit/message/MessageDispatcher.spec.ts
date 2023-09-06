@@ -21,8 +21,7 @@ describe('MessageDispatcher', () => {
   let spyWindowRemoveEventListener: any
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    jest.resetAllMocks()
+    jest.restoreAllMocks()
 
     spyWindowParent = jest.spyOn(window, 'parent', 'get')
 
@@ -43,7 +42,6 @@ describe('MessageDispatcher', () => {
     test('when an id is provided', () => {
       // Declaration
       const id = 'dispatcherId'
-      spyWindowParent.mockImplementation(() => window)
       // Execution
       const dispatcher = new MessageDispatcher(id)
       // Assertion
