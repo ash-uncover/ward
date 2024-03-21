@@ -78,19 +78,40 @@ service.terminate()
 
 ##### Example #2: sending messages
 
+The following example creates a service and sends a message to the **Ward** event bus. The message will be dispatched to all other existing services.
+
 ```js
 import Ward from '@uncover/ward'
-
-function messageLog(message) {
-  console.log(`received message ${message.type}:`)
-  console.log(JSON.stringify(message.payload))
-}
 
 // Create the service (with optionnal id)
 const service = Ward.addService('my-service')
 
 // Send a message that will be received by all other services
 service.sendMesage({
+  type: 'my-message-type',
+  payload: {
+    data: 'myData',
+    otherData: 'otherData'
+  }
+})
+
+// Terminate the service (stops receiving messages, service should be dropped)
+service.terminate()
+```
+
+##### Example #3: sending messages to handlers
+
+Allthough considered a bad pattern, in some scenarios you might want to send a message to the handlers of your service.
+You can do it by simulating a message reception by the service.
+
+```js
+import Ward from '@uncover/ward'
+
+// Create the service (with optionnal id)
+const service = Ward.addService('my-service')
+
+// Send a message that will be received by all handlers of this service
+service.onMesage({
   type: 'my-message-type',
   payload: {
     data: 'myData',
