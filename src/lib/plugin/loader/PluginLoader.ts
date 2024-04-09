@@ -22,7 +22,7 @@ export const PluginLoadStates: {
   LOADED: 'LOADED'
 }
 
-interface WardPluginState {
+export interface WardPluginState {
   url: string
   state: PluginLoadState
   errors: string[]
