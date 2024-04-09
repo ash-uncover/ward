@@ -226,6 +226,7 @@ class PluginManager implements PluginManagerData {
 
   async #loadPluginInternal(url: string, parent?: string): Promise<any> {
     if (this.#excludedUrls.includes(url)) {
+      this.#loader.exclude(url)
       LOGGER.warn(`Plugin excluded from: '${url}'`)
       return false
     }

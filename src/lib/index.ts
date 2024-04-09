@@ -24,7 +24,7 @@ export interface WardData extends MessageDispatcherData, PluginManagerData {
 
 }
 
-class Ward {
+class WardClass {
 
   // Attributes //
 
@@ -97,14 +97,14 @@ class Ward {
   }
 }
 
-let WardInstance
+let WardInstance: WardClass
 declare global {
   interface Window {
     uncover: any
   }
 }
 if (!window.uncover?.ward) {
-  WardInstance = new Ward()
+  WardInstance = new WardClass()
   window.uncover = window.uncover || {}
   window.uncover.ward = WardInstance
 } else {

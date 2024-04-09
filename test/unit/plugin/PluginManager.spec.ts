@@ -20,6 +20,7 @@ describe('PluginManager', () => {
   let mockPluginLoaderGetErrors = jest.fn()
   let mockPluginLoaderGetState = jest.fn()
   let mockPluginLoaderLoad = jest.fn()
+  let mockPluginLoaderExclude = jest.fn()
 
   let PluginMgr: PluginManager
 
@@ -35,7 +36,8 @@ describe('PluginManager', () => {
       getData: mockPluginLoaderGetData,
       getErrors: mockPluginLoaderGetErrors,
       getState: mockPluginLoaderGetState,
-      load: mockPluginLoaderLoad
+      load: mockPluginLoaderLoad,
+      exclude: mockPluginLoaderExclude
     }
     PluginMgr = new PluginManager(mockPluginLoader)
   })
@@ -428,8 +430,8 @@ describe('PluginManager', () => {
         expect(PluginMgr.plugins).toEqual({
           pluginName: {}
         })
-      });
-    });
+      })
+    })
 
     // reset //
 

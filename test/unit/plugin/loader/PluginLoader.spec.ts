@@ -148,4 +148,18 @@ describe('PluginLoader', () => {
     })
   })
 
+  // exclude //
+
+  describe('exclude', () => {
+    test('Properly exclude all internal data', async () => {
+      // Declaration
+      const loader = new PluginLoader()
+      const url = 'url'
+      // Execution
+      loader.exclude(url)
+      // Assertion
+      expect(loader.urls).toEqual(['url'])
+      expect(loader.getState(url)).toBe(PluginLoadStates.EXCLUDED)
+    })
+  })
 })

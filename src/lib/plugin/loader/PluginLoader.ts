@@ -39,6 +39,7 @@ export interface IPluginLoader {
   getErrors: (url: string) => string[]
   getState: (url: string) => PluginLoadState
   load: (url: string) => Promise<boolean>
+  exclude: (url: string) => void
 }
 class PluginLoader implements IPluginLoader {
 
@@ -80,6 +81,15 @@ class PluginLoader implements IPluginLoader {
   }
   getState(url: string) {
     return this.#urls[url]?.state || PluginLoadStates.NONE
+  }
+
+  exclude (url:string) {
+    this.#urls[url] = {
+      url,
+      state: 'EXCLUDED',
+      errors: [],
+      loadDate: (new Date()).getTime()
+    }
   }
 
   async load (url: string) {
