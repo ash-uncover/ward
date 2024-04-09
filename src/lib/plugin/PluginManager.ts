@@ -164,7 +164,7 @@ class PluginManager implements PluginManagerData {
     }
   }
 
-  async loadPlugin(url: string) {
+  async loadPlugin(url: string, notify: boolean = true) {
     clearInterval(this.#retryInterval)
     try {
       await this.#loadPluginInternal.call(this, url)
@@ -180,7 +180,9 @@ class PluginManager implements PluginManagerData {
         this.reloadPlugins()
       }, this.#retryDelay)
     }
-    this.notify()
+    if (notify) {
+      this.notify()
+    }
   }
 
   async unloadPlugin(url: string) {
@@ -197,8 +199,9 @@ class PluginManager implements PluginManagerData {
     this.reset(false)
     excludedUrls.forEach((excludedUrl) => this.#excludedUrls.push(excludedUrl))
     rootUrls.forEach(async (rootUrl) => {
-      await this.loadPlugin(rootUrl)
+      await this.loadPlugin(rootUrl, false)
     })
+    this.notify()
   }
 
   async reloadPlugins() {
@@ -209,8 +212,9 @@ class PluginManager implements PluginManagerData {
     this.#providers = {}
 
     rootUrls.forEach(async (url) => {
-      await this.loadPlugin(url)
+      await this.loadPlugin(url, false)
     })
+    this.notify()
   }
 
   // Internal Methods //
