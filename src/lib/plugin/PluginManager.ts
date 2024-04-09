@@ -204,6 +204,11 @@ class PluginManager implements PluginManagerData {
     this.notify()
   }
 
+  async unexcludePlugin(url: string) {
+    this.#excludedUrls = this.#excludedUrls.filter(excludedUrl => excludedUrl !== url)
+    await this.loadPlugin(url)
+  }
+
   async reloadPlugins() {
     const rootUrls = Object.values(this.roots).map(plugin => plugin.loadUrl)
 

@@ -409,6 +409,28 @@ describe('PluginManager', () => {
       })
     })
 
+    describe('unexcludePlugin', () => {
+      test('when plugin was loaded as root', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl',
+          dependencies: []
+        }
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => true)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
+        mockPluginLoaderGetData.mockImplementation((url) => data)
+        // Execution
+        await PluginMgr.unloadPlugin('url')
+        await PluginMgr.unexcludePlugin('url')
+        // Assertion
+        expect(PluginMgr.plugins).toEqual({
+          pluginName: {}
+        })
+      });
+    });
+
     // reset //
 
     describe('reset', () => {
