@@ -198,9 +198,7 @@ class PluginManager implements PluginManagerData {
     }
     this.reset(false)
     excludedUrls.forEach((excludedUrl) => this.#excludedUrls.push(excludedUrl))
-    rootUrls.forEach(async (rootUrl) => {
-      await this.loadPlugin(rootUrl, false)
-    })
+    await Promise.all(rootUrls.map((rootUrl) => this.loadPlugin(rootUrl, false)))
     this.notify()
   }
 
@@ -216,9 +214,7 @@ class PluginManager implements PluginManagerData {
     this.#definitions = {}
     this.#providers = {}
 
-    rootUrls.forEach(async (url) => {
-      await this.loadPlugin(url, false)
-    })
+    await Promise.all(rootUrls.map((rootUrl) => this.loadPlugin(rootUrl, false)))
     this.notify()
   }
 
