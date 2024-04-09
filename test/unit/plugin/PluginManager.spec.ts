@@ -4,7 +4,7 @@ import Plugin from '../../../src/lib/plugin/object/Plugin'
 import PluginDefine from '../../../src/lib/plugin/object/PluginDefine'
 import PluginProvider from '../../../src/lib/plugin/object/PluginProvider'
 import PluginProvide from '../../../src/lib/plugin/object/PluginProvide'
-import PluginLoader from '../../../src/lib/plugin/loader/PluginLoader'
+import PluginLoader, { PluginLoadStates } from '../../../src/lib/plugin/loader/PluginLoader'
 
 LogConfig.off()
 
@@ -345,6 +345,66 @@ describe('PluginManager', () => {
         expect(PluginMgr.plugins).toEqual({
           pluginName: {},
           dependencyName: {}
+        })
+      })
+
+      test('load excluded plugin', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl',
+          dependencies: []
+        }
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => true)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
+        mockPluginLoaderGetData.mockImplementation((url) => data)
+        // Execution
+        await PluginMgr.unloadPlugin('url')
+        await PluginMgr.loadPlugin('url')
+        // Assertion
+        expect(PluginMgr.plugins).toEqual({})
+      })
+    })
+
+    describe('unloadPlugin', () => {
+
+      test('when plugin was never loaded', async () => {
+        // Declaration
+        // Execution
+        await PluginMgr.unloadPlugin('url')
+        // Assertion
+        expect(PluginMgr.urls).toEqual({
+          url: {
+            state: PluginLoadStates.EXCLUDED,
+            errors: []
+          }
+        })
+      })
+
+      test('when plugin was loaded as root', async () => {
+        // Declaration
+        const data = {
+          name: 'pluginName',
+          url: 'pluginUrl',
+          dependencies: []
+        }
+        const data2 = {
+          name: 'pluginName2',
+          url: 'pluginUrl2',
+          dependencies: []
+        }
+        mockPluginLoaderHasData.mockImplementation(() => false)
+        mockPluginLoaderLoad.mockImplementation(() => true)
+        mockPluginLoaderGetErrors.mockImplementation(() => [])
+        mockPluginLoaderGetData.mockImplementation((url) => url === 'url' ? data : data2)
+        // Execution
+        await PluginMgr.loadPlugin('url')
+        await PluginMgr.loadPlugin('url2')
+        await PluginMgr.unloadPlugin('url')
+        // Assertion
+        expect(PluginMgr.roots).toEqual({
+          [data2.name]: new Plugin('url2', data2)
         })
       })
     })

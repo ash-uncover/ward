@@ -4,33 +4,21 @@ import PluginDefine from './object/PluginDefine'
 import PluginProvider from './object/PluginProvider'
 import { ArrayUtils } from '@uncover/js-utils'
 import { WardPlugin } from './loader/model/PluginDataModel'
-import PluginLoader, { IPluginLoader, PluginLoadState } from './loader/PluginLoader'
+import PluginLoader, { IPluginLoader, PluginLoadState, PluginLoadStates } from './loader/PluginLoader'
 
 const LOGGER = new Logger('PluginManager', LogLevels.WARN)
 
 export interface PluginManagerData {
-  urls: PluginManagerDataUrls
-  roots: PluginManagerDataPlugins
-  plugins: PluginManagerDataPlugins
-  definitions: PluginManagerDataDefinitions
-  providers: PluginManagerDataProviders
-}
-export interface PluginManagerDataUrls {
-  [key: string]: PluginManagerDataUrl
+  urls: Record<string, PluginManagerDataUrl>
+  roots: Record<string, Plugin>
+  plugins: Record<string, Plugin>
+  definitions: Record<string, PluginDefine>
+  providers: Record<string, PluginProvider>
 }
 export interface PluginManagerDataUrl {
   state: PluginLoadState
   errors: string[]
   data?: WardPlugin
-}
-export interface PluginManagerDataPlugins {
-  [key: string]: Plugin
-}
-export interface PluginManagerDataDefinitions {
-  [key: string]: PluginDefine
-}
-export interface PluginManagerDataProviders {
-  [key: string]: PluginProvider
 }
 
 class PluginManager implements PluginManagerData {
@@ -38,15 +26,16 @@ class PluginManager implements PluginManagerData {
   // Attributes //
 
   #loader: IPluginLoader
+  #excludedUrls: string[] = []
 
   #retryDelay: number = -1
   #retryInterval: any
 
   #listeners: ((data: PluginManagerData) => void)[] = []
 
-  #plugins: PluginManagerDataPlugins = {}
-  #definitions: PluginManagerDataDefinitions = {}
-  #providers: PluginManagerDataProviders = {}
+  #plugins: Record<string, Plugin> = {}
+  #definitions: Record<string, PluginDefine> = {}
+  #providers: Record<string, PluginProvider> = {}
 
   // Constructor //
 
@@ -74,7 +63,7 @@ class PluginManager implements PluginManagerData {
   }
 
   get urls () {
-    return this.#loader.urls.reduce((acc: PluginManagerDataUrls, url) => {
+    const loadedUrls = this.#loader.urls.reduce((acc: Record<string, PluginManagerDataUrl>, url) => {
       acc[url] = {
         state: this.getState(url),
         errors: this.getErrors(url),
@@ -82,6 +71,14 @@ class PluginManager implements PluginManagerData {
       }
       return acc
     }, {})
+    const allUrls = this.#excludedUrls.reduce((acc: Record<string, PluginManagerDataUrl>, url) => {
+      acc[url] = {
+        state: PluginLoadStates.EXCLUDED,
+        errors: []
+      }
+      return acc
+    }, loadedUrls)
+    return allUrls
   }
   getData(url: string) {
     return this.#loader.getData(url)
@@ -93,7 +90,7 @@ class PluginManager implements PluginManagerData {
     return this.#loader.getErrors(url)
   }
 
-  get roots(): PluginManagerDataPlugins {
+  get roots(): Record<string, Plugin> {
     const dependentEntries: string[] = []
     Object.values(this.#plugins).forEach(plugin => {
       plugin.dependencies.forEach(dependency => {
@@ -102,7 +99,7 @@ class PluginManager implements PluginManagerData {
         }
       })
     })
-    return Object.values(this.#plugins).reduce((acc: PluginManagerDataPlugins, plugin) => {
+    return Object.values(this.#plugins).reduce((acc: Record<string, Plugin>, plugin) => {
       if (!dependentEntries.includes(plugin.loadUrl)) {
         acc[plugin.name] = plugin
       }
@@ -110,7 +107,7 @@ class PluginManager implements PluginManagerData {
     }, {})
   }
 
-  get plugins(): PluginManagerDataPlugins {
+  get plugins(): Record<string, Plugin> {
     return this.#plugins
   }
   getPlugin(pluginId: string): Plugin | undefined {
@@ -155,13 +152,16 @@ class PluginManager implements PluginManagerData {
     })
   }
 
-  reset() {
+  reset(notify: boolean = true) {
     this.#loader.reset()
     this.#plugins = {}
     this.#definitions = {}
     this.#providers = {}
+    this.#excludedUrls = []
 
-    this.notify()
+    if (notify) {
+      this.notify()
+    }
   }
 
   async loadPlugin(url: string) {
@@ -183,6 +183,24 @@ class PluginManager implements PluginManagerData {
     this.notify()
   }
 
+  async unloadPlugin(url: string) {
+    const rootUrls = Object.values(this.roots).map(plugin => plugin.loadUrl)
+    const excludedUrls = this.#excludedUrls.slice()
+    const rootIndex = rootUrls.findIndex(rootUrl => rootUrl === url)
+
+    if (rootIndex > -1) {
+      rootUrls.splice(rootIndex, 1)
+    }
+    if (!excludedUrls.includes(url)) {
+      excludedUrls.push(url)
+    }
+    this.reset(false)
+    excludedUrls.forEach((excludedUrl) => this.#excludedUrls.push(excludedUrl))
+    rootUrls.forEach(async (rootUrl) => {
+      await this.loadPlugin(rootUrl)
+    })
+  }
+
   async reloadPlugins() {
     const rootUrls = Object.values(this.roots).map(plugin => plugin.loadUrl)
 
@@ -198,6 +216,11 @@ class PluginManager implements PluginManagerData {
   // Internal Methods //
 
   async #loadPluginInternal(url: string, parent?: string): Promise<any> {
+    if (this.#excludedUrls.includes(url)) {
+      LOGGER.warn(`Plugin excluded from: '${url}'`)
+      return false
+    }
+
     if (this.#loader.hasData(url)) {
       LOGGER.warn(`URL already loaded: '${url}'`)
       return true

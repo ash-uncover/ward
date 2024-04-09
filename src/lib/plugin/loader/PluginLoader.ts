@@ -2,14 +2,21 @@ import { WardPlugin } from './model/PluginDataModel'
 import { getValidator } from './JsonValidator'
 
 
-export type PluginLoadState = 'NONE' | 'LOAD_ERROR' | 'VALIDATION_ERROR' | 'LOADED'
+export type PluginLoadState =
+  |'NONE'
+  | 'LOAD_ERROR'
+  | 'VALIDATION_ERROR'
+  | 'LOADED'
+  | 'EXCLUDED'
 export const PluginLoadStates: {
   NONE: PluginLoadState
+  EXCLUDED: PluginLoadState
   LOAD_ERROR: PluginLoadState
   VALIDATION_ERROR: PluginLoadState
   LOADED: PluginLoadState
 } = {
   NONE: 'NONE',
+  EXCLUDED: 'EXCLUDED',
   LOAD_ERROR: 'LOAD_ERROR',
   VALIDATION_ERROR: 'VALIDATION_ERROR',
   LOADED: 'LOADED'
