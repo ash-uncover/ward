@@ -85,6 +85,9 @@ class Ward {
   loadPlugin(plugin: string) {
     this.#pluginManager.loadPlugin(plugin)
   }
+  unloadPlugin(plugin: string) {
+    this.#pluginManager.unloadPlugin(plugin)
+  }
 
   addService(id?: string): EventService {
     return new ServiceEvent(this.#messageDispatcher, id)
