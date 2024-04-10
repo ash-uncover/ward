@@ -39,6 +39,21 @@ describe('PluginLoader', () => {
 
   describe('load', () => {
 
+    test('When the url was excluded', async () => {
+      // Declaration
+      const loader = new PluginLoader()
+      const url = 'url'
+      // Execution
+      loader.exclude(url)
+      const result = await loader.load(url)
+      // Assertion
+      expect(result).toBe(false)
+      expect(loader.urls).toEqual(['url'])
+      expect(loader.hasData(url)).toBe(false)
+      expect(loader.isLoaded(url)).toBe(false)
+      expect(loader.getState(url)).toBe(PluginLoadStates.EXCLUDED)
+    })
+
     test('When fetch returns an error', async () => {
       // Declaration
       const loader = new PluginLoader()
@@ -128,6 +143,26 @@ describe('PluginLoader', () => {
   // reset //
 
   describe('reset', () => {
+
+    test('Properly reset all internal data', async () => {
+      // Declaration
+      const loader = new PluginLoader()
+      const url = 'url'
+      const data = {
+        name: 'name',
+        url: 'url'
+      }
+      // @ts-ignore
+      global.fetch = jest.fn((input: URL) => Promise.resolve({
+        json: () => data
+      }))
+      // Execution
+      const result = await loader.load(url)
+      loader.reset(true)
+      // Assertion
+      expect(loader.urls).toEqual([])
+    })
+
     test('Properly reset all internal data', async () => {
       // Declaration
       const loader = new PluginLoader()
@@ -151,15 +186,52 @@ describe('PluginLoader', () => {
   // exclude //
 
   describe('exclude', () => {
-    test('Properly exclude all internal data', async () => {
+
+    test('Properly exclude an url', () => {
       // Declaration
       const loader = new PluginLoader()
       const url = 'url'
       // Execution
       loader.exclude(url)
       // Assertion
-      expect(loader.urls).toEqual(['url'])
-      expect(loader.getState(url)).toBe(PluginLoadStates.EXCLUDED)
+      expect(loader.excludedUrls).toEqual([url])
+    })
+
+    test('When calling exclude twice with the same url', () => {
+      // Declaration
+      const loader = new PluginLoader()
+      const url = 'url'
+      // Execution
+      loader.exclude(url)
+      loader.exclude(url)
+      // Assertion
+      expect(loader.excludedUrls).toEqual([url])
+    })
+  })
+
+  // include //
+
+  describe('include', () => {
+
+    test('Properly include previsouly excluded url', () => {
+      // Declaration
+      const loader = new PluginLoader()
+      const url = 'url'
+      // Execution
+      loader.exclude(url)
+      loader.include(url)
+      // Assertion
+      expect(loader.excludedUrls).toEqual([])
+    })
+
+    test('When url was not excluded before', () => {
+      // Declaration
+      const loader = new PluginLoader()
+      const url = 'url'
+      // Execution
+      loader.include(url)
+      // Assertion
+      expect(loader.excludedUrls).toEqual([])
     })
   })
 })

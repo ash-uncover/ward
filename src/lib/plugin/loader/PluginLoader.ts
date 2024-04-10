@@ -40,6 +40,7 @@ export interface IPluginLoader {
   getState: (url: string) => PluginLoadState
   load: (url: string) => Promise<boolean>
   exclude: (url: string) => void
+  include: (url: string) => void
 }
 class PluginLoader implements IPluginLoader {
 
@@ -48,6 +49,7 @@ class PluginLoader implements IPluginLoader {
   #urls: {
     [url: string]: WardPluginState
   } = {}
+  #excludedUrls: string[] = []
 
   // Constructors //
 
@@ -59,11 +61,17 @@ class PluginLoader implements IPluginLoader {
   get urls () {
     return Object.keys(this.#urls)
   }
+  get excludedUrls () {
+    return this.#excludedUrls.slice()
+  }
 
   // Public Methods //
 
-  reset() {
+  reset(resetExcluded: boolean = false) {
     this.#urls = {}
+    if (resetExcluded) {
+      this.#excludedUrls = []
+    }
   }
 
   hasData(url: string) {
@@ -84,20 +92,28 @@ class PluginLoader implements IPluginLoader {
   }
 
   exclude (url:string) {
-    this.#urls[url] = {
-      url,
-      state: 'EXCLUDED',
-      errors: [],
-      loadDate: (new Date()).getTime()
+    if (!this.#excludedUrls.includes(url)) {
+      this.#excludedUrls.push(url)
+    }
+  }
+  include (url:string) {
+    const index = this.#excludedUrls.indexOf(url)
+    if (index > -1) {
+      this.#excludedUrls.splice(index, 1)
     }
   }
 
   async load (url: string) {
     this.#urls[url] = {
       url,
-      state: 'NONE',
+      state: PluginLoadStates.NONE,
       errors: [],
       loadDate: (new Date()).getTime()
+    }
+
+    if (this.#excludedUrls.includes(url)) {
+      this.#urls[url].state = PluginLoadStates.EXCLUDED
+      return false
     }
 
     let response: Response

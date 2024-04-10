@@ -21,6 +21,7 @@ describe('PluginManager', () => {
   let mockPluginLoaderGetState = jest.fn()
   let mockPluginLoaderLoad = jest.fn()
   let mockPluginLoaderExclude = jest.fn()
+  let mockPluginLoaderInclude = jest.fn()
 
   let PluginMgr: PluginManager
 
@@ -37,7 +38,8 @@ describe('PluginManager', () => {
       getErrors: mockPluginLoaderGetErrors,
       getState: mockPluginLoaderGetState,
       load: mockPluginLoaderLoad,
-      exclude: mockPluginLoaderExclude
+      exclude: mockPluginLoaderExclude,
+      include: mockPluginLoaderInclude
     }
     PluginMgr = new PluginManager(mockPluginLoader)
   })
@@ -349,24 +351,6 @@ describe('PluginManager', () => {
           dependencyName: {}
         })
       })
-
-      test('load excluded plugin', async () => {
-        // Declaration
-        const data = {
-          name: 'pluginName',
-          url: 'pluginUrl',
-          dependencies: []
-        }
-        mockPluginLoaderHasData.mockImplementation(() => false)
-        mockPluginLoaderLoad.mockImplementation(() => true)
-        mockPluginLoaderGetErrors.mockImplementation(() => [])
-        mockPluginLoaderGetData.mockImplementation((url) => data)
-        // Execution
-        await PluginMgr.unloadPlugin('url')
-        await PluginMgr.loadPlugin('url')
-        // Assertion
-        expect(PluginMgr.plugins).toEqual({})
-      })
     })
 
     describe('unloadPlugin', () => {
@@ -376,60 +360,20 @@ describe('PluginManager', () => {
         // Execution
         await PluginMgr.unloadPlugin('url')
         // Assertion
-        expect(PluginMgr.urls).toEqual({
-          url: {
-            state: PluginLoadStates.EXCLUDED,
-            errors: []
-          }
-        })
+        expect(PluginMgr.urls).toEqual({})
+        expect(mockPluginLoaderExclude).toHaveBeenCalledTimes(1)
+        expect(mockPluginLoaderInclude).toHaveBeenCalledTimes(0)
       })
 
-      test('when plugin was loaded as root', async () => {
+      test('when plugin was loaded once', async () => {
         // Declaration
-        const data = {
-          name: 'pluginName',
-          url: 'pluginUrl',
-          dependencies: []
-        }
-        const data2 = {
-          name: 'pluginName2',
-          url: 'pluginUrl2',
-          dependencies: []
-        }
-        mockPluginLoaderHasData.mockImplementation(() => false)
-        mockPluginLoaderLoad.mockImplementation(() => true)
-        mockPluginLoaderGetErrors.mockImplementation(() => [])
-        mockPluginLoaderGetData.mockImplementation((url) => url === 'url' ? data : data2)
         // Execution
         await PluginMgr.loadPlugin('url')
-        await PluginMgr.loadPlugin('url2')
         await PluginMgr.unloadPlugin('url')
         // Assertion
-        expect(PluginMgr.roots).toEqual({
-          [data2.name]: new Plugin('url2', data2)
-        })
-      })
-    })
-
-    describe('unexcludePlugin', () => {
-      test('when plugin was loaded as root', async () => {
-        // Declaration
-        const data = {
-          name: 'pluginName',
-          url: 'pluginUrl',
-          dependencies: []
-        }
-        mockPluginLoaderHasData.mockImplementation(() => false)
-        mockPluginLoaderLoad.mockImplementation(() => true)
-        mockPluginLoaderGetErrors.mockImplementation(() => [])
-        mockPluginLoaderGetData.mockImplementation((url) => data)
-        // Execution
-        await PluginMgr.unloadPlugin('url')
-        await PluginMgr.unexcludePlugin('url')
-        // Assertion
-        expect(PluginMgr.plugins).toEqual({
-          pluginName: {}
-        })
+        expect(PluginMgr.urls).toEqual({})
+        expect(mockPluginLoaderExclude).toHaveBeenCalledTimes(1)
+        expect(mockPluginLoaderInclude).toHaveBeenCalledTimes(1)
       })
     })
 

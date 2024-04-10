@@ -26,7 +26,6 @@ class PluginManager implements PluginManagerData {
   // Attributes //
 
   #loader: IPluginLoader
-  #excludedUrls: string[] = []
 
   #retryDelay: number = -1
   #retryInterval: any
@@ -62,7 +61,7 @@ class PluginManager implements PluginManagerData {
     }
   }
 
-  get urls () {
+  get urls() {
     const loadedUrls = this.#loader.urls.reduce((acc: Record<string, PluginManagerDataUrl>, url) => {
       acc[url] = {
         state: this.getState(url),
@@ -71,14 +70,7 @@ class PluginManager implements PluginManagerData {
       }
       return acc
     }, {})
-    const allUrls = this.#excludedUrls.reduce((acc: Record<string, PluginManagerDataUrl>, url) => {
-      acc[url] = {
-        state: PluginLoadStates.EXCLUDED,
-        errors: []
-      }
-      return acc
-    }, loadedUrls)
-    return allUrls
+    return loadedUrls
   }
   getData(url: string) {
     return this.#loader.getData(url)
@@ -157,7 +149,6 @@ class PluginManager implements PluginManagerData {
     this.#plugins = {}
     this.#definitions = {}
     this.#providers = {}
-    this.#excludedUrls = []
 
     if (notify) {
       this.notify()
@@ -165,67 +156,29 @@ class PluginManager implements PluginManagerData {
   }
 
   async loadPlugin(url: string, notify: boolean = true) {
-    clearInterval(this.#retryInterval)
-    try {
-      await this.#loadPluginInternal.call(this, url)
-      // Check all plugins info consistency
-      this.#checkPluginsInternal.call(this)
-    } catch (error) {
-      /* istanbul ignore next */
-      LOGGER.error(String(error))
-      // Traces have been logged, we dont want to crash the application
-    }
-    if (this.#retryDelay > 0) {
-      this.#retryInterval = setInterval(() => {
-        this.reloadPlugins()
-      }, this.#retryDelay)
-    }
+    this.#loader.include(url)
+    await this.#loadPluginInternal.call(this, url)
     if (notify) {
       this.notify()
     }
   }
 
   async unloadPlugin(url: string) {
-    const rootUrls = Object.values(this.roots).map(plugin => plugin.loadUrl)
-    const excludedUrls = this.#excludedUrls.slice()
-    const rootIndex = rootUrls.findIndex(rootUrl => rootUrl === url)
-
-    if (rootIndex > -1) {
-      rootUrls.splice(rootIndex, 1)
-    }
-    if (!excludedUrls.includes(url)) {
-      excludedUrls.push(url)
-    }
-    this.reset(false)
-    excludedUrls.forEach((excludedUrl) => this.#excludedUrls.push(excludedUrl))
-    await Promise.all(rootUrls.map((rootUrl) => this.loadPlugin(rootUrl, false)))
-    this.notify()
-  }
-
-  async unexcludePlugin(url: string) {
-    this.#excludedUrls = this.#excludedUrls.filter(excludedUrl => excludedUrl !== url)
-    await this.loadPlugin(url)
+    this.#loader.exclude(url)
+    this.reloadPlugins()
   }
 
   async reloadPlugins() {
-    const rootUrls = Object.values(this.roots).map(plugin => plugin.loadUrl)
-
-    this.#plugins = {}
-    this.#definitions = {}
-    this.#providers = {}
-
-    await Promise.all(rootUrls.map((rootUrl) => this.loadPlugin(rootUrl, false)))
+    const rootUrls = Object.values(this.roots).map(root => root.loadUrl)
+    this.reset(false)
+    await Promise.all(rootUrls.map(rootUrl => this.#loadPluginInternal(rootUrl)))
     this.notify()
   }
 
   // Internal Methods //
 
   async #loadPluginInternal(url: string, parent?: string): Promise<any> {
-    if (this.#excludedUrls.includes(url)) {
-      this.#loader.exclude(url)
-      LOGGER.warn(`Plugin excluded from: '${url}'`)
-      return false
-    }
+    clearInterval(this.#retryInterval)
 
     if (this.#loader.hasData(url)) {
       LOGGER.warn(`URL already loaded: '${url}'`)
@@ -257,6 +210,21 @@ class PluginManager implements PluginManagerData {
     await Promise.allSettled((data.dependencies || []).map((dependency) => {
       return this.#loadPluginInternal(dependency, data.name)
     }))
+
+    try {
+      // Check all plugins info consistency
+      this.#checkPluginsInternal.call(this)
+    } catch (error) {
+      /* istanbul ignore next */
+      LOGGER.error(String(error))
+      // Traces have been logged, we dont want to crash the application
+    }
+
+    if (this.#retryDelay > 0) {
+      this.#retryInterval = setInterval(() => {
+        this.reloadPlugins()
+      }, this.#retryDelay)
+    }
 
     LOGGER.warn(`Succesully loaded plugin from '${url}'`)
     return true

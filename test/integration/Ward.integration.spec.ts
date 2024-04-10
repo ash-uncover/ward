@@ -92,25 +92,40 @@ describe('Ward', () => {
     test('when disabling a loaded plugin', async () => {
       // Declaration
       const mgr = new PluginManager(new PluginLoaderTest())
-      // Execution
+      // Step1
       await mgr.loadPlugin('pluginMain')
+      expect(Object.keys(mgr.urls)).toEqual(['pluginMain', 'pluginSub1', 'pluginSub2'])
+      expect(mgr.getState('pluginMain')).toEqual('LOADED')
+      expect(mgr.getState('pluginSub1')).toEqual('LOADED')
+      expect(mgr.getState('pluginSub2')).toEqual('LOADED')
+      // Step2
       await mgr.unloadPlugin('pluginSub1')
-      // Assertion
       expect(Object.keys(mgr.urls)).toEqual(['pluginMain', 'pluginSub1', 'pluginSub2'])
       expect(mgr.getState('pluginMain')).toEqual('LOADED')
       expect(mgr.getState('pluginSub1')).toEqual('EXCLUDED')
+      expect(mgr.getState('pluginSub2')).toEqual('LOADED')
+      // Step3
+      await mgr.loadPlugin('pluginSub1')
+      expect(Object.keys(mgr.urls)).toEqual(['pluginMain', 'pluginSub1', 'pluginSub2'])
+      expect(mgr.getState('pluginMain')).toEqual('LOADED')
+      expect(mgr.getState('pluginSub1')).toEqual('LOADED')
       expect(mgr.getState('pluginSub2')).toEqual('LOADED')
     })
 
     test('when disabling a root plugin', async () => {
       // Declaration
       const mgr = new PluginManager(new PluginLoaderTest())
-      // Execution
+      // Step1
       await mgr.loadPlugin('pluginMain')
       await mgr.unloadPlugin('pluginMain')
-      // Assertion
       expect(Object.keys(mgr.urls)).toEqual(['pluginMain'])
-      expect(mgr.getState('pluginMain')).toEqual('NONE')
+      expect(mgr.getState('pluginMain')).toEqual('EXCLUDED')
+      // Step2
+      await mgr.loadPlugin('pluginMain')
+      expect(Object.keys(mgr.urls)).toEqual(['pluginMain', 'pluginSub1', 'pluginSub2'])
+      expect(mgr.getState('pluginMain')).toEqual('LOADED')
+      expect(mgr.getState('pluginSub1')).toEqual('LOADED')
+      expect(mgr.getState('pluginSub2')).toEqual('LOADED')
     })
   })
 })

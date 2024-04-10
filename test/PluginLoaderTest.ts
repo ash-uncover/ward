@@ -74,6 +74,7 @@ class PluginLoaderTest implements IPluginLoader {
   #urls: {
     [url: string]: WardPluginState
   } = {}
+  #excludedUrls: string[] = []
 
   // Constructors //
 
@@ -109,12 +110,15 @@ class PluginLoaderTest implements IPluginLoader {
     return this.#urls[url]?.state || PluginLoadStates.NONE
   }
 
-  exclude(url: string) {
-    this.#urls[url] = {
-      url,
-      state: 'EXCLUDED',
-      errors: [],
-      loadDate: (new Date()).getTime()
+  exclude (url:string) {
+    if (!this.#excludedUrls.includes(url)) {
+      this.#excludedUrls.push(url)
+    }
+  }
+  include (url:string) {
+    const index = this.#excludedUrls.indexOf(url)
+    if (index > -1) {
+      this.#excludedUrls.splice(index, 1)
     }
   }
 
@@ -124,6 +128,11 @@ class PluginLoaderTest implements IPluginLoader {
       state: 'NONE',
       errors: [],
       loadDate: (new Date()).getTime()
+    }
+
+    if (this.#excludedUrls.includes(url)) {
+      this.#urls[url].state = PluginLoadStates.EXCLUDED
+      return false
     }
 
     let data: any

@@ -15,6 +15,7 @@ describe('PluginManager', () => {
   let mockPluginLoaderGetState = jest.fn()
   let mockPluginLoaderLoad = jest.fn()
   let mockPluginLoaderExclude = jest.fn()
+  let mockPluginLoaderInclude = jest.fn()
 
   let PluginMgr: PluginManager
 
@@ -31,7 +32,8 @@ describe('PluginManager', () => {
       getErrors: mockPluginLoaderGetErrors,
       getState: mockPluginLoaderGetState,
       load: mockPluginLoaderLoad,
-      exclude: mockPluginLoaderExclude
+      exclude: mockPluginLoaderExclude,
+      include: mockPluginLoaderInclude
     }
     PluginMgr = new PluginManager(mockPluginLoader)
   })
