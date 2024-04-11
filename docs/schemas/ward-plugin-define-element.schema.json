@@ -2,5 +2,16 @@
   "$id": "https://ash-uncover.github.io/ward/schemas/ward-plugin-define-element.schema.json",
   "title": "Ward Plugin Define Element",
   "description": "Plugin Define Element",
-  "type": "object"
+  "type": "object",
+  "properties": {
+    "properties": {
+      "$ref": "https://ash-uncover.github.io/ward/schemas/ward-plugin-define-element-properties.schema.json"
+    },
+    "attributes": {
+      "$ref": "https://ash-uncover.github.io/ward/schemas/ward-plugin-define-element-attributes.schema.json"
+    },
+    "events": {
+      "$ref": "https://ash-uncover.github.io/ward/schemas/ward-plugin-define-element-events.schema.json"
+    }
+  }
 }

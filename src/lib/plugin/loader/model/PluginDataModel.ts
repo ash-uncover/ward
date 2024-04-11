@@ -78,7 +78,62 @@ export interface WardPluginDefineElements {
  * via the `patternProperty` "^.*$".
  */
 export interface WardPluginDefineElement {
+  properties?: WardPluginDefineElementProperties
+  attributes?: WardPluginDefineElementAttributes
+  events?: WardPluginDefineElementEvents
   [k: string]: unknown
+}
+/**
+ * Plugin Define Element Properties
+ */
+export interface WardPluginDefineElementProperties {
+  /**
+   * Define Element Property
+   *
+   * This interface was referenced by `WardPluginDefineElementProperties`'s JSON-Schema definition
+   * via the `patternProperty` "^.*$".
+   */
+  [k: string]:
+    | string
+    | number
+    | boolean
+    | unknown[]
+    | {
+        [k: string]: unknown
+      }
+}
+/**
+ * Plugin Define Element Attributes
+ */
+export interface WardPluginDefineElementAttributes {
+  /**
+   * Define Element Attribute
+   *
+   * This interface was referenced by `WardPluginDefineElementAttributes`'s JSON-Schema definition
+   * via the `patternProperty` "^.*$".
+   */
+  [k: string]:
+    | string
+    | number
+    | boolean
+    | unknown[]
+    | {
+        [k: string]: unknown
+      }
+}
+/**
+ * Plugin Define Element Events
+ */
+export interface WardPluginDefineElementEvents {
+  /**
+   * Define Element Event
+   *
+   * This interface was referenced by `WardPluginDefineElementEvents`'s JSON-Schema definition
+   * via the `patternProperty` "^.*$".
+   */
+  [k: string]: {
+    [k: string]: unknown
+  }
 }
 /**
  * Plugin Provides

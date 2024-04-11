@@ -1,4 +1,7 @@
 export { PluginDefineAttributesSchema } from './PluginDefineAttributesSchema'
+export { PluginDefineElementAttributesSchema } from './PluginDefineElementAttributesSchema'
+export { PluginDefineElementEventsSchema } from './PluginDefineElementEventsSchema'
+export { PluginDefineElementPropertiesSchema } from './PluginDefineElementPropertiesSchema'
 export { PluginDefineElementSchema } from './PluginDefineElementSchema'
 export { PluginDefineElementsSchema } from './PluginDefineElementsSchema'
 export { PluginDefinePropertiesSchema } from './PluginDefinePropertiesSchema'

@@ -3,6 +3,9 @@ import Ajv from 'ajv'
 import {
   PluginDefineAttributesSchema,
   PluginDefineElementSchema,
+  PluginDefineElementAttributesSchema,
+  PluginDefineElementEventsSchema,
+  PluginDefineElementPropertiesSchema,
   PluginDefineElementsSchema,
   PluginDefinePropertiesSchema,
   PluginDefineSchema,
@@ -26,6 +29,9 @@ const ajv = new Ajv({
   allowUnionTypes: true,
   schemas: [
     PluginDefineAttributesSchema,
+    PluginDefineElementAttributesSchema,
+    PluginDefineElementEventsSchema,
+    PluginDefineElementPropertiesSchema,
     PluginDefineElementSchema,
     PluginDefineElementsSchema,
     PluginDefinePropertiesSchema,
