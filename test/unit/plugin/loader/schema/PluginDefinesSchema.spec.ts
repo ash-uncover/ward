@@ -1,6 +1,9 @@
 import Ajv from 'ajv'
 import {
   PluginDefineAttributesSchema,
+  PluginDefineElementAttributesSchema,
+  PluginDefineElementEventsSchema,
+  PluginDefineElementPropertiesSchema,
   PluginDefineElementSchema,
   PluginDefineElementsSchema,
   PluginDefinePropertiesSchema,
@@ -22,6 +25,9 @@ describe('PluginDefinesSchema', () => {
       allowUnionTypes: true,
       schemas: [
         PluginDefineAttributesSchema,
+        PluginDefineElementAttributesSchema,
+        PluginDefineElementEventsSchema,
+        PluginDefineElementPropertiesSchema,
         PluginDefineElementSchema,
         PluginDefineElementsSchema,
         PluginDefinePropertiesSchema,
