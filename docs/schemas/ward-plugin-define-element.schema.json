@@ -13,5 +13,6 @@
     "events": {
       "$ref": "https://ash-uncover.github.io/ward/schemas/ward-plugin-define-element-events.schema.json"
     }
-  }
+  },
+  "additionalProperties": false
 }

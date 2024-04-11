@@ -81,7 +81,6 @@ export interface WardPluginDefineElement {
   properties?: WardPluginDefineElementProperties
   attributes?: WardPluginDefineElementAttributes
   events?: WardPluginDefineElementEvents
-  [k: string]: unknown
 }
 /**
  * Plugin Define Element Properties

@@ -5,7 +5,8 @@ export const PluginDefineElementEventsSchema = {
     type: 'object',
     patternProperties: {
       '^.*$': {
-        description: 'Define Element Event'
+        description: 'Define Element Event',
+        type: 'object'
       }
     },
     additionalProperties: false

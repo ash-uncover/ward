@@ -13,5 +13,6 @@ export const PluginDefineElementSchema = {
     events: {
       $ref: 'WardPluginDefineElementEventsSchema'
     }
-  }
+  },
+  additionalProperties: false
 }
