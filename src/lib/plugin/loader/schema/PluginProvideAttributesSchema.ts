@@ -5,7 +5,7 @@ export const PluginProvideAttributesSchema = {
   type: 'object',
   patternProperties: {
     '^.*$': {
-      description: 'Attribute value',
+      description: 'Provide Attribute',
       oneOf: [{
         type: ['string', 'number', 'boolean']
       }, {

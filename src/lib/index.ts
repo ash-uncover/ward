@@ -34,6 +34,8 @@ class WardClass {
   #messageDispatcher: MessageDispatcher
 
   #listeners: ((data: WardData) => void)[] = []
+  #listenersPlugins: ((data: WardData) => void)[] = []
+  #listenersServices: ((data: WardData) => void)[] = []
 
   // Constructors //
 
@@ -45,8 +47,8 @@ class WardClass {
     this.#wardId = wardId || UUID.next()
     this.#pluginManager = pluginManager || new PluginManager()
     this.#messageDispatcher = messageDispatcher || new MessageDispatcher()
-    this.#pluginManager.register(this.notify.bind(this))
-    this.#messageDispatcher.register(this.notify.bind(this))
+    this.#pluginManager.register(this.notifyPlugins.bind(this))
+    this.#messageDispatcher.register(this.notifyServices.bind(this))
   }
 
   // Getters & Setters //
@@ -71,7 +73,34 @@ class WardClass {
   unregister(listener: (data: WardData) => void) {
     this.#listeners = ArrayUtils.removeElement(this.#listeners, listener)
   }
-  notify() {
+
+  registerPlugins(listener: (data: WardData) => void) {
+    this.#listenersPlugins.push(listener)
+    return () => this.unregister(listener)
+  }
+  unregisterPlugins(listener: (data: WardData) => void) {
+    this.#listenersPlugins = ArrayUtils.removeElement(this.#listenersPlugins, listener)
+  }
+  notifyPlugins() {
+    this.#listenersPlugins.forEach(listener => {
+      listener(this.data)
+    })
+    this.#listeners.forEach(listener => {
+      listener(this.data)
+    })
+  }
+
+  registerServices(listener: (data: WardData) => void) {
+    this.#listenersServices.push(listener)
+    return () => this.unregister(listener)
+  }
+  unregisterServices(listener: (data: WardData) => void) {
+    this.#listenersServices = ArrayUtils.removeElement(this.#listenersServices, listener)
+  }
+  notifyServices() {
+    this.#listenersServices.forEach(listener => {
+      listener(this.data)
+    })
     this.#listeners.forEach(listener => {
       listener(this.data)
     })
