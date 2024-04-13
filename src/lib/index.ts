@@ -76,7 +76,7 @@ class WardClass {
 
   registerPlugins(listener: (data: WardData) => void) {
     this.#listenersPlugins.push(listener)
-    return () => this.unregister(listener)
+    return () => this.unregisterPlugins(listener)
   }
   unregisterPlugins(listener: (data: WardData) => void) {
     this.#listenersPlugins = ArrayUtils.removeElement(this.#listenersPlugins, listener)
@@ -92,7 +92,7 @@ class WardClass {
 
   registerServices(listener: (data: WardData) => void) {
     this.#listenersServices.push(listener)
-    return () => this.unregister(listener)
+    return () => this.unregisterServices(listener)
   }
   unregisterServices(listener: (data: WardData) => void) {
     this.#listenersServices = ArrayUtils.removeElement(this.#listenersServices, listener)
