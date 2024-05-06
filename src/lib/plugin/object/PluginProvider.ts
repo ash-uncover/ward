@@ -1,4 +1,4 @@
-import Logger from '@uncover/js-utils-logger/dist/Logger'
+import { Logger } from '@uncover/js-utils-logger/dist/Logger'
 import PluginDefine from './PluginDefine'
 import PluginProvide from './PluginProvide'
 import PluginProviderAttribute from './PluginProviderAttribute'

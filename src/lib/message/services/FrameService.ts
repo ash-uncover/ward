@@ -1,5 +1,5 @@
 import { UUID } from '@uncover/js-utils'
-import Logger, { LogLevels } from '@uncover/js-utils-logger'
+import { Logger, LogLevels } from '@uncover/js-utils-logger'
 import { Message, MessageService, MessageServiceTypes } from '../model/model'
 import MessageDispatcher, { CONNECTION_CLOSING } from '../MessageDispatcher'
 

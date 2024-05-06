@@ -150,6 +150,29 @@ describe('EventService', () => {
       expect(handleMessage2).toHaveBeenCalledTimes(1)
       expect(handleMessage2).toHaveBeenCalledWith(message)
     })
+
+    test('when a handler is failing', () => {
+      // Declaration
+      const dispatcher = new MessageDispatcher()
+      const handleMessage1 = jest.fn()
+      const handleMessageFailing = () => { throw 'error' }
+      const handleMessage2 = jest.fn()
+      const service = new ServiceEvent(dispatcher)
+      service.addHandler(handleMessage1)
+      service.addHandler(handleMessageFailing)
+      service.addHandler(handleMessage2)
+      const message = {
+        type: 'type',
+        payload: 'payload'
+      }
+      // Execution
+      service.onMessage(message)
+      // Assertion
+      expect(handleMessage1).toHaveBeenCalledTimes(1)
+      expect(handleMessage1).toHaveBeenCalledWith(message)
+      expect(handleMessage2).toHaveBeenCalledTimes(1)
+      expect(handleMessage2).toHaveBeenCalledWith(message)
+    })
   })
 
   // EventService.sendMessage //

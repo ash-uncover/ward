@@ -1,4 +1,4 @@
-import Logger, { LogLevels } from '@uncover/js-utils-logger'
+import { Logger, LogLevels } from '@uncover/js-utils-logger'
 import Plugin from './object/Plugin'
 import PluginDefine from './object/PluginDefine'
 import PluginProvider from './object/PluginProvider'

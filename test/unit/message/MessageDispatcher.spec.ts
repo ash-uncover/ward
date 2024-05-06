@@ -352,5 +352,18 @@ describe('MessageDispatcher', () => {
       // Assertion
       expect(spyListerner).toHaveBeenCalledTimes(0)
     })
+
+    test('Check that failing listeners are not blocking the dispatcher', async () => {
+      // Declaration
+      const dispatcher = new MessageDispatcher()
+      // Execution
+      const spyFailingListerner = () => { throw 'Error' }
+      const spyListerner = jest.fn()
+      dispatcher.register(spyFailingListerner)
+      dispatcher.register(spyListerner)
+      dispatcher.reset()
+      // Assertion
+      expect(spyListerner).toHaveBeenCalledTimes(1)
+    })
   })
 })
