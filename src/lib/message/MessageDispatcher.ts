@@ -1,5 +1,5 @@
 import { ArrayUtils, UUID } from '@uncover/js-utils'
-import Logger, { LogLevels } from '@uncover/js-utils-logger'
+import { Logger, LogLevels } from '@uncover/js-utils-logger'
 import { MessageService, Message } from './model/model'
 import FrameService from './services/FrameService'
 
@@ -82,7 +82,12 @@ class MessageDispatcher implements MessageDispatcherData {
   }
   notify() {
     this.#listeners.forEach(listener => {
-      listener(this.data)
+      try {
+        listener(this.data)
+      } catch (error) {
+        LOGGER.error(`[DISP-${this.id}] listener failed with error`)  
+        LOGGER.error(`${error}`)
+      }
     })
   }
 
