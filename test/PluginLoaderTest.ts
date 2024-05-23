@@ -1,5 +1,3 @@
-import { getValidator } from '../src/lib/plugin/loader/JsonValidator'
-import { WardPlugin } from '../src/lib/plugin/loader/model/PluginDataModel'
 import {
   IPluginLoader,
   WardPluginState,

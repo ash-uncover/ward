@@ -20,13 +20,13 @@
     ]
   },
   "include": [
-    "src/lib",
-    "test"
+    "src/lib"
   ],
   "exclude": [
     "src/index_bundle.js",
     "dist",
     "node_modules",
+    "test",
     ".vscode"
   ]
 }

@@ -1,7 +1,7 @@
-import { LogConfig } from '@uncover/js-utils-logger'
+import { GlobalConfig } from '@uncover/js-utils-logger'
 import PluginManager from '../../../src/lib/plugin/PluginManager'
 
-LogConfig.off()
+GlobalConfig.off()
 
 describe('PluginManager', () => {
 

@@ -1,12 +1,10 @@
-import { Logger, LogLevels } from '@uncover/js-utils-logger'
+import { LogConfig, Logger } from '@uncover/js-utils-logger'
 import Plugin from './object/Plugin'
 import PluginDefine from './object/PluginDefine'
 import PluginProvider from './object/PluginProvider'
 import { ArrayUtils } from '@uncover/js-utils'
 import { WardPlugin } from './loader/model/PluginDataModel'
-import PluginLoader, { IPluginLoader, PluginLoadState, PluginLoadStates } from './loader/PluginLoader'
-
-const LOGGER = new Logger('PluginManager', LogLevels.WARN)
+import PluginLoader, { IPluginLoader, PluginLoadState } from './loader/PluginLoader'
 
 export interface PluginManagerData {
   urls: Record<string, PluginManagerDataUrl>
@@ -36,13 +34,20 @@ class PluginManager implements PluginManagerData {
   #definitions: Record<string, PluginDefine> = {}
   #providers: Record<string, PluginProvider> = {}
 
+  #logger:Logger
+
   // Constructor //
 
-  constructor(loader?: IPluginLoader) {
+  constructor(loader?: IPluginLoader, logConfig?: LogConfig) {
     this.#loader = loader || new PluginLoader()
+    this.#logger = new Logger('PluginManager', logConfig)
   }
 
   // Getters & Setters //
+
+  get logger() {
+    return this.#logger
+  }
 
   get retryDelay() {
     return this.#retryDelay
@@ -181,14 +186,14 @@ class PluginManager implements PluginManagerData {
     clearInterval(this.#retryInterval)
 
     if (this.#loader.hasData(url)) {
-      LOGGER.warn(`URL already loaded: '${url}'`)
+      this.logger.warn(`URL already loaded: '${url}'`)
       return true
     }
 
     const loadValid = await this.#loader.load(url)
     if (!loadValid) {
-      LOGGER.warn(`Failed to load plugin from: '${url}'`)
-      LOGGER.warn(this.#loader.getErrors(url).join('\n'))
+      this.logger.warn(`Failed to load plugin from: '${url}'`)
+      this.logger.warn(this.#loader.getErrors(url).join('\n'))
       return false
     }
 
@@ -198,7 +203,7 @@ class PluginManager implements PluginManagerData {
     // Check no plugin with same name exists
     if (this.#plugins[data.name]) {
       const previousUrl = this.#plugins[data.name].loadUrl
-      LOGGER.warn(`Plugin '${data.name}' from '${data.url}' already registered from '${previousUrl}'`)
+      this.logger.warn(`Plugin '${data.name}' from '${data.url}' already registered from '${previousUrl}'`)
       return false
     }
 
@@ -216,7 +221,7 @@ class PluginManager implements PluginManagerData {
       this.#checkPluginsInternal.call(this)
     } catch (error) {
       /* istanbul ignore next */
-      LOGGER.error(String(error))
+      this.logger.error(String(error))
       // Traces have been logged, we dont want to crash the application
     }
 
@@ -226,7 +231,7 @@ class PluginManager implements PluginManagerData {
       }, this.#retryDelay)
     }
 
-    LOGGER.warn(`Succesully loaded plugin from '${url}'`)
+    this.logger.warn(`Succesully loaded plugin from '${url}'`)
     return true
   }
 
@@ -243,7 +248,7 @@ class PluginManager implements PluginManagerData {
       /* istanbul ignore next */
       if (this.getDefinition(define.name)) {
         /* istanbul ignore next */
-        LOGGER.warn(`Defines '${define.name}' from '${plugin.name}' is already registered from ${this.getDefinition(define.name).plugin}`)
+        this.logger.warn(`Defines '${define.name}' from '${plugin.name}' is already registered from ${this.getDefinition(define.name).plugin}`)
       } else {
         this.#definitions[define.name] = define
       }
@@ -261,7 +266,7 @@ class PluginManager implements PluginManagerData {
     plugin.provides.forEach(provide => {
       const definition = this.getDefinition(provide.define)
       if (!definition) {
-        LOGGER.warn(`Provides '${provide.name}' from '${plugin.name}' has no definition '${provide.define}'`)
+        this.logger.warn(`Provides '${provide.name}' from '${plugin.name}' has no definition '${provide.define}'`)
       } else {
         const provider = new PluginProvider(plugin.url, definition, provide)
         this.#providers[provider.name] = provider
