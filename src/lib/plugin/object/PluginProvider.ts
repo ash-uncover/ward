@@ -1,150 +1,157 @@
-import { Logger } from '@uncover/js-utils-logger/dist/Logger'
-import PluginDefine from './PluginDefine'
-import PluginProvide from './PluginProvide'
-import PluginProviderAttribute from './PluginProviderAttribute'
-import PluginProviderElement from './PluginProviderElement'
-import { LogLevels } from '@uncover/js-utils-logger'
-
-const LOGGER = new Logger('PluginManager', LogLevels.WARN)
+import { Logger } from "@uncover/js-utils-logger/dist/Logger";
+import PluginDefine from "./PluginDefine";
+import PluginProvide from "./PluginProvide";
+import PluginProviderAttribute from "./PluginProviderAttribute";
+import PluginProviderElement from "./PluginProviderElement";
+import { LogConfig, LogLevels } from "@uncover/js-utils-logger";
 
 class PluginProvider {
-
   // Attributes //
 
-  #plugin: string
-  #definition: string
-  #name: string
+  #plugin: string;
+  #definition: string;
+  #name: string;
 
-  #attributes: PluginProviderAttribute[] = []
-  #elements: PluginProviderElement[] = []
+  #attributes: PluginProviderAttribute[] = [];
+  #elements: PluginProviderElement[] = [];
+
+  #logger: Logger;
 
   // Constructor //
 
   constructor(
     pluginUrl: string,
     definition: PluginDefine,
-    provide: PluginProvide
+    provide: PluginProvide,
+    logConfig?: LogConfig
   ) {
-    this.#plugin = provide.plugin
-    this.#definition = definition.name
-    this.#name = `${definition.name}/${provide.name}`
+    this.#logger = new Logger("PluginManager", logConfig);
+    this.#plugin = provide.plugin;
+    this.#definition = definition.name;
+    this.#name = `${definition.name}/${provide.name}`;
 
-    definition.attributes.forEach(attributeDefinition => {
-      const {
-        name,
-        type,
-        mandatory,
-        array,
-      } = attributeDefinition
-      const attribute = provide.attributes.find(att => att.name === name)
+    definition.attributes.forEach((attributeDefinition) => {
+      const { name, type, mandatory, array } = attributeDefinition;
+      const attribute = provide.attributes.find((att) => att.name === name);
       if (mandatory && !attribute) {
-        throw new Error(`Missing mandatory attribute '${name}'`)
+        throw new Error(`Missing mandatory attribute '${name}'`);
       }
       if (!attribute) {
-        return
+        return;
       }
       if (array !== Array.isArray(attribute.value)) {
-        throw new Error(`Invalid attribute type '${name}', should ${array ? '' : 'not '}be an array`)
+        throw new Error(
+          `Invalid attribute type '${name}', should ${array ? "" : "not "}be an array`
+        );
       }
 
       this.#attributes.push(
-        new PluginProviderAttribute(
-          pluginUrl,
-          attributeDefinition,
-          attribute
-        )
-      )
-    })
+        new PluginProviderAttribute(pluginUrl, attributeDefinition, attribute)
+      );
+    });
 
-    provide.attributes.forEach(attribute => {
+    provide.attributes.forEach((attribute) => {
       /* istanbul ignore next */
-      const attributeDefinition = definition.attributes.find(att => att.name === attribute.name)
+      const attributeDefinition = definition.attributes.find(
+        (att) => att.name === attribute.name
+      );
       /* istanbul ignore next */
       if (!attributeDefinition) {
         /* istanbul ignore next */
-        LOGGER.warn(`${provide.plugin} - ${provide.name} - Attribute '${attribute.name}' is not defined`)
+        this.logger.warn(
+          `${provide.plugin} - ${provide.name} - Attribute '${attribute.name}' is not defined`
+        );
       }
-    })
+    });
 
-    definition.elements.forEach(elementDefinition => {
-      const {
-        name,
-      } = elementDefinition
-      const element = provide.elements.find(elem => elem.name === name)
+    definition.elements.forEach((elementDefinition) => {
+      const { name } = elementDefinition;
+      const element = provide.elements.find((elem) => elem.name === name);
       if (!element) {
-        throw new Error(`Missing element '${name}'`)
+        throw new Error(`Missing element '${name}'`);
       }
 
       this.#elements.push(
-        new PluginProviderElement(
-          pluginUrl,
-          elementDefinition,
-          element
-        )
-      )
-    })
+        new PluginProviderElement(pluginUrl, elementDefinition, element)
+      );
+    });
 
-    provide.elements.forEach(element => {
+    provide.elements.forEach((element) => {
       /* istanbul ignore next */
-      const elementDefinition = definition.elements.find(elem => elem.name === element.name)
+      const elementDefinition = definition.elements.find(
+        (elem) => elem.name === element.name
+      );
       /* istanbul ignore next */
       if (!elementDefinition) {
         /* istanbul ignore next */
-        LOGGER.warn(`${provide.plugin} - ${provide.name} - Element '${element.name}' is not defined`)
+        this.logger.warn(
+          `${provide.plugin} - ${provide.name} - Element '${element.name}' is not defined`
+        );
       }
-    })
+    });
   }
 
   // Getters & Setters //
 
-  get plugin() { return this.#plugin }
-  get definition() { return this.#definition }
-  get name() { return this.#name }
+  get plugin() {
+    return this.#plugin;
+  }
+  get definition() {
+    return this.#definition;
+  }
+  get name() {
+    return this.#name;
+  }
+
+  /* istanbul ignore next */
+  get logger() {
+    /* istanbul ignore next */
+    return this.#logger;
+  }
 
   get attributes(): {
-    [key: string]: any
+    [key: string]: any;
   } {
     return this.#attributes.reduce((acc: any, attribute) => {
-      acc[attribute.name] = attribute.value
-      return acc
-    }, {})
+      acc[attribute.name] = attribute.value;
+      return acc;
+    }, {});
   }
   getAttributes() {
-    return this.#attributes.slice()
+    return this.#attributes.slice();
   }
-  getAttribute (attributeId: string) {
-    return this.attributes[attributeId]
+  getAttribute(attributeId: string) {
+    return this.attributes[attributeId];
   }
 
   get elements(): {
     [key: string]: {
-      plugin: string,
-      url: string,
-      type: string,
-      element: string
-    }
+      plugin: string;
+      url: string;
+      type: string;
+      element: string;
+    };
   } {
     return this.#elements.reduce((acc: any, element) => {
       acc[element.name] = {
         plugin: this.plugin,
         url: element.url,
         type: element.type,
-        element: element.element
-      }
-      return acc
-    }, {})
+        element: element.element,
+      };
+      return acc;
+    }, {});
   }
   getElements() {
-    return this.#elements.slice()
+    return this.#elements.slice();
   }
   getElement(elementId: string) {
-    return this.elements[elementId]
+    return this.elements[elementId];
   }
 
   // Public Methods //
 
   // Internal Methods //
-
 }
 
-export default PluginProvider
+export default PluginProvider;

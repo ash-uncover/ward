@@ -1,19 +1,17 @@
-import { UUID } from '@uncover/js-utils'
-import { Logger, LogLevels } from '@uncover/js-utils-logger'
-import { Message, MessageService, MessageServiceTypes } from '../model/model'
-import MessageDispatcher, { CONNECTION_CLOSING } from '../MessageDispatcher'
-
-const LOGGER = new Logger('FrameService', LogLevels.DEBUG)
+import { UUID } from "@uncover/js-utils";
+import { LogConfig, Logger } from "@uncover/js-utils-logger";
+import { Message, MessageService, MessageServiceTypes } from "../model/model";
+import MessageDispatcher, { CONNECTION_CLOSING } from "../MessageDispatcher";
 
 class FrameService implements MessageService {
-
   // Attributes //
 
-  #id: string
-  #dispatcher: MessageDispatcher
-  #remoteDispatcherId: string
-  #window: Window
-  #origin: string
+  #id: string;
+  #dispatcher: MessageDispatcher;
+  #remoteDispatcherId: string;
+  #window: Window;
+  #origin: string;
+  #logger: Logger
 
   // Constructor //
 
@@ -22,68 +20,81 @@ class FrameService implements MessageService {
     wdow: Window,
     origin: string,
     remoteDispatcherId: string,
-    id?: string
+    id?: string,
+    logConfig?: LogConfig
   ) {
-    this.#dispatcher = dispatcher
-    this.#id = id || UUID.next()
-    this.#window = wdow
-    this.#origin = origin
-    this.#remoteDispatcherId = remoteDispatcherId
-    LOGGER.info(`[DISP-${this.dispatcherId}/FRAME-${this.id}] created`)
+    this.#logger = new Logger("FrameService", logConfig);
+    this.#dispatcher = dispatcher;
+    this.#id = id || UUID.next();
+    this.#window = wdow;
+    this.#origin = origin;
+    this.#remoteDispatcherId = remoteDispatcherId;
+    this.logger.info(`[DISP-${this.dispatcherId}/FRAME-${this.id}] created`);
+    window.addEventListener("message", this.#handleMessage.bind(this));
     window.addEventListener(
-      'message',
-      this.#handleMessage.bind(this)
-    )
-    window.addEventListener(
-      'beforeUnload',
+      "beforeUnload",
       this.#handleBeforeUnload.bind(this)
-    )
+    );
   }
 
   // Getters & Setters //
 
   get id() {
-    return this.#id
+    return this.#id;
   }
   get dispatcherId() {
-    return this.#dispatcher.id
+    return this.#dispatcher.id;
   }
   get window() {
-    return this.#window
+    return this.#window;
   }
 
   get type() {
-    return MessageServiceTypes.FRAME
+    return MessageServiceTypes.FRAME;
   }
 
+  get logger() {
+    return this.#logger;
+  }
 
   // Public Methods //
 
   onMessage(message: Message) {
-    LOGGER.info(`[DISP-${this.dispatcherId}/FRAME-${this.id}] onMessage ${message.type}`)
+    this.logger.info(
+      `[DISP-${this.dispatcherId}/FRAME-${this.id}] onMessage ${message.type}`
+    );
     if (this.#window.closed) {
-      LOGGER.info(`[DISP-${this.dispatcherId}/FRAME-${this.id}] onMessage /!\\ window closed /!\\`)
-      this.terminate()
+      this.logger.info(
+        `[DISP-${this.dispatcherId}/FRAME-${this.id}] onMessage /!\\ window closed /!\\`
+      );
+      this.terminate();
     } else {
-      LOGGER.debug(`[DISP-${this.dispatcherId}/FRAME-${this.id}] onMessage posting message to ${this.#origin}`)
-      this.#window.postMessage({
-        ...message,
-        _serviceId: this.#id
-      }, this.#origin)
+      this.logger.debug(
+        `[DISP-${this.dispatcherId}/FRAME-${this.id}] onMessage posting message to ${this.#origin}`
+      );
+      this.#window.postMessage(
+        {
+          ...message,
+          _serviceId: this.#id,
+        },
+        this.#origin
+      );
     }
   }
 
   sendMessage(message: Message) {
-    LOGGER.debug(`[DISP-${this.dispatcherId}/FRAME-${this.id}] sendMessage ${message.type}`)
+    this.logger.debug(
+      `[DISP-${this.dispatcherId}/FRAME-${this.id}] sendMessage ${message.type}`
+    );
     this.#dispatcher.sendMessage({
       ...message,
       _serviceId: this.id,
-    })
+    });
   }
 
   terminate() {
-    LOGGER.info(`[DISP-${this.dispatcherId}/FRAME-${this.id}] terminate`)
-    this.#dispatcher.removeService(this)
+    this.logger.info(`[DISP-${this.dispatcherId}/FRAME-${this.id}] terminate`);
+    this.#dispatcher.removeService(this);
   }
 
   // Private Methods //
@@ -93,26 +104,34 @@ class FrameService implements MessageService {
       type: CONNECTION_CLOSING,
       _dispatcherId: this.dispatcherId,
       payload: {},
-    })
-    this.terminate()
+    });
+    this.terminate();
   }
 
   #handleMessage(event: MessageEvent) {
-    const data = event.data || {}
-    LOGGER.debug(`[DISP-${this.dispatcherId}/FRAME-${this.id}] handleMessage `)
-    if (data._serviceId && data._dispatcherId && data._dispatcherId === this.#remoteDispatcherId) {
-      LOGGER.debug(`[DISP-${this.dispatcherId}/FRAME-${this.id}] handleMessage ${event.data.type}`)
+    const data = event.data || {};
+    this.logger.debug(
+      `[DISP-${this.dispatcherId}/FRAME-${this.id}] handleMessage `
+    );
+    if (
+      data._serviceId &&
+      data._dispatcherId &&
+      data._dispatcherId === this.#remoteDispatcherId
+    ) {
+      this.logger.debug(
+        `[DISP-${this.dispatcherId}/FRAME-${this.id}] handleMessage ${event.data.type}`
+      );
       if (data.type === CONNECTION_CLOSING) {
-        this.terminate()
+        this.terminate();
       } else {
         this.sendMessage({
           _serviceId: this.#id,
           type: data.type,
-          payload: data.payload
-        })
+          payload: data.payload,
+        });
       }
     }
   }
 }
 
-export default FrameService
+export default FrameService;

@@ -1,11 +1,11 @@
-import { LogConfig } from '@uncover/js-utils-logger'
+import { GlobalConfig } from '@uncover/js-utils-logger'
 import FrameService from '../../../../src/lib/message/services/FrameService'
 import MessageDispatcher, {
   CONNECTION_CLOSING
 } from '../../../../src/lib/message/MessageDispatcher'
 import { MessageServiceTypes } from '../../../../src/lib/message/model/model'
 
-LogConfig.off()
+GlobalConfig.off()
 
 describe('FrameService', () => {
 

@@ -1,4 +1,4 @@
-import { LogConfig } from '@uncover/js-utils-logger'
+import { GlobalConfig } from '@uncover/js-utils-logger'
 import MessageDispatcher, {
   CONNECTION_ACKNOWLEDGE,
   CONNECTION_CLOSING,
@@ -6,7 +6,7 @@ import MessageDispatcher, {
 } from '../../../src/lib/message/MessageDispatcher'
 import { MessageService } from '../../../src/lib/message/model/model'
 
-LogConfig.off()
+GlobalConfig.off()
 
 describe('MessageDispatcher', () => {
 

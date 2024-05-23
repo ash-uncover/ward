@@ -1,9 +1,9 @@
-import { LogConfig } from '@uncover/js-utils-logger'
+import { GlobalConfig } from '@uncover/js-utils-logger'
 import { ServiceEvent } from '../../../../src/lib/message/services/ServiceEvent'
 import MessageDispatcher from '../../../../src/lib/message/MessageDispatcher'
 import { MessageServiceTypes } from '../../../../src/lib/message/model/model'
 
-LogConfig.off()
+GlobalConfig.off()
 
 describe('EventService', () => {
 
