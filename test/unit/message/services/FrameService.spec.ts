@@ -15,7 +15,6 @@ describe('FrameService', () => {
 
   /* TEST SETUP */
 
-  let spyWindow: any
   let spyWindowPostMessage: any
   let spyWindowAddEventListener: any
 

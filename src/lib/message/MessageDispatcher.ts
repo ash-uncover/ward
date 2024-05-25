@@ -89,7 +89,7 @@ class MessageDispatcher implements MessageDispatcherData {
       try {
         listener(this.data)
       } catch (error) {
-        this.logger.error(`[DISP-${this.id}] listener failed with error`)  
+        this.logger.error(`[DISP-${this.id}] listener failed with error`)
         this.logger.error(`${error}`)
       }
     })
@@ -132,7 +132,7 @@ class MessageDispatcher implements MessageDispatcherData {
     this.logger.info(`[DISP-${this.id}] remove service [${service.id}]`)
     this.#services = this.#services.filter(serv => serv !== service)
     if (service instanceof FrameService) {
-      this.#dispatchers = this.#dispatchers.filter(dispatcherId => dispatcherId !== service.dispatcherId)
+      this.#dispatchers = this.#dispatchers.filter(dispatcherId => dispatcherId !== service.remoteDispatcherId)
     }
     this.notify()
   }

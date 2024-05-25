@@ -45,6 +45,9 @@ class FrameService implements MessageService {
   get dispatcherId() {
     return this.#dispatcher.id;
   }
+  get remoteDispatcherId() {
+    return this.#remoteDispatcherId;
+  }
   get window() {
     return this.#window;
   }
