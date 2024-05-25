@@ -1,6 +1,6 @@
 {
   "name": "@uncover/ward",
-  "version": "0.2.21",
+  "version": "0.2.22",
   "author": "aSH <ash.uncover@gmail.com>",
   "description": "Ward micro frontends frameworks",
   "license": "MIT",
@@ -31,8 +31,8 @@
     "ajv": "8.13.0"
   },
   "devDependencies": {
-    "@babel/core": "7.24.5",
-    "@babel/preset-env": "7.24.5",
+    "@babel/core": "7.24.6",
+    "@babel/preset-env": "7.24.6",
     "@reduxjs/toolkit": "2.2.5",
     "@types/jest": "29.5.12",
     "@types/node": "20.12.12",

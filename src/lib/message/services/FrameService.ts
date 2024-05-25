@@ -110,9 +110,6 @@ class FrameService implements MessageService {
 
   #handleMessage(event: MessageEvent) {
     const data = event.data || {};
-    this.logger.debug(
-      `[DISP-${this.dispatcherId}/FRAME-${this.id}] handleMessage `
-    );
     if (
       data._serviceId &&
       data._dispatcherId &&

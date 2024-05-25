@@ -131,6 +131,9 @@ class MessageDispatcher implements MessageDispatcherData {
   removeService(service: MessageService) {
     this.logger.info(`[DISP-${this.id}] remove service [${service.id}]`)
     this.#services = this.#services.filter(serv => serv !== service)
+    if (service instanceof FrameService) {
+      this.#dispatchers = this.#dispatchers.filter(dispatcherId => dispatcherId !== service.dispatcherId)
+    }
     this.notify()
   }
 
