@@ -53,6 +53,7 @@ export class ServiceEvent implements EventService {
 
   terminate() {
     this.logger.info(`[DISP-${this.dispatcherId}/EVENT-${this.id}] terminate`);
+    this.#handlers = [];
     this.#dispatcher.removeService(this);
   }
 
