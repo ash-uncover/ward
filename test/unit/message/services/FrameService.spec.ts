@@ -59,11 +59,11 @@ describe('FrameService', () => {
       const remoteDispatcherId: string = 'remoteDispather'
       const serviceId: string = 'serviceId'
       // Execution
-      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId, serviceId)
+      const service = new FrameService(dispatcher, window, window, origin, remoteDispatcherId, serviceId)
       // Assertion
       expect(service.id).toBe(serviceId)
       expect(service.dispatcherId).toBe(DISPATCHER_ID)
-      expect(service.window).toEqual(window)
+      expect(service.windowRemote).toEqual(window)
       expect(service.type).toBe(MessageServiceTypes.FRAME)
       expect(spyWindowAddEventListener).toHaveBeenCalledTimes(2)
     })
@@ -75,11 +75,11 @@ describe('FrameService', () => {
       const origin: string = '*'
       const remoteDispatcherId: string = 'remoteDispather'
       // Execution
-      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
+      const service = new FrameService(dispatcher, window, window, origin, remoteDispatcherId)
       // Assertion
       expect(service.id).toBeDefined()
       expect(service.dispatcherId).toBe(DISPATCHER_ID)
-      expect(service.window).toEqual(window)
+      expect(service.windowRemote).toEqual(window)
       expect(service.type).toBe(MessageServiceTypes.FRAME)
       expect(spyWindowAddEventListener).toHaveBeenCalledTimes(2)
     })
@@ -94,7 +94,7 @@ describe('FrameService', () => {
       const dispatcher = new MessageDispatcher()
       const origin: string = 'http://localhost'
       const remoteDispatcherId: string = 'remoteDispather'
-      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
+      const service = new FrameService(dispatcher, window, window, origin, remoteDispatcherId)
       // Execution
       service.onMessage({
         type: 'type',
@@ -121,7 +121,7 @@ describe('FrameService', () => {
         value: true,
         writable: true,
       })
-      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId, serviceId)
+      const service = new FrameService(dispatcher, window, window, origin, remoteDispatcherId, serviceId)
       // Execution
       service.onMessage({
         type: 'type',
@@ -142,7 +142,7 @@ describe('FrameService', () => {
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
       const remoteDispatcherId: string = 'remoteDispather'
-      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
+      const service = new FrameService(dispatcher, window, window, origin, remoteDispatcherId)
       // Execution
       service.sendMessage({ type: 'type', payload: 'payload' })
       // Assertion
@@ -166,7 +166,7 @@ describe('FrameService', () => {
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
       const remoteDispatcherId: string = 'remoteDispather'
-      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
+      const service = new FrameService(dispatcher, window, window, origin, remoteDispatcherId)
       spyServiceOnMessage = jest.spyOn(service, 'onMessage')
       // Execution
       const event = new MessageEvent('beforeUnload')
@@ -188,7 +188,7 @@ describe('FrameService', () => {
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
       const remoteDispatcherId: string = 'remoteDispather'
-      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
+      const service = new FrameService(dispatcher, window, window, origin, remoteDispatcherId)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const message = {
@@ -206,7 +206,7 @@ describe('FrameService', () => {
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
       const remoteDispatcherId: string = 'remoteDispather'
-      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
+      const service = new FrameService(dispatcher, window, window, origin, remoteDispatcherId)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const message = {
@@ -226,7 +226,7 @@ describe('FrameService', () => {
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
       const remoteDispatcherId: string = 'remoteDispather'
-      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
+      const service = new FrameService(dispatcher, window, window, origin, remoteDispatcherId)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const event = new MessageEvent('message', {})
@@ -240,7 +240,7 @@ describe('FrameService', () => {
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
       const remoteDispatcherId: string = 'remoteDispather'
-      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
+      const service = new FrameService(dispatcher, window, window, origin, remoteDispatcherId)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const message = {
@@ -266,7 +266,7 @@ describe('FrameService', () => {
       const dispatcher = new MessageDispatcher()
       const origin: string = '*'
       const remoteDispatcherId: string = 'remoteDispather'
-      const service = new FrameService(dispatcher, window, origin, remoteDispatcherId)
+      const service = new FrameService(dispatcher, window, window, origin, remoteDispatcherId)
       spyServiceSendMessage = jest.spyOn(service, 'sendMessage')
       // Execution
       const message = {

@@ -10,6 +10,7 @@ class FrameService implements MessageService {
   #dispatcher: MessageDispatcher;
   #remoteDispatcherId: string;
   #window: Window;
+  #windowRemote: Window;
   #origin: string;
   #logger: Logger
 
@@ -18,6 +19,7 @@ class FrameService implements MessageService {
   constructor(
     dispatcher: MessageDispatcher,
     wdow: Window,
+    wdowRemote: Window,
     origin: string,
     remoteDispatcherId: string,
     id?: string,
@@ -27,11 +29,12 @@ class FrameService implements MessageService {
     this.#dispatcher = dispatcher;
     this.#id = id || UUID.next();
     this.#window = wdow;
+    this.#windowRemote = wdowRemote;
     this.#origin = origin;
     this.#remoteDispatcherId = remoteDispatcherId;
     this.logger.info(`[DISP-${this.dispatcherId}/FRAME-${this.id}] created`);
-    window.addEventListener("message", this.#handleMessage.bind(this));
-    window.addEventListener(
+    this.#window.addEventListener("message", this.#handleMessage.bind(this));
+    this.#window.addEventListener(
       "beforeUnload",
       this.#handleBeforeUnload.bind(this)
     );
@@ -48,8 +51,8 @@ class FrameService implements MessageService {
   get remoteDispatcherId() {
     return this.#remoteDispatcherId;
   }
-  get window() {
-    return this.#window;
+  get windowRemote() {
+    return this.#windowRemote;
   }
 
   get type() {
@@ -66,7 +69,7 @@ class FrameService implements MessageService {
     this.logger.info(
       `[DISP-${this.dispatcherId}/FRAME-${this.id}] onMessage ${message.type}`
     );
-    if (this.#window.closed) {
+    if (this.#windowRemote.closed) {
       this.logger.info(
         `[DISP-${this.dispatcherId}/FRAME-${this.id}] onMessage /!\\ window closed /!\\`
       );
@@ -75,7 +78,7 @@ class FrameService implements MessageService {
       this.logger.debug(
         `[DISP-${this.dispatcherId}/FRAME-${this.id}] onMessage posting message to ${this.#origin}`
       );
-      this.#window.postMessage(
+      this.#windowRemote.postMessage(
         {
           ...message,
           _serviceId: this.#id,

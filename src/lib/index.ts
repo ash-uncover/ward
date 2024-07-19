@@ -12,6 +12,12 @@ export { ServiceEvent, EventService } from "./message/services/ServiceEvent";
 
 export interface WardData extends MessageDispatcherData, PluginManagerData {}
 
+declare global {
+  interface Window {
+    documentPictureInPicture?: any
+  }
+}
+
 class WardClass {
   // Attributes //
 
@@ -134,7 +140,7 @@ if (!window.uncover?.ward) {
   WardInstance = new WardClass();
   window.uncover = window.uncover || {};
   window.uncover.ward = WardInstance;
-  window.uncover.wardVersion = "0.2.23";
+  window.uncover.wardVersion = "0.2.26";
 } else {
   console.warn(
     `Ward is already registered with version ${window.uncover.wardVersion || "older than 0.2.21"}`

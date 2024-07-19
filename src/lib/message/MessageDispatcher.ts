@@ -33,17 +33,26 @@ class MessageDispatcher implements MessageDispatcherData {
     this.#logger = new Logger('MessageDispatcher', logConfig)
     this.#id = id || UUID.next()
     this.logger.info(`[DISP-${this.id}] created`)
-    this.#handler = this.#handleMessage.bind(this)
+    this.#handler = this.#handleMessage.bind(this, window)
     window.addEventListener(
       'message',
       this.#handler
     )
+    /* istanbul ignore else */
     if (window !== window.parent) {
       this.logger.info(`[DISP-${this.id}] contact parent`)
       window.parent.postMessage({
         _dispatcherId: this.#id,
         type: CONNECTION_REQUEST
       }, '*')
+    } else if (window.documentPictureInPicture) {
+      window.documentPictureInPicture.addEventListener("enter", (event: any) => {
+        const pipWindow = event.window;
+        pipWindow.addEventListener(
+          'message', 
+          this.#handleMessage.bind(this, pipWindow)
+        );
+      });
     }
   }
 
@@ -152,15 +161,15 @@ class MessageDispatcher implements MessageDispatcherData {
 
   // Internal Methods //
 
-  #handleMessage(event: MessageEvent) {
+  #handleMessage(window: Window, event: MessageEvent) {
     if (event.data?._dispatcherId) {
       switch (event.data.type) {
         case CONNECTION_REQUEST: {
-          this.#handleConnectionRequest(event)
+          this.#handleConnectionRequest(event, window)
           break
         }
         case CONNECTION_ACKNOWLEDGE: {
-          this.#handleConnectionAcknowledge(event)
+          this.#handleConnectionAcknowledge(event, window)
           break
         }
         case CONNECTION_CLOSING: {
@@ -171,16 +180,17 @@ class MessageDispatcher implements MessageDispatcherData {
     }
   }
 
-  #handleConnectionRequest(event: MessageEvent) {
+  #handleConnectionRequest(event: MessageEvent, /* istanbul ignore next */ wdow: Window = window) {
     const dispatcherId = event.data._dispatcherId
     this.logger.info(`[DISP-${this.id}] child trying to connect [${dispatcherId}]`)
     this.logger.info(`[DISP-${this.id}] current childs: ${this.dispatchers.join(', ')}`)
-    const wdow = <Window>event.source!
+    const wdowRemote = <Window>event.source!
     const origin = event.origin
     if (!this.#dispatchers.includes(dispatcherId)) {
       const service = new FrameService(
         this,
         wdow,
+        wdowRemote,
         origin,
         dispatcherId,
         undefined,
@@ -197,10 +207,11 @@ class MessageDispatcher implements MessageDispatcherData {
     }
   }
 
-  #handleConnectionAcknowledge(event: MessageEvent) {
+  #handleConnectionAcknowledge(event: MessageEvent, /* istanbul ignore next */ wdow: Window = window) {
     this.logger.info(`[DISP-${this.id}] parent acknowledge connection`)
     const service = new FrameService(
       this,
+      wdow,
       window.parent,
       event.origin,
       event.data._dispatcherId,
