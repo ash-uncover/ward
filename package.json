@@ -1,5 +1,5 @@
 {
-  "name": "@uncover/ward",
+  "name": "@sol.ac/ward",
   "version": "1.0.0",
   "author": "aSH <ash.uncover@gmail.com>",
   "description": "Ward micro frontends frameworks",
@@ -22,14 +22,13 @@
     "build:bundle": "webpack --config webpack.config.build.cjs --mode production",
     "build:schemas": "npm run build:tsc & node ./bin/ward-json-schemas",
     "build:tsc": "tsc -p tsconfig.build.json",
-    "postinstall": "npm update @uncover/js-utils @uncover/js-utils-logger",
     "test": "jest --env=jsdom",
     "test:coverage": "jest --env=jsdom --collectCoverage",
     "prepare": "husky"
   },
   "dependencies": {
-    "@uncover/js-utils": "ash-uncover/js-utils",
-    "@uncover/js-utils-logger": "ash-uncover/js-utils-logger",
+    "@sol.ac/js-utils": "1.0.1",
+    "@sol.ac/js-utils-logger": "1.0.1",
     "ajv": "8.17.1"
   },
   "devDependencies": {

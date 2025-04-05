@@ -1,1 +1,0 @@
-{"version":3,"file":"PluginDefinesSchema.js","sourceRoot":"","sources":["../../../../src/plugin/loader/schema/PluginDefinesSchema.ts"],"names":[],"mappings":";;;AAAa,QAAA,mBAAmB,GAAG;IACjC,GAAG,EAAE,yBAAyB;IAC9B,KAAK,EAAE,qBAAqB;IAC5B,WAAW,EAAE,gBAAgB;IAC7B,IAAI,EAAE,QAAQ;IACd,iBAAiB,EAAE;QACjB,MAAM,EAAE;YACN,IAAI,EAAE,wBAAwB;SAC/B;KACF;IACD,oBAAoB,EAAE,KAAK;CAC5B,CAAA"}
