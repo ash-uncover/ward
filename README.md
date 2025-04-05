@@ -1,6 +1,6 @@
 # ward
 
-[![npm version](https://badge.fury.io/js/@uncover%2Fward.svg)](https://badge.fury.io/js/@uncover%2Fward)
+[![npm version](https://badge.fury.io/js/@sol.ac%2Fward.svg)](https://badge.fury.io/js/@sol.ac%2Fward)
 ![Last Push](https://github.com/ash-uncover/ward/actions/workflows/publish-npm.yml/badge.svg)
 
 **Ward** is a small JavaScript library providing tools to ease microfrontend development regardless of the chosen frameworks.
@@ -44,7 +44,7 @@
 ### Installation
 
 ```
-npm add @uncover/ward
+npm add @sol.ac/ward
 ```
 
 ### Using Message Services
@@ -56,7 +56,7 @@ npm add @uncover/ward
 The following example creates a service that will log all messages sent to the **Ward** event bus.
 
 ```js
-import Ward from '@uncover/ward'
+import { Ward } from '@sol.ac/ward'
 
 function messageLog(message) {
   console.log(`received message ${message.type}:`)
@@ -81,7 +81,7 @@ service.terminate()
 The following example creates a service and sends a message to the **Ward** event bus. The message will be dispatched to all other existing services.
 
 ```js
-import Ward from '@uncover/ward'
+import { Ward } from '@sol.ac/ward'
 
 // Create the service (with optionnal id)
 const service = Ward.addService('my-service')
@@ -105,7 +105,7 @@ Allthough considered a bad pattern, in some scenarios you might want to send a m
 You can do it by simulating a message reception by the service.
 
 ```js
-import Ward from '@uncover/ward'
+import { Ward } from '@sol.ac/ward'
 
 // Create the service (with optionnal id)
 const service = Ward.addService('my-service')

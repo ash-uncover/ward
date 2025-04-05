@@ -1,4 +1,4 @@
-import { GlobalConfig } from '@uncover/js-utils-logger'
+import { GlobalConfig } from '@sol.ac/js-utils-logger'
 import FrameService from '../../../../src/message/services/FrameService'
 import MessageDispatcher, {
   CONNECTION_CLOSING

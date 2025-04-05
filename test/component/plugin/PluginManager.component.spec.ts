@@ -1,4 +1,4 @@
-import { GlobalConfig } from '@uncover/js-utils-logger'
+import { GlobalConfig } from '@sol.ac/js-utils-logger'
 import PluginManager from '../../../src/plugin/PluginManager'
 
 GlobalConfig.off()

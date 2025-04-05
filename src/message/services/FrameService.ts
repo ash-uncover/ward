@@ -1,5 +1,5 @@
-import { UUID } from "@uncover/js-utils";
-import { LogConfig, Logger } from "@uncover/js-utils-logger";
+import { UUID } from "@sol.ac/js-utils";
+import { LogConfig, Logger } from "@sol.ac/js-utils-logger";
 import { Message, MessageService, MessageServiceTypes } from "../model/model";
 import MessageDispatcher, { CONNECTION_CLOSING } from "../MessageDispatcher";
 

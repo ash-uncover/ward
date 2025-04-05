@@ -1,5 +1,5 @@
-import { ArrayUtils, UUID } from '@uncover/js-utils'
-import { LogConfig, Logger } from '@uncover/js-utils-logger'
+import { ArrayUtils, UUID } from '@sol.ac/js-utils'
+import { LogConfig, Logger } from '@sol.ac/js-utils-logger'
 import { MessageService, Message } from './model/model'
 import FrameService from './services/FrameService'
 

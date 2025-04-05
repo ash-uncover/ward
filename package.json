@@ -1,6 +1,6 @@
 {
   "name": "@sol.ac/ward",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "aSH <ash.uncover@gmail.com>",
   "description": "Ward micro frontends frameworks",
   "license": "MIT",
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@sol.ac/js-utils": "1.0.1",
-    "@sol.ac/js-utils-logger": "1.0.1",
+    "@sol.ac/js-utils-logger": "1.0.3",
     "ajv": "8.17.1"
   },
   "devDependencies": {

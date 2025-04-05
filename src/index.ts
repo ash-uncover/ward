@@ -1,11 +1,11 @@
-import { ArrayUtils, UUID } from "@uncover/js-utils";
+import { ArrayUtils, UUID } from "@sol.ac/js-utils";
 
 import PluginManager, { PluginManagerData } from "./plugin/PluginManager";
 import MessageDispatcher, {
   MessageDispatcherData,
 } from "./message/MessageDispatcher";
 import { ServiceEvent, EventService } from "./message/services/ServiceEvent";
-import { LogConfig } from "@uncover/js-utils-logger";
+import { LogConfig } from "@sol.ac/js-utils-logger";
 
 export { Message, MessageService } from "./message/model/model";
 export { ServiceEvent, EventService } from "./message/services/ServiceEvent";

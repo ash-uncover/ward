@@ -1,8 +1,8 @@
-import { LogConfig, Logger } from '@uncover/js-utils-logger'
+import { LogConfig, Logger } from '@sol.ac/js-utils-logger'
 import Plugin from './object/Plugin'
 import PluginDefine from './object/PluginDefine'
 import PluginProvider from './object/PluginProvider'
-import { ArrayUtils } from '@uncover/js-utils'
+import { ArrayUtils } from '@sol.ac/js-utils'
 import { WardPlugin } from './loader/model/PluginDataModel'
 import PluginLoader, { IPluginLoader, PluginLoadState } from './loader/PluginLoader'
 

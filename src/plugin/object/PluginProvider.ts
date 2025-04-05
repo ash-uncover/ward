@@ -1,9 +1,8 @@
-import { Logger } from "@uncover/js-utils-logger/dist/Logger";
 import PluginDefine from "./PluginDefine";
 import PluginProvide from "./PluginProvide";
 import PluginProviderAttribute from "./PluginProviderAttribute";
 import PluginProviderElement from "./PluginProviderElement";
-import { LogConfig, LogLevels } from "@uncover/js-utils-logger";
+import { Logger, LogConfig, LogLevels } from "@sol.ac/js-utils-logger";
 
 class PluginProvider {
   // Attributes //
