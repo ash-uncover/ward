@@ -8,6 +8,7 @@ config.json
 # Ignore dist
 docs_tmp
 dist
+bundles
 
 # test coverage info
 test/__coverage__
