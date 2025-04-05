@@ -1,6 +1,6 @@
-import PluginDefineAttribute from '../../../../src/lib/plugin/object/PluginDefineAttribute'
-import PluginProvideAttribute from '../../../../src/lib/plugin/object/PluginProvideAttribute'
-import PluginProviderAttribute from '../../../../src/lib/plugin/object/PluginProviderAttribute'
+import PluginDefineAttribute from '../../../../src/plugin/object/PluginDefineAttribute'
+import PluginProvideAttribute from '../../../../src/plugin/object/PluginProvideAttribute'
+import PluginProviderAttribute from '../../../../src/plugin/object/PluginProviderAttribute'
 
 describe('PluginProviderAttribute', () => {
 

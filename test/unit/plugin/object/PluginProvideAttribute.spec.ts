@@ -1,4 +1,4 @@
-import PluginProvideAttribute from '../../../../src/lib/plugin/object/PluginProvideAttribute'
+import PluginProvideAttribute from '../../../../src/plugin/object/PluginProvideAttribute'
 
 describe('PluginProvideAttribute', () => {
 

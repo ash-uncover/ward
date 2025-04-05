@@ -1,4 +1,4 @@
-import PluginLoader, { PluginLoadStates } from "../../../../src/lib/plugin/loader/PluginLoader"
+import PluginLoader, { PluginLoadStates } from "../../../../src/plugin/loader/PluginLoader"
 
 describe('PluginLoader', () => {
 

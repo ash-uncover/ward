@@ -1,4 +1,4 @@
-import { getValidator } from '../../../../src/lib/plugin/loader/JsonValidator'
+import { getValidator } from '../../../../src/plugin/loader/JsonValidator'
 
 describe('JsonValidator', () => {
 

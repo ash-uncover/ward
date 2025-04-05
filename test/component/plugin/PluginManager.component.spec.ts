@@ -1,5 +1,5 @@
 import { GlobalConfig } from '@uncover/js-utils-logger'
-import PluginManager from '../../../src/lib/plugin/PluginManager'
+import PluginManager from '../../../src/plugin/PluginManager'
 
 GlobalConfig.off()
 

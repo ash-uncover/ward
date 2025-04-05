@@ -1,6 +1,6 @@
-import PluginDefine from '../../../../src/lib/plugin/object/PluginDefine'
-import PluginProvide from '../../../../src/lib/plugin/object/PluginProvide'
-import PluginProvider from '../../../../src/lib/plugin/object/PluginProvider'
+import PluginDefine from '../../../../src/plugin/object/PluginDefine'
+import PluginProvide from '../../../../src/plugin/object/PluginProvide'
+import PluginProvider from '../../../../src/plugin/object/PluginProvider'
 
 describe('PluginProvider', () => {
 

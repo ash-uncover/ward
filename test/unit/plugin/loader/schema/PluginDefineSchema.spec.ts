@@ -8,7 +8,7 @@ import {
   PluginDefineElementsSchema,
   PluginDefinePropertiesSchema,
   PluginDefineSchema,
-} from '../../../../../src/lib/plugin/loader/schema'
+} from '../../../../../src/plugin/loader/schema'
 
 describe('PluginDefinePropertiesSchema', () => {
 

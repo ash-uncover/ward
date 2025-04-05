@@ -1,4 +1,4 @@
-import PluginDefineElementEvent from '../../../../src/lib/plugin/object/PluginDefineElementEvent'
+import PluginDefineElementEvent from '../../../../src/plugin/object/PluginDefineElementEvent'
 
 describe('PluginDefineElementEvent', () => {
 

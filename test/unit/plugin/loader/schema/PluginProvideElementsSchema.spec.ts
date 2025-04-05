@@ -2,7 +2,7 @@ import Ajv from 'ajv'
 import {
   PluginProvideElementSchema,
   PluginProvideElementsSchema,
-} from '../../../../../src/lib/plugin/loader/schema'
+} from '../../../../../src/plugin/loader/schema'
 
 describe('PluginProvideElementsSchema', () => {
 

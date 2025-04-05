@@ -3,8 +3,8 @@ import MessageDispatcher, {
   CONNECTION_ACKNOWLEDGE,
   CONNECTION_CLOSING,
   CONNECTION_REQUEST,
-} from '../../../src/lib/message/MessageDispatcher'
-import { MessageService } from '../../../src/lib/message/model/model'
+} from '../../../src/message/MessageDispatcher'
+import { MessageService } from '../../../src/message/model/model'
 
 GlobalConfig.off()
 

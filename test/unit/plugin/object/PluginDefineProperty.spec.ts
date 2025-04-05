@@ -1,4 +1,4 @@
-import PluginDefineProperty from '../../../../src/lib/plugin/object/PluginDefineProperty'
+import PluginDefineProperty from '../../../../src/plugin/object/PluginDefineProperty'
 
 describe('PluginDefineProperty', () => {
 

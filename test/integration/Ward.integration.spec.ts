@@ -1,4 +1,4 @@
-import PluginManager from '../../src/lib/plugin/PluginManager'
+import PluginManager from '../../src/plugin/PluginManager'
 import PluginLoaderTest from '../PluginLoaderTest'
 
 describe('Ward', () => {

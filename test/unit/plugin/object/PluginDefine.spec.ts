@@ -1,8 +1,8 @@
-import { WardPluginDefine } from '../../../../src/lib/plugin/loader/model/PluginDataModel'
-import PluginDefine from '../../../../src/lib/plugin/object/PluginDefine'
-import PluginDefineAttribute from '../../../../src/lib/plugin/object/PluginDefineAttribute'
-import PluginDefineElement from '../../../../src/lib/plugin/object/PluginDefineElement'
-import PluginDefineProperty from '../../../../src/lib/plugin/object/PluginDefineProperty'
+import { WardPluginDefine } from '../../../../src/plugin/loader/model/PluginDataModel'
+import PluginDefine from '../../../../src/plugin/object/PluginDefine'
+import PluginDefineAttribute from '../../../../src/plugin/object/PluginDefineAttribute'
+import PluginDefineElement from '../../../../src/plugin/object/PluginDefineElement'
+import PluginDefineProperty from '../../../../src/plugin/object/PluginDefineProperty'
 
 describe('PluginDefine', () => {
 

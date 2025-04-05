@@ -1,5 +1,5 @@
-import { WardPluginProvideElement } from '../../../../src/lib/plugin/loader/model/PluginDataModel'
-import PluginProvideElement from '../../../../src/lib/plugin/object/PluginProvideElement'
+import { WardPluginProvideElement } from '../../../../src/plugin/loader/model/PluginDataModel'
+import PluginProvideElement from '../../../../src/plugin/object/PluginProvideElement'
 
 describe('PluginProvideElement', () => {
 

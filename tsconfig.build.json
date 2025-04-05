@@ -20,10 +20,9 @@
     ]
   },
   "include": [
-    "src/lib"
+    "src"
   ],
   "exclude": [
-    "src/index_bundle.js",
     "dist",
     "node_modules",
     "test",

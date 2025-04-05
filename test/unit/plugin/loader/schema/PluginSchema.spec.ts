@@ -18,7 +18,7 @@ import {
   PluginProvidesSchema,
 
   PluginSchema
-} from '../../../../../src/lib/plugin/loader/schema'
+} from '../../../../../src/plugin/loader/schema'
 
 describe('PluginSchema', () => {
 

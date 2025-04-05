@@ -1,7 +1,7 @@
 import { GlobalConfig } from '@uncover/js-utils-logger'
-import { ServiceEvent } from '../../../../src/lib/message/services/ServiceEvent'
-import MessageDispatcher from '../../../../src/lib/message/MessageDispatcher'
-import { MessageServiceTypes } from '../../../../src/lib/message/model/model'
+import { ServiceEvent } from '../../../../src/message/services/ServiceEvent'
+import MessageDispatcher from '../../../../src/message/MessageDispatcher'
+import { MessageServiceTypes } from '../../../../src/message/model/model'
 
 GlobalConfig.off()
 

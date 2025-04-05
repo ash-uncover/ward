@@ -1,10 +1,10 @@
 import { GlobalConfig } from '@uncover/js-utils-logger'
-import PluginManager from '../../../src/lib/plugin/PluginManager'
-import Plugin from '../../../src/lib/plugin/object/Plugin'
-import PluginDefine from '../../../src/lib/plugin/object/PluginDefine'
-import PluginProvider from '../../../src/lib/plugin/object/PluginProvider'
-import PluginProvide from '../../../src/lib/plugin/object/PluginProvide'
-import PluginLoader, { PluginLoadStates } from '../../../src/lib/plugin/loader/PluginLoader'
+import PluginManager from '../../../src/plugin/PluginManager'
+import Plugin from '../../../src/plugin/object/Plugin'
+import PluginDefine from '../../../src/plugin/object/PluginDefine'
+import PluginProvider from '../../../src/plugin/object/PluginProvider'
+import PluginProvide from '../../../src/plugin/object/PluginProvide'
+import PluginLoader, { PluginLoadStates } from '../../../src/plugin/loader/PluginLoader'
 
 GlobalConfig.off()
 

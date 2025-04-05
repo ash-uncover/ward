@@ -1,9 +1,9 @@
 import { GlobalConfig } from '@uncover/js-utils-logger'
-import FrameService from '../../../../src/lib/message/services/FrameService'
+import FrameService from '../../../../src/message/services/FrameService'
 import MessageDispatcher, {
   CONNECTION_CLOSING
-} from '../../../../src/lib/message/MessageDispatcher'
-import { MessageServiceTypes } from '../../../../src/lib/message/model/model'
+} from '../../../../src/message/MessageDispatcher'
+import { MessageServiceTypes } from '../../../../src/message/model/model'
 
 GlobalConfig.off()
 

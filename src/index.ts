@@ -130,6 +130,7 @@ class WardClass {
   }
 }
 
+let Version = "1.0.0"
 let WardInstance: WardClass;
 declare global {
   interface Window {
@@ -140,12 +141,14 @@ if (!window.uncover?.ward) {
   WardInstance = new WardClass();
   window.uncover = window.uncover || {};
   window.uncover.ward = WardInstance;
-  window.uncover.wardVersion = "0.2.26";
+  window.uncover.wardVersion = Version;
 } else {
   console.warn(
     `Ward is already registered with version ${window.uncover.wardVersion || "older than 0.2.21"}`
   );
   WardInstance = window.uncover.ward;
+  Version = window.uncover.wardVersion
 }
 
-export default WardInstance;
+export const Ward = WardInstance
+export const WardVersion = Version

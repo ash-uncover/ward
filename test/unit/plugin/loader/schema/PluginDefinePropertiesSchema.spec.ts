@@ -1,7 +1,7 @@
 import Ajv from 'ajv'
 import {
   PluginDefinePropertiesSchema,
-} from '../../../../../src/lib/plugin/loader/schema'
+} from '../../../../../src/plugin/loader/schema'
 
 describe('PluginDefinePropertiesSchema', () => {
 

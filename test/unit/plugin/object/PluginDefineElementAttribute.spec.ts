@@ -1,4 +1,4 @@
-import PluginDefineElementAttribute from '../../../../src/lib/plugin/object/PluginDefineElementAttribute'
+import PluginDefineElementAttribute from '../../../../src/plugin/object/PluginDefineElementAttribute'
 
 describe('PluginDefineElementAttribute', () => {
 

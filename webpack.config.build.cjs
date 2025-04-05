@@ -8,7 +8,7 @@ const DIR_NODE_MODULES = path.resolve(__dirname, 'node_modules')
 
 module.exports = {
   entry: {
-    'ward': path.resolve(DIR_SRC, 'index_bundle.ts'),
+    'ward': path.resolve(DIR_SRC, 'index.ts'),
   },
 
   output: {

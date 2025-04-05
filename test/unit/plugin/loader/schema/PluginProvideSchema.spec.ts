@@ -5,7 +5,7 @@ import {
   PluginProvideElementsSchema,
   PluginProvidePropertiesSchema,
   PluginProvideSchema,
-} from '../../../../../src/lib/plugin/loader/schema'
+} from '../../../../../src/plugin/loader/schema'
 
 describe('PluginProvideSchema', () => {
 

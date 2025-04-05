@@ -16,7 +16,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 var _a;
 var _WardClass_wardId, _WardClass_pluginManager, _WardClass_messageDispatcher, _WardClass_listeners, _WardClass_listenersPlugins, _WardClass_listenersServices, _WardClass_logConfig;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ServiceEvent = void 0;
+exports.WardVersion = exports.Ward = exports.ServiceEvent = void 0;
 const js_utils_1 = require("@uncover/js-utils");
 const PluginManager_1 = __importDefault(require("./plugin/PluginManager"));
 const MessageDispatcher_1 = __importDefault(require("./message/MessageDispatcher"));
@@ -100,16 +100,19 @@ class WardClass {
     }
 }
 _WardClass_wardId = new WeakMap(), _WardClass_pluginManager = new WeakMap(), _WardClass_messageDispatcher = new WeakMap(), _WardClass_listeners = new WeakMap(), _WardClass_listenersPlugins = new WeakMap(), _WardClass_listenersServices = new WeakMap(), _WardClass_logConfig = new WeakMap();
+let Version = "1.0.0";
 let WardInstance;
 if (!((_a = window.uncover) === null || _a === void 0 ? void 0 : _a.ward)) {
     WardInstance = new WardClass();
     window.uncover = window.uncover || {};
     window.uncover.ward = WardInstance;
-    window.uncover.wardVersion = "0.2.26";
+    window.uncover.wardVersion = Version;
 }
 else {
     console.warn(`Ward is already registered with version ${window.uncover.wardVersion || "older than 0.2.21"}`);
     WardInstance = window.uncover.ward;
+    Version = window.uncover.wardVersion;
 }
-exports.default = WardInstance;
+exports.Ward = WardInstance;
+exports.WardVersion = Version;
 //# sourceMappingURL=index.js.map

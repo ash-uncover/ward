@@ -9,7 +9,7 @@ import {
   PluginDefinePropertiesSchema,
   PluginDefineSchema,
   PluginDefinesSchema,
-} from '../../../../../src/lib/plugin/loader/schema'
+} from '../../../../../src/plugin/loader/schema'
 
 describe('PluginDefinesSchema', () => {
 

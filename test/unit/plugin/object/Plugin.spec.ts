@@ -1,7 +1,7 @@
-import { WardPlugin } from '../../../../src/lib/plugin/loader/model/PluginDataModel'
-import Plugin from '../../../../src/lib/plugin/object/Plugin'
-import PluginDefine from '../../../../src/lib/plugin/object/PluginDefine'
-import PluginProvide from '../../../../src/lib/plugin/object/PluginProvide'
+import { WardPlugin } from '../../../../src/plugin/loader/model/PluginDataModel'
+import Plugin from '../../../../src/plugin/object/Plugin'
+import PluginDefine from '../../../../src/plugin/object/PluginDefine'
+import PluginProvide from '../../../../src/plugin/object/PluginProvide'
 
 describe('Plugin', () => {
 

@@ -2,7 +2,7 @@ import {
   IPluginLoader,
   WardPluginState,
   PluginLoadStates
-} from '../src/lib/plugin/loader/PluginLoader'
+} from '../src/plugin/loader/PluginLoader'
 
 const TEST_DATA: Record<string, any> = {
   pluginMain: {
